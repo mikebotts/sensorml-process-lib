@@ -25,7 +25,7 @@ package org.sensorML.process;
 
 import org.vast.process.*;
 import org.vast.data.*;
-import org.vast.mapping.*;
+import org.vast.physics.*;
 
 
 /**

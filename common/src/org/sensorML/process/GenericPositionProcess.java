@@ -28,7 +28,6 @@ import org.ogc.cdm.common.*;
 import org.vast.data.*;
 import org.vast.math.*;
 import org.vast.process.*;
-import org.vast.unit.UnitConversion;
 import org.vast.unit.UnitConverter;
 
 
@@ -111,7 +110,7 @@ public class GenericPositionProcess extends DataProcess
             			DataValue output = (DataValue)lookUpProcess.getOutputList().getComponent(j);
             			String axisCode = (String)output.getProperty("axisCode");
             			String def = (String)output.getProperty("definition");
-            			String uom = (String)output.getProperty("unit");
+            			//String uom = (String)output.getProperty("unit");
             			AxisCurve axis = createAxis(def, axisCode);
             			axis.process = lookUpProcess;
             			axis.outputIndex = j;

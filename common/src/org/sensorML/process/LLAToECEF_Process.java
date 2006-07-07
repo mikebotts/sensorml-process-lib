@@ -28,7 +28,6 @@ import org.ogc.cdm.common.*;
 import org.vast.data.*;
 import org.vast.math.*;
 import org.vast.physics.*;
-import org.vast.mapping.*;
 
 
 /**
