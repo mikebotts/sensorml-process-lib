@@ -68,10 +68,9 @@ public class TLEParser_Process extends DataProcess
     // internal variables
     protected String tlePath;
     protected BufferedReader tleReader;
-    protected int startingLine = 0;
     protected int lineNumber = 0;
-    protected String currentLine1 = "", previousLine1 = "", nextLine1 = "";
-    protected String currentLine2 = "", previousLine2 = "", nextLine2 = "";
+    protected String currentLine1, previousLine1, nextLine1;
+    protected String currentLine2, previousLine2, nextLine2;
     protected double currentTime, nextTime;
     
     // inner structure for TLE params
@@ -91,13 +90,15 @@ public class TLEParser_Process extends DataProcess
     
     public TLEParser_Process()
     {
+        reset();
     }
     
     
     public TLEParser_Process(String tlePath)
     {
+        this();
         this.tlePath = tlePath;
-        
+
         try
         {
             tleReader = new BufferedReader(new FileReader(tlePath));
@@ -134,6 +135,23 @@ public class TLEParser_Process extends DataProcess
         
         // Get TLE file name
         tlePath = paramData.getComponent("tleDataUrl").getData().getStringValue();
+        
+        reset();
+    }
+    
+    
+    public void reset()
+    {
+        closeFile();
+        currentTime = Double.NEGATIVE_INFINITY;
+        nextTime = Double.NEGATIVE_INFINITY;
+        currentLine1 = "";
+        previousLine1 = "";
+        nextLine1 = "";
+        currentLine2 = "";
+        previousLine2 = "";
+        nextLine2 = "";
+        lineNumber = 0;
     }
 
 
@@ -146,8 +164,18 @@ public class TLEParser_Process extends DataProcess
         
         try
         {
-            tleReader = new BufferedReader(new FileReader(tlePath));
-            TLEInfo tle = readTLE(t);
+            TLEInfo tle = null;
+            
+            if (tleReader != null && t >= currentTime)
+            {
+                tle = readTLE(t);
+            }
+            else
+            {
+                reset();
+                tleReader = new BufferedReader(new FileReader(tlePath));                
+                tle = readTLE(t);
+            }
             
             paramEpochYear.getData().setStringValue(tle.epochYear);
             paramEpochDay.getData().setStringValue(tle.epochDay);
@@ -159,13 +187,13 @@ public class TLEParser_Process extends DataProcess
             paramMeanAnomaly.getData().setStringValue(tle.meanAnomaly);
             paramMeanMotion.getData().setStringValue(tle.meanMotion);
             
-            this.closeFile();
+            //System.err.println(t + ": " + tle.inclination);
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
-    }    
+    }
     
     
     /**
@@ -222,10 +250,9 @@ public class TLEParser_Process extends DataProcess
     protected TLEInfo readTLE(double desiredTime) throws IOException
     {
         boolean isLastEntry = false;
-        startingLine -= 3; // to allow previous times
         
         // loop until we find the good TLE for the requested time
-        do
+        while (desiredTime > nextTime)
         {
             // read next 2 lines
             isLastEntry = readNextEntry();
@@ -235,8 +262,7 @@ public class TLEParser_Process extends DataProcess
             // check to see if this is the right time
             currentTime = nextTime;
             nextTime = getJulian(nextLine1);
-        }
-        while (desiredTime > nextTime);
+        }        
         
         // if no more lines, use last one
         if (!isLastEntry)
@@ -248,25 +274,9 @@ public class TLEParser_Process extends DataProcess
             double nextDelta = Math.abs(nextTime - desiredTime);
 
             if (currentDelta > nextDelta)
-            {
-                // shift existing lineBuffers and get one more
-                tleReader.mark(140);
-                previousLine1 = currentLine1;
-                previousLine2 = currentLine2;
-                currentLine1 = nextLine1;
-                currentLine2 = nextLine2;
-                do
-                {
-                    nextLine1 = tleReader.readLine();
-                }
-                while (nextLine1.length() == 0);
-                do
-                {
-                    nextLine2 = tleReader.readLine();
-                }
-                while (nextLine2.length() == 0);
-                lineNumber++;
-            }
+                return parseTLE(nextLine1, nextLine2);
+            else
+                return parseTLE(currentLine1, currentLine2);
         }
         
         // parse TLE
@@ -369,9 +379,25 @@ public class TLEParser_Process extends DataProcess
     /**
      * Call to close the TLE data file when done
      */
-    public void closeFile() throws IOException
+    public void closeFile()
     {
-        tleReader.close();
-        tleReader = null;
+        try
+        {
+            if (tleReader != null)
+            {
+                tleReader.close();
+                tleReader = null;
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
+    
+    protected void finalize()
+    {
+        closeFile();
     }
 }
