@@ -341,8 +341,11 @@ public class TLEParser_Process extends DataProcess
             tle.epochYear = "20" + tle.epochYear;
         else
             tle.epochYear = "19" + tle.epochYear;
+        
         tle.epochDay = lineBuffer1.substring(20,32).trim();
-        tle.bstar = "0." + lineBuffer1.substring(53,59).trim() + "e" + lineBuffer1.substring(59,61);
+        
+        tle.bstar = lineBuffer1.charAt(53) + "0." + lineBuffer1.substring(54,59).trim() + "e" + lineBuffer1.substring(59,61);
+        
         tle.inclination = lineBuffer2.substring(8,16).trim();
         tle.rightAscension = lineBuffer2.substring(17,25).trim();
         tle.eccentricity = "0." + lineBuffer2.substring(26,33).trim();
