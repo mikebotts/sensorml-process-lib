@@ -195,7 +195,7 @@ public class GenericPositionProcess extends DataProcess
         // set output matrix values
         if (outputMatrix != null)
         {
-        	Matrix4x4 outMatrix = computeMatrix();
+        	Matrix4d outMatrix = computeMatrix();
         	data = outputMatrix.getData();
         	for (int i=0; i<16; i++)
             	data.setDoubleValue(i, outMatrix.getElement(i/4, i%4));
@@ -235,7 +235,7 @@ public class GenericPositionProcess extends DataProcess
      * Computes 4x4 matrix using look up table outputs
      * @return
      */
-    protected Matrix4x4 computeMatrix()
+    protected Matrix4d computeMatrix()
 	{
     	double tx = 0.0;
     	double ty = 0.0;
@@ -244,7 +244,7 @@ public class GenericPositionProcess extends DataProcess
     	double ry = 0.0;
     	double rz = 0.0;
     	
-    	Matrix4x4 newMatrix = new Matrix4x4();
+    	Matrix4d newMatrix = new Matrix4d();
     	
 		// get interpolated values from look up tables
 		if (txCurve != null)
@@ -279,12 +279,12 @@ public class GenericPositionProcess extends DataProcess
 		}
 
 		// set up rotation matrices
-		Matrix4x4 xRotMatrix = new Matrix4x4();
-		Matrix4x4 yRotMatrix = new Matrix4x4();
-		Matrix4x4 zRotMatrix = new Matrix4x4();
-		xRotMatrix.rotateX(rx);
-		yRotMatrix.rotateY(ry);
-		zRotMatrix.rotateZ(rz);
+		Matrix4d xRotMatrix = new Matrix4d();
+		Matrix4d yRotMatrix = new Matrix4d();
+		Matrix4d zRotMatrix = new Matrix4d();
+		xRotMatrix.rotX(rx);
+		yRotMatrix.rotY(ry);
+		zRotMatrix.rotZ(rz);
 
 		// rotate in given order
 		for (int i=0; i<3; i++)
@@ -294,21 +294,21 @@ public class GenericPositionProcess extends DataProcess
 			switch (axis)
 			{
 				case 'X':
-					newMatrix.multiply(xRotMatrix);
+					newMatrix.mul(xRotMatrix);
 					break;
 					
 				case 'Y':
-					newMatrix.multiply(yRotMatrix);
+					newMatrix.mul(yRotMatrix);
 					break;
 					
 				case 'Z':
-					newMatrix.multiply(zRotMatrix);
+					newMatrix.mul(zRotMatrix);
 					break;
 			}
 		}
 
 		// translate
-		newMatrix.translate(tx, ty, tz);
+		newMatrix.setTranslation(tx, ty, tz);
 		
 		return newMatrix;
 	}

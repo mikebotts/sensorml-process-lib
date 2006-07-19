@@ -144,9 +144,9 @@ public class LLAToECEF_Process extends DataProcess
     
     public void execute() throws ProcessException
     {
-    	Matrix4x4 toEcefMatrix;
-    	Matrix3x3 nadirMatrix;
-    	Matrix3x3 attitudeMatrix;
+    	Matrix4d toEcefMatrix;
+    	Matrix3d nadirMatrix;
+    	Matrix3d attitudeMatrix;
     	
     	// get lat,lon,alt coordinates from input and convert to SI
     	double lat = latData.getData().getDoubleValue();
@@ -160,16 +160,16 @@ public class LLAToECEF_Process extends DataProcess
         // default = north/east/up orientation
         if (nadirOriented == true)
         {
-        	Vector3D ecfPosition;
+        	Vector3d ecfPosition;
         	
-        	ecfPosition = new Vector3D(ecefPos[0], ecefPos[1], ecefPos[2]);        	
-            Vector3D toEcfNorth = NadirPointing.getEcfVectorToNorth(ecfPosition);
+        	ecfPosition = new Vector3d(ecefPos[0], ecefPos[1], ecefPos[2]);        	
+            Vector3d toEcfNorth = NadirPointing.getEcfVectorToNorth(ecfPosition);
             nadirMatrix = NadirPointing.getRotationMatrix(ecfPosition, toEcfNorth, northAxis, upAxis);
-            toEcefMatrix = new Matrix4x4(nadirMatrix);
+            toEcefMatrix = new Matrix4d(nadirMatrix);
         }
         else
         {
-        	toEcefMatrix = new Matrix4x4();
+        	toEcefMatrix = new Matrix4d();
         }
         
         // add translation coordinates
@@ -179,7 +179,7 @@ public class LLAToECEF_Process extends DataProcess
         // apply pitch/roll/yaw rotations
         // local order z y x / yaw pitch roll
         attitudeMatrix = computeMatrix();
-        toEcefMatrix.multiply(attitudeMatrix);
+        toEcefMatrix.mul(attitudeMatrix);
         
         // set output matrix values
         for (int i=0; i<15; i++)
@@ -193,7 +193,7 @@ public class LLAToECEF_Process extends DataProcess
      * Computes attitude matrix with respect to local nadir orientation
      * @return 3x3 orientation matrix
      */
-    protected Matrix3x3 computeMatrix()
+    protected Matrix3d computeMatrix()
 	{
     	// retrieve rotation values (converted to SI)
     	double rx = lrxData.getData().getDoubleValue();
@@ -201,7 +201,7 @@ public class LLAToECEF_Process extends DataProcess
     	double rz = lrzData.getData().getDoubleValue();
 
     	// set up rotation matrices
-    	Matrix3x3 newMatrix = new Matrix3x3();
+    	Matrix3d newMatrix = new Matrix3d();
 
 		// rotate in given order
 		for (int i=0; i<3; i++)
@@ -211,15 +211,15 @@ public class LLAToECEF_Process extends DataProcess
 			switch (axis)
 			{
 				case 'X':
-					newMatrix.rotateX(rx);
+					newMatrix.rotX(rx);
 					break;
 					
 				case 'Y':
-					newMatrix.rotateY(ry);
+					newMatrix.rotY(ry);
 					break;
 					
 				case 'Z':
-					newMatrix.rotateZ(rz);
+					newMatrix.rotZ(rz);
 					break;
 			}
 		}

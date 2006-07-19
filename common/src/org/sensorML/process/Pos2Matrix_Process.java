@@ -49,10 +49,10 @@ public class Pos2Matrix_Process extends DataProcess
     private DataValue rxData, ryData, rzData;
     private DataArray outputMatrix;
     private char[] rotationOrder = {'X','Y','Z'};
-    private Matrix4x4 newMatrix = new Matrix4x4();
-    private Matrix4x4 xRotMatrix = new Matrix4x4();
-    private Matrix4x4 yRotMatrix = new Matrix4x4();
-    private Matrix4x4 zRotMatrix = new Matrix4x4();
+    private Matrix4d newMatrix = new Matrix4d();
+    private Matrix4d xRotMatrix = new Matrix4d();
+    private Matrix4d yRotMatrix = new Matrix4d();
+    private Matrix4d zRotMatrix = new Matrix4d();
     
     
     public Pos2Matrix_Process()
@@ -109,14 +109,14 @@ public class Pos2Matrix_Process extends DataProcess
             rz = rzData.getData().getDoubleValue();
 
         // set up rotation matrices
-        newMatrix.identity();
-        xRotMatrix.identity();
-        yRotMatrix.identity();
-        zRotMatrix.identity();
-        xRotMatrix.rotateX(rx);
-        yRotMatrix.rotateY(ry);
-        zRotMatrix.rotateZ(rz);
-
+        newMatrix.setIdentity();
+        xRotMatrix.setIdentity();
+        yRotMatrix.setIdentity();
+        zRotMatrix.setIdentity();
+        xRotMatrix.rotX(rx);
+        yRotMatrix.rotY(ry);
+        zRotMatrix.rotZ(rz);
+ 
         // rotate in given order
         for (int i=0; i<3; i++)
         {
@@ -125,21 +125,21 @@ public class Pos2Matrix_Process extends DataProcess
             switch (axis)
             {
                 case 'X':
-                    newMatrix.multiply(xRotMatrix);
+                    newMatrix.mul(xRotMatrix);
                     break;
                     
                 case 'Y':
-                    newMatrix.multiply(yRotMatrix);
+                    newMatrix.mul(yRotMatrix);
                     break;
                     
                 case 'Z':
-                    newMatrix.multiply(zRotMatrix);
+                    newMatrix.mul(zRotMatrix);
                     break;
             }
         }
 
         // translate
-        newMatrix.translate(tx, ty, tz);
+        newMatrix.setTranslation(tx, ty, tz);
         
         // assign values to output matrix
         DataBlock data = outputMatrix.getData();

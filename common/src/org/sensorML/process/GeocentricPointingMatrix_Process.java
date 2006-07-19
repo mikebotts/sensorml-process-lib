@@ -117,64 +117,65 @@ public class GeocentricPointingMatrix_Process extends DataProcess
         if (vzData != null)
             vz = vzData.getData().getDoubleValue();
 
-        Matrix4x4 newMatrix = null;        
-        Vector3D heading, other;
+        Matrix4d newMatrix = null;        
+        Vector3d heading = new Vector3d();
+        Vector3d other = new Vector3d();
         
-        Vector3D up = new Vector3D(x, y, z);
+        Vector3d up = new Vector3d(x, y, z);
         up.normalize();
         
-        Vector3D velocity = new Vector3D(vx, vy, vz);
+        Vector3d velocity = new Vector3d(vx, vy, vz);
         velocity.normalize();
 
         if ((forwardAxis == 'X') && (upAxis == 'Z'))
         {
-            other = up.cross(velocity);
+            other.cross(up, velocity);
             other.normalize();
-            heading = other.cross(up);
-            newMatrix = new Matrix4x4(heading, other, up);
+            heading.cross(other, up);
+            newMatrix = new Matrix4d(heading, other, up);
         }
 
         else if ((forwardAxis == 'X') && (upAxis == 'Y'))
         {
-            other = velocity.cross(up);
+            other.cross(velocity, up);
             other.normalize();
-            heading = up.cross(other);
-            newMatrix = new Matrix4x4(heading, up, other);
+            heading.cross(up, other);
+            newMatrix = new Matrix4d(heading, up, other);
         }
 
         else if ((forwardAxis == 'Y') && (upAxis == 'X'))
         {
-            other = up.cross(velocity);
+            other.cross(up, velocity);
             other.normalize();
-            heading = other.cross(up);
-            newMatrix = new Matrix4x4(up, heading, other);
+            heading.cross(other, up);
+            newMatrix = new Matrix4d(up, heading, other);
         }
 
         else if ((forwardAxis == 'Y') && (upAxis == 'Z'))
         {
-            other = velocity.cross(up);
+            other.cross(velocity, up);
             other.normalize();
-            heading = up.cross(other);
-            newMatrix = new Matrix4x4(other, heading, up);
+            heading.cross(up, other);
+            newMatrix = new Matrix4d(other, heading, up);
         }
 
         else if ((forwardAxis == 'Z') && (upAxis == 'X'))
         {
-            other = velocity.cross(up);
+            other.cross(velocity, up);
             other.normalize();
-            heading = up.cross(other);
-            newMatrix = new Matrix4x4(up, other, heading);
+            heading.cross(up, other);
+            newMatrix = new Matrix4d(up, other, heading);
         }
 
         else if ((forwardAxis == 'Z') && (upAxis == 'Y'))
         {
-            other = up.cross(velocity);
+            other.cross(up, velocity);
             other.normalize();
-            heading = other.cross(up);
-            newMatrix = new Matrix4x4(other, up, heading);
+            heading.cross(other, up);
+            newMatrix = new Matrix4d(other, up, heading);
         }
         
-        newMatrix.translate(x, y, z);
+        newMatrix.setTranslation(x, y, z);
         
         // assign values to output matrix
         DataBlock data = outputMatrix.getData();

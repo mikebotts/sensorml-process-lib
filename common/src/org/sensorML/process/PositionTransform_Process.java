@@ -98,15 +98,15 @@ public class PositionTransform_Process extends DataProcess
         DataBlock locMatrixData = localPos.getData();
     	
     	// compute transformed position
-        Matrix4x4 refMatrix = new Matrix4x4();
+        Matrix4d refMatrix = new Matrix4d();
         for (int i=0; i<16; i++)
         	refMatrix.setElement(i/4, i%4, refMatrixData.getDoubleValue(i));
         
-        Matrix4x4 locMatrix = new Matrix4x4();
+        Matrix4d locMatrix = new Matrix4d();
         for (int i=0; i<16; i++)
         	locMatrix.setElement(i/4, i%4, locMatrixData.getDoubleValue(i));
              
-        refMatrix.multiply(locMatrix);
+        refMatrix.mul(locMatrix);
         
         // assign output values
         DataBlock resultMatrixData = resultPos.getData();

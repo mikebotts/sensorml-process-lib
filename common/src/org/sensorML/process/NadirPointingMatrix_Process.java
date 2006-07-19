@@ -26,6 +26,8 @@ package org.sensorML.process;
 import org.ogc.cdm.common.*;
 import org.vast.data.*;
 import org.vast.math.*;
+import org.vast.physics.Datum;
+import org.vast.physics.MapProjection;
 import org.vast.process.*;
 
 
@@ -115,68 +117,84 @@ public class NadirPointingMatrix_Process extends DataProcess
         if (vzData != null)
             vz = vzData.getData().getDoubleValue();
 
-        Matrix4x4 newMatrix = null;        
-        Vector3D heading, other;
-        
-        Vector3D up = new Vector3D(x, y, z);
-        up.normalize();
-        
-        Vector3D velocity = new Vector3D(vx, vy, vz);
+        Matrix4d newMatrix = null;        
+        Vector3d heading = new Vector3d();
+        Vector3d other = new Vector3d();
+        Vector3d up = new Vector3d();
+        Vector3d position = new Vector3d(x, y, z);
+        Vector3d velocity = new Vector3d(vx, vy, vz);
         velocity.normalize();
+        
+        double[] lla = MapProjection.ECFtoLLA(position.x, position.y, position.z, new Datum());
+        double[] ecf = MapProjection.LLAtoECF(lla[0], lla[1], -3e3, new Datum());        
+        Vector3d nearPoint = new Vector3d(ecf[0], ecf[1], ecf[2]);
+        
+        up.sub(position, nearPoint);
+        up.normalize();
 
         if ((forwardAxis == 'X') && (upAxis == 'Z'))
         {
-            other = up.cross(velocity);
+            other.cross(up, velocity);
             other.normalize();
-            heading = other.cross(up);
-            newMatrix = new Matrix4x4(heading, other, up);
+            heading.cross(other, up);
+            newMatrix = new Matrix4d(heading, other, up);
         }
 
         else if ((forwardAxis == 'X') && (upAxis == 'Y'))
         {
-            other = velocity.cross(up);
+            other.cross(velocity, up);
             other.normalize();
-            heading = up.cross(other);
-            newMatrix = new Matrix4x4(heading, up, other);
+            heading.cross(up, other);
+            newMatrix = new Matrix4d(heading, up, other);
         }
 
         else if ((forwardAxis == 'Y') && (upAxis == 'X'))
         {
-            other = up.cross(velocity);
+            other.cross(up, velocity);
             other.normalize();
-            heading = other.cross(up);
-            newMatrix = new Matrix4x4(up, heading, other);
+            heading.cross(other, up);
+            newMatrix = new Matrix4d(up, heading, other);
         }
 
         else if ((forwardAxis == 'Y') && (upAxis == 'Z'))
         {
-            other = velocity.cross(up);
+            other.cross(velocity, up);
             other.normalize();
-            heading = up.cross(other);
-            newMatrix = new Matrix4x4(other, heading, up);
+            heading.cross(up, other);
+            newMatrix = new Matrix4d(other, heading, up);
         }
 
         else if ((forwardAxis == 'Z') && (upAxis == 'X'))
         {
-            other = velocity.cross(up);
+            other.cross(velocity, up);
             other.normalize();
-            heading = up.cross(other);
-            newMatrix = new Matrix4x4(up, other, heading);
+            heading.cross(up, other);
+            newMatrix = new Matrix4d(up, other, heading);
         }
 
         else if ((forwardAxis == 'Z') && (upAxis == 'Y'))
         {
-            other = up.cross(velocity);
+            other.cross(up, velocity);
             other.normalize();
-            heading = other.cross(up);
-            newMatrix = new Matrix4x4(other, up, heading);
+            heading.cross(other, up);
+            newMatrix = new Matrix4d(other, up, heading);
         }
         
-        newMatrix.translate(x, y, z);
+        newMatrix.setTranslation(x, y, z);
         
         // assign values to output matrix
         DataBlock data = outputMatrix.getData();
         for (int i=0; i<16; i++)
             data.setDoubleValue(i, newMatrix.getElement(i/4, i%4));
+    }
+    
+    
+    public static Vector3d getEcfVectorToNorth(Vector3d ecfPosition)
+    {
+        double polarRadius = (new Datum()).polarRadius;
+        Vector3d northPole = new Vector3d(0.0, 0.0, polarRadius);
+        Vector3d res = new Vector3d();
+        res.sub(northPole, ecfPosition);
+        return res;
     }
 }
