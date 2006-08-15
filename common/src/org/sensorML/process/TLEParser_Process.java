@@ -74,7 +74,7 @@ public class TLEParser_Process extends DataProcess
     protected double currentTime, nextTime;
     
     // inner structure for TLE params
-    class TLEInfo
+    public class TLEInfo
     {
         public String epochYear;
         public String epochDay;
@@ -191,7 +191,7 @@ public class TLEParser_Process extends DataProcess
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            reset();
         }
     }
     
@@ -201,21 +201,14 @@ public class TLEParser_Process extends DataProcess
      * @param timeRange
      * @return list of TLE objects
      */
-    public List<TLEInfo> readTle(double startTime, double stopTime)
+    public List<TLEInfo> readTle(double startTime, double stopTime) throws IOException
     {
         List<TLEInfo> tleList = new ArrayList<TLEInfo>();
         
-        try
-        {
-            TLEInfo tle = readTLE(startTime);
+        TLEInfo tle = readTLE(startTime);
+        tleList.add(tle);
+        while ((tle = readNextTLE(stopTime)) != null)
             tleList.add(tle);
-            while ((tle = readNextTLE(stopTime)) != null)
-                tleList.add(tle);            
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
         
         return tleList;
     }
