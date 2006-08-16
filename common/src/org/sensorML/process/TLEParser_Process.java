@@ -273,7 +273,7 @@ public class TLEParser_Process extends DataProcess
         }
         
         // parse TLE
-        return parseTLE(currentLine1, currentLine2);     
+        return parseTLE(currentLine1, currentLine2);
     }
     
     
@@ -300,7 +300,11 @@ public class TLEParser_Process extends DataProcess
 
             // return if EOF
             if (nextLine1 == null)
+            {
+                nextLine1 = currentLine1;
+                nextLine2 = currentLine2;
                 return true;
+            }
 
             // skip blank lines and get line 2
             do
