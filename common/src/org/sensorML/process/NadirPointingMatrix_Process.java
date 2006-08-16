@@ -68,12 +68,14 @@ public class NadirPointingMatrix_Process extends DataProcess
         try
         {
             // input mappings
-            xData = (DataValue)inputData.getComponent("location").getComponent("x");
-            yData = (DataValue)inputData.getComponent("location").getComponent("y");
-            zData = (DataValue)inputData.getComponent("location").getComponent("z");
-            vxData = (DataValue)inputData.getComponent("velocity").getComponent("x");
-            vyData = (DataValue)inputData.getComponent("velocity").getComponent("y");
-            vzData = (DataValue)inputData.getComponent("velocity").getComponent("z");
+            DataGroup locVector = (DataGroup)inputData.getComponent("location");
+            xData = (DataValue)locVector.getComponent("x");
+            yData = (DataValue)locVector.getComponent("y");
+            zData = (DataValue)locVector.getComponent("z");            
+            DataGroup velVector = (DataGroup)inputData.getComponent("velocity");
+            vxData = (DataValue)velVector.getComponent("x");
+            vyData = (DataValue)velVector.getComponent("y");
+            vzData = (DataValue)velVector.getComponent("z");
             
             // output mapping
             outputMatrix = (DataArray)outputData.getComponent("posMatrix");

@@ -65,13 +65,26 @@ public class Pos2Matrix_Process extends DataProcess
     {
         try
         {
-            txData = (DataValue)inputData.getComponent("location").getComponent("x");
-            tyData = (DataValue)inputData.getComponent("location").getComponent("y");
-            tzData = (DataValue)inputData.getComponent("location").getComponent("z");
-            rxData = (DataValue)inputData.getComponent("orientation").getComponent("x");
-            ryData = (DataValue)inputData.getComponent("orientation").getComponent("y");
-            rzData = (DataValue)inputData.getComponent("orientation").getComponent("z");
+            // input mappings
+            DataGroup locVector = (DataGroup)inputData.getComponent("location");
+            txData = (DataValue)locVector.getComponent("x");
+            tyData = (DataValue)locVector.getComponent("y");
+            tzData = (DataValue)locVector.getComponent("z");
+            DataGroup rotVector = (DataGroup)inputData.getComponent("orientation");
+            rxData = (DataValue)rotVector.getComponent("x");
+            ryData = (DataValue)rotVector.getComponent("y");
+            rzData = (DataValue)rotVector.getComponent("z");
+            
+            // output mapping
             outputMatrix = (DataArray)outputData.getComponent("posMatrix");
+            
+            // figure out rotation order by order of orientation inputs
+            int rxIndex = rotVector.getComponentIndex("x");
+            rotationOrder[rxIndex] = 'X';
+            int ryIndex = rotVector.getComponentIndex("y");
+            rotationOrder[ryIndex] = 'Y';
+            int rzIndex = rotVector.getComponentIndex("z");
+            rotationOrder[rzIndex] = 'Z';
         }
         catch (RuntimeException e)
         {
