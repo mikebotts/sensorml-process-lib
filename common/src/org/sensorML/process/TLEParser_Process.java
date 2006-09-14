@@ -173,7 +173,7 @@ public class TLEParser_Process extends DataProcess
             else
             {
                 reset();
-                tleReader = new BufferedReader(new FileReader(tlePath));                
+                tleReader = new BufferedReader(new FileReader(tlePath));
                 tle = readTLE(t);
             }
             
@@ -192,6 +192,7 @@ public class TLEParser_Process extends DataProcess
         catch (IOException e)
         {
             reset();
+            throw new ProcessException("Cannot read from TLE file", e);            
         }
     }
     

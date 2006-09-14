@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProcessMap>
+   
+   <Process>
+      <uri>urn:ogc:def:process:LUT1D:1.0</uri>
+      <class>org.sensorML.process.LookUpTable1D_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:pos2Matrix:1.0</uri>
+      <class>org.sensorML.process.Pos2Matrix_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:positionTransform:1.0</uri>
+      <class>org.sensorML.process.PositionTransform_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:timeTransform:1.0</uri>
+      <class>org.sensorML.process.TimeTransform_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:geocentricPointing:1.0</uri>
+      <class>org.sensorML.process.GeocentricPointingMatrix_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:nadirPointing:1.0</uri>
+      <class>org.sensorML.process.NadirPointingMatrix_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:vast:def:process:tleParser:1.0</uri>
+      <class>org.sensorML.process.TLEParser_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:SGP4:1.0</uri>
+      <class>org.sensorML.process.SGP4_OrbitalModel_Process</class>
+   </Process>
+      
+   <Process>
+      <uri>urn:ogc:def:process:rayIntersectEllipsoid:1.0</uri>
+      <class>org.sensorML.process.RayIntersectEllipsoid_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:ECEFToLLA:1.0</uri>
+      <class>org.sensorML.process.ECEFToLLA_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:eciToEcef:1.0</uri>
+      <class>org.sensorML.process.ECItoECEF_Process</class>
+   </Process>
+   
+   <Process>
+      <uri>urn:ogc:def:process:eciVelToEcef:1.0</uri>
+      <class>org.sensorML.process.ECIVeltoECEF_Process</class>
+   </Process>
+   
+   <!--========================================-->
+   <!-- Create a component when using Detector -->
+   <!--========================================-->
+   <Process>
+      <uri>urn:ogc:def:process:1.0:detector</uri>
+      <class>org.vast.sensorML.system.SMLComponent</class>
+   </Process>
+   
+</ProcessMap>
