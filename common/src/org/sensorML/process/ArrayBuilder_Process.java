@@ -83,7 +83,7 @@ public class ArrayBuilder_Process extends DataProcess
             arraySize = inputSize.getData().getIntValue();
             outputSize.getData().setIntValue(arraySize);
             outputArray.updateSize();
-            outputData.getComponent(0).renewDataBlock();            
+            ((DataGroup)outputData.getComponent(0)).combineDataBlocks();            
             
             // set size input as not needed so that we can continue
             // building the array
@@ -96,13 +96,13 @@ public class ArrayBuilder_Process extends DataProcess
         
         int index = inputIndex.getData().getIntValue();
         DataBlock data = inputComponent.getData();
-        System.out.print(elementCount + ",");
+        //System.out.print(elementCount + ",");
         for (int i=0; i<data.getAtomCount(); i++)
         {
             outputArray.getComponent(index).getData().setDoubleValue(i, data.getDoubleValue(i));
-            System.out.print(data.getDoubleValue(i) + ",");
+            //System.out.print(data.getDoubleValue(i) + ",");
         }
-        System.out.println();
+        //System.out.println();
         elementCount++;
         
         
