@@ -50,9 +50,6 @@ public class Pos2Matrix_Process extends DataProcess
     private DataArray outputMatrix;
     private char[] rotationOrder = {'X','Y','Z'};
     private Matrix4d newMatrix = new Matrix4d();
-    private Matrix4d xRotMatrix = new Matrix4d();
-    private Matrix4d yRotMatrix = new Matrix4d();
-    private Matrix4d zRotMatrix = new Matrix4d();
     
     
     public Pos2Matrix_Process()
@@ -123,12 +120,6 @@ public class Pos2Matrix_Process extends DataProcess
 
         // set up rotation matrices
         newMatrix.setIdentity();
-        xRotMatrix.setIdentity();
-        yRotMatrix.setIdentity();
-        zRotMatrix.setIdentity();
-        xRotMatrix.rotX(rx);
-        yRotMatrix.rotY(ry);
-        zRotMatrix.rotZ(rz);
  
         // rotate in given order
         for (int i=0; i<3; i++)
@@ -138,15 +129,15 @@ public class Pos2Matrix_Process extends DataProcess
             switch (axis)
             {
                 case 'X':
-                    newMatrix.mul(xRotMatrix);
+                    newMatrix.rotateX(-rx);
                     break;
                     
                 case 'Y':
-                    newMatrix.mul(yRotMatrix);
+                    newMatrix.rotateY(-ry);
                     break;
                     
                 case 'Z':
-                    newMatrix.mul(zRotMatrix);
+                    newMatrix.rotateZ(-rz);
                     break;
             }
         }

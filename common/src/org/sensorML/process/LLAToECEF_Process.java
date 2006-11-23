@@ -23,8 +23,8 @@
 
 package org.sensorML.process;
 
+import org.ogc.cdm.common.DataComponent;
 import org.vast.process.*;
-import org.ogc.cdm.common.*;
 import org.vast.data.*;
 import org.vast.math.*;
 import org.vast.physics.*;
@@ -46,68 +46,39 @@ import org.vast.physics.*;
  */
 public class LLAToECEF_Process extends DataProcess
 {
-    AbstractDataComponent latData, lonData, altData;
-    AbstractDataComponent lrxData, lryData, lrzData;
-    AbstractDataComponent outputPos;
-    
-    protected boolean nadirOriented = true;
-    protected int upAxis = 3;
-    protected int northAxis = 2;
+    private AbstractDataComponent latData, lonData, altData;
+    private AbstractDataComponent lrxData, lryData, lrzData;
+    private AbstractDataComponent outputPos;
+    private Matrix4d toEcefMatrix;
+    private Matrix3d rotMatrix;
+    private boolean nadirOriented = true;
+    private int upAxis = 3;
+    private int northAxis = 2;
     char[] rotationOrder = {'Z','X','Y'};
 
 
     public LLAToECEF_Process()
-    {    	
-    }
-    
-    
-    // helper method to build outputs if not reading from xml
-    protected void buildIO()
     {
-    	// build inputs
-    	DataGroup geoLocData = new DataGroup(3);
-    	geoLocData.addComponent("latitude", new DataValue(DataType.DOUBLE));
-    	geoLocData.addComponent("longitude", new DataValue(DataType.DOUBLE));
-    	geoLocData.addComponent("altitude", new DataValue(DataType.DOUBLE));
-    	this.addInput("geoLocation", geoLocData);
-    	
-    	DataGroup locAttData = new DataGroup(3);
-    	locAttData.addComponent("x", new DataValue(DataType.DOUBLE));
-    	locAttData.addComponent("y", new DataValue(DataType.DOUBLE));
-    	locAttData.addComponent("z", new DataValue(DataType.DOUBLE));
-    	this.addInput("localOrientation", locAttData);
-    	
-    	// build outputs
-    	DataArray ecefMatrix = new DataArray(16);
-    	ecefMatrix.addComponent(new DataValue(DataType.DOUBLE));
-    	this.addOutput("ecefPosition", ecefMatrix);
+        toEcefMatrix = new Matrix4d();
+        rotMatrix = new Matrix3d();
     }
 
     
     public void init() throws ProcessException
     {
-    	if (inputData.getComponentCount() == 0 && outputData.getComponentCount() == 0)
-    		buildIO();
-    	
     	try
         {
             // get input data containers + create appropriate Unit Converters
     		AbstractDataComponent locationData = inputData.getComponent("geoLocation");
-            if (locationData != null)
-            {
-	            latData = locationData.getComponent("latitude");          
-	            lonData = locationData.getComponent("longitude");       
-	            altData = locationData.getComponent("altitude");
-            }
+            latData = locationData.getComponent("latitude");          
+            lonData = locationData.getComponent("longitude");       
+            altData = locationData.getComponent("altitude");
             
             // get orientation data containers + create appropriate Unit Converters
             AbstractDataComponent orientationData = inputData.getComponent("localOrientation");
-            if (orientationData != null)
-            {
-	            lrxData = orientationData.getComponent("x");          
-	            lryData = orientationData.getComponent("y");    
-	            lrzData = orientationData.getComponent("z");
-            }
+            lrxData = orientationData.getComponent("x");          
+            lryData = orientationData.getComponent("y");    
+            lrzData = orientationData.getComponent("z");
             
             // read rotation order
             String rotOrder = orientationData.getComponent("order").getData().getStringValue();
@@ -115,38 +86,37 @@ public class LLAToECEF_Process extends DataProcess
             	rotationOrder = rotOrder.toCharArray();
             
             // set up upAxis and northAxis depending on the frame (ENU, NED, etc...)
-            String refFrame = (String)orientationData.getProperty("referenceFrame");
+            String refFrame = (String)orientationData.getProperty(DataComponent.REF);
             if (refFrame != null)
             {
             	if (refFrame.contains("NED"))
             	{
             		northAxis = 1;
             		upAxis = -3;
+                    nadirOriented = true;
             	}
-            	else if (refFrame.contains("WND"))
+            	else if (refFrame.contains("ENU"))
             	{
             		northAxis = 2;
-            		upAxis = -3;
+            		upAxis = 3;
+                    nadirOriented = true;
             	}
             }
             
-            
             // output data containers
         	outputPos = outputData.getComponent("ecefPosition");
-        	outputPos.assignNewDataBlock();
+        	outputPos.renewDataBlock();
         }
         catch (Exception e)
         {
-            throw new ProcessException("Invalid input structure");
+            throw new ProcessException(ioError, e);
         }
     }
    
     
     public void execute() throws ProcessException
     {
-    	Matrix4d toEcefMatrix;
     	Matrix3d nadirMatrix;
-    	Matrix3d attitudeMatrix;
     	
     	// get lat,lon,alt coordinates from input and convert to SI
     	double lat = latData.getData().getDoubleValue();
@@ -155,37 +125,30 @@ public class LLAToECEF_Process extends DataProcess
         
         // convert to ECEF
         double[] ecefPos = MapProjection.LLAtoECF(lat, lon, alt, new Datum());
-        
+        toEcefMatrix.setIdentity();
+                
         // compute nadir orientation if needed
         // default = north/east/up orientation
         if (nadirOriented == true)
         {
-        	Vector3d ecfPosition;
-        	
+        	Vector3d ecfPosition;        	
         	ecfPosition = new Vector3d(ecefPos[0], ecefPos[1], ecefPos[2]);        	
             Vector3d toEcfNorth = NadirPointing.getEcfVectorToNorth(ecfPosition);
             nadirMatrix = NadirPointing.getRotationMatrix(ecfPosition, toEcfNorth, northAxis, upAxis);
-            toEcefMatrix = new Matrix4d(nadirMatrix);
-        }
-        else
-        {
-        	toEcefMatrix = new Matrix4d();
+            toEcefMatrix.setRotation(nadirMatrix);
         }
         
         // add translation coordinates
         for (int i=0; i<3; i++)
         	toEcefMatrix.setElement(i, 3, ecefPos[i]);
         
-        // apply pitch/roll/yaw rotations
-        // local order z y x / yaw pitch roll
-        attitudeMatrix = computeMatrix();
-        toEcefMatrix.mul(attitudeMatrix);
+        // apply rotations in specified order
+        computeRotMatrix();
+        toEcefMatrix.mul(rotMatrix);
         
         // set output matrix values
         for (int i=0; i<15; i++)
         	outputPos.getData().setDoubleValue(i, toEcefMatrix.getElement(i/4, i%4));
-        
-        //System.out.println("lla = " + lat + "," + lon + "," + alt);
     }
     
     
@@ -193,15 +156,14 @@ public class LLAToECEF_Process extends DataProcess
      * Computes attitude matrix with respect to local nadir orientation
      * @return 3x3 orientation matrix
      */
-    protected Matrix3d computeMatrix()
+    protected void computeRotMatrix()
 	{
-    	// retrieve rotation values (converted to SI)
+        rotMatrix.setIdentity();
+        
+        // retrieve rotation values (converted to SI)
     	double rx = lrxData.getData().getDoubleValue();
     	double ry = lryData.getData().getDoubleValue();
     	double rz = lrzData.getData().getDoubleValue();
-
-    	// set up rotation matrices
-    	Matrix3d newMatrix = new Matrix3d();
 
 		// rotate in given order
 		for (int i=0; i<3; i++)
@@ -211,21 +173,17 @@ public class LLAToECEF_Process extends DataProcess
 			switch (axis)
 			{
 				case 'X':
-					newMatrix.rotX(rx);
+                    rotMatrix.rotateX(-rx);
 					break;
 					
 				case 'Y':
-					newMatrix.rotY(ry);
+                    rotMatrix.rotateY(-ry);
 					break;
 					
 				case 'Z':
-					newMatrix.rotZ(rz);
+                    rotMatrix.rotateZ(-rz);
 					break;
 			}
 		}
-		
-		//System.out.println("xyz = " + rx + "," + ry + "," + rz);
-		
-		return newMatrix;
 	}
 }

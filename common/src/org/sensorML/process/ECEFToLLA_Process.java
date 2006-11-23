@@ -44,8 +44,8 @@ import org.vast.physics.*;
  */
 public class ECEFToLLA_Process extends DataProcess
 {
-    DataValue xData, yData, zData;
-    DataValue latData, lonData, altData;
+    private DataValue xData, yData, zData;
+    private DataValue latData, lonData, altData;
     
 
     public ECEFToLLA_Process()
@@ -60,25 +60,19 @@ public class ECEFToLLA_Process extends DataProcess
         {
     		// input data containers
             DataGroup ecefData = (DataGroup)inputData.getComponent("ecefLocation");
-            if (ecefData != null)
-            {
-                xData = (DataValue)ecefData.getComponent("x");
-                yData = (DataValue)ecefData.getComponent("y");
-                zData = (DataValue)ecefData.getComponent("z");
-            }
+            xData = (DataValue)ecefData.getComponent("x");
+            yData = (DataValue)ecefData.getComponent("y");
+            zData = (DataValue)ecefData.getComponent("z");
         	
     		// get output data containers + create appropriate Unit Converters
-    		DataGroup locationData = (DataGroup)outputData.getComponent("llaLocation");
-            if (locationData != null)
-            {
-	            latData = (DataValue)locationData.getComponent("latitude");            
-	            lonData = (DataValue)locationData.getComponent("longitude");
-	            altData = (DataValue)locationData.getComponent("altitude");
-            }
+    		DataGroup locationData = (DataGroup)outputData.getComponent("geoLocation");
+            latData = (DataValue)locationData.getComponent("latitude");            
+            lonData = (DataValue)locationData.getComponent("longitude");
+            altData = (DataValue)locationData.getComponent("altitude");
         }
         catch (Exception e)
         {
-            throw new ProcessException("Invalid I/O structure");
+            throw new ProcessException(ioError, e);
         }
     }
    
@@ -95,5 +89,7 @@ public class ECEFToLLA_Process extends DataProcess
     	latData.getData().setDoubleValue(lla[0]);
         lonData.getData().setDoubleValue(lla[1]);
         altData.getData().setDoubleValue(lla[2]);
+        
+        //System.out.println("lla: " + lla[0] + "," + lla[1] + "," + lla[2]);
     }
 }
