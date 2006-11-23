@@ -49,8 +49,8 @@ public class LLAToECEF_Process extends DataProcess
     private AbstractDataComponent latData, lonData, altData;
     private AbstractDataComponent lrxData, lryData, lrzData;
     private AbstractDataComponent outputPos;
-    private Matrix4d toEcefMatrix;
-    private Matrix3d rotMatrix;
+    private Matrix4d toEcefMatrix = new Matrix4d();;
+    private Matrix3d rotMatrix = new Matrix3d();;
     private boolean nadirOriented = true;
     private int upAxis = 3;
     private int northAxis = 2;
@@ -59,8 +59,6 @@ public class LLAToECEF_Process extends DataProcess
 
     public LLAToECEF_Process()
     {
-        toEcefMatrix = new Matrix4d();
-        rotMatrix = new Matrix3d();
     }
 
     
@@ -116,11 +114,9 @@ public class LLAToECEF_Process extends DataProcess
     
     public void execute() throws ProcessException
     {
-    	Matrix3d nadirMatrix;
-    	
     	// get lat,lon,alt coordinates from input and convert to SI
-    	double lat = latData.getData().getDoubleValue();
-    	double lon = lonData.getData().getDoubleValue();
+    	double lat = latData.getData().getDoubleValue() * Math.PI/180;
+    	double lon = lonData.getData().getDoubleValue() * Math.PI/180;
     	double alt = altData.getData().getDoubleValue();
         
         // convert to ECEF
@@ -131,10 +127,10 @@ public class LLAToECEF_Process extends DataProcess
         // default = north/east/up orientation
         if (nadirOriented == true)
         {
-        	Vector3d ecfPosition;        	
-        	ecfPosition = new Vector3d(ecefPos[0], ecefPos[1], ecefPos[2]);        	
+        	Vector3d ecfPosition;
+        	ecfPosition = new Vector3d(ecefPos[0], ecefPos[1], ecefPos[2]);
             Vector3d toEcfNorth = NadirPointing.getEcfVectorToNorth(ecfPosition);
-            nadirMatrix = NadirPointing.getRotationMatrix(ecfPosition, toEcfNorth, northAxis, upAxis);
+            Matrix3d nadirMatrix = NadirPointing.getRotationMatrix(ecfPosition, toEcfNorth, northAxis, upAxis);
             toEcefMatrix.setRotation(nadirMatrix);
         }
         
@@ -165,10 +161,11 @@ public class LLAToECEF_Process extends DataProcess
     	double ry = lryData.getData().getDoubleValue();
     	double rz = lrzData.getData().getDoubleValue();
 
-		// rotate in given order
+		// rotate in reverse order as the one given
+        // because we want the opposite matrix
 		for (int i=0; i<3; i++)
 		{
-			char axis = rotationOrder[i];
+			char axis = rotationOrder[2-i];
 			
 			switch (axis)
 			{

@@ -49,6 +49,8 @@ public class LocationTransform_Process extends DataProcess
 	private DataArray refPos;
     private DataValue inputX, inputY, inputZ;
     private DataValue outputX, outputY, outputZ;
+    private Matrix4d refMatrix = new Matrix4d();
+    private Vector3d loc = new Vector3d();
     
     
     public LocationTransform_Process()
@@ -84,17 +86,16 @@ public class LocationTransform_Process extends DataProcess
     {
         DataBlock refMatrixData = refPos.getData();
     	
-    	// compute transformed position
-        Matrix4d refMatrix = new Matrix4d();
+    	// set ref matrix elements
         for (int i=0; i<16; i++)
         	refMatrix.setElement(i/4, i%4, refMatrixData.getDoubleValue(i));
         
-        // local location
-        Vector3d loc = new Vector3d();
+        // set location vector coordinates
         loc.x = inputX.getData().getDoubleValue();
         loc.y = inputY.getData().getDoubleValue();
         loc.z = inputZ.getData().getDoubleValue();
-             
+        
+        // transform vector
         loc.transform(refMatrix);
         
         // assign output values
