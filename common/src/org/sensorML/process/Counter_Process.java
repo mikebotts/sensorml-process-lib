@@ -114,7 +114,7 @@ public class Counter_Process extends DataProcess
             outputPassThrough.setData(inputPassThrough.getData());
             
             // set inputs as not needed so that we can continue looping
-            // wihtout requiring inputs
+            // without requiring inputs
             for (int i=0; i<inputConnections.size(); i++)
                 inputConnections.get(i).setNeeded(false);
             
