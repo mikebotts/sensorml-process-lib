@@ -49,7 +49,7 @@ public class Counter_Process extends DataProcess
     protected DataComponent inputPassThrough, outputPassThrough;
     protected DataValue inputStart, inputStop, inputStep;
     protected DataValue outputIndex, outputVariable;
-    protected int passThroughOutputIndex, countIndex;
+    protected int countIndex;
     protected double start, stop, step, var;
     protected boolean useStepCount, done;
     
@@ -82,8 +82,8 @@ public class Counter_Process extends DataProcess
                 useStepCount = true;
             }
 
-            passThroughOutputIndex = outputData.getComponentIndex("pass-through");
-            outputPassThrough = outputData.getComponent(passThroughOutputIndex);
+            int outputNum = outputData.getComponentIndex("pass-through");
+            outputPassThrough = outputData.getComponent(outputNum);
             DataGroup countOutput = (DataGroup) outputData.getComponent("count");
             outputIndex = (DataValue) countOutput.getComponent("index");
             outputVariable = (DataValue) countOutput.getComponent("variable");
