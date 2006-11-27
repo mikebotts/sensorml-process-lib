@@ -111,7 +111,7 @@ public class ArrayBuilder_Process extends DataProcess
             needInit = true;
             inputConnections.get(sizeInputIndex).setNeeded(true);
             outputConnections.get(0).setNeeded(true);
-            this.resetAvailabilityFlags(inputConnections, false);
+            this.setAvailability(inputConnections, false);
         }
     }
 }

@@ -140,7 +140,7 @@ public class Counter_Process extends DataProcess
             // and we need another set of inputs
             for (int i=0; i<inputConnections.size(); i++)
                 inputConnections.get(i).setNeeded(true);            
-            this.resetAvailabilityFlags(inputConnections, false);
+            this.setAvailability(inputConnections, false);
         }
     }
 }
