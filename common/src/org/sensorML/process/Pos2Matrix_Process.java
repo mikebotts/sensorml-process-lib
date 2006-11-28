@@ -121,10 +121,11 @@ public class Pos2Matrix_Process extends DataProcess
         // set up rotation matrices
         newMatrix.setIdentity();
  
-        // rotate in given order
+        // rotate in reverse order as the one given
+        // because we want the opposite matrix
         for (int i=0; i<3; i++)
         {
-            char axis = rotationOrder[i];
+            char axis = rotationOrder[2-i];
             
             switch (axis)
             {
