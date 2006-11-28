@@ -111,7 +111,7 @@ public class Counter_Process extends DataProcess
             
             // forward pass-through data
             ((DataGroup)inputPassThrough).combineDataBlocks();
-            outputPassThrough.setData(inputPassThrough.getData());
+            outputPassThrough.setData(inputPassThrough.getData());//.clone()??);
             
             // set inputs as not needed so that we can continue looping
             // without requiring inputs
