@@ -115,8 +115,8 @@ public class LLAToECEF_Process extends DataProcess
     public void execute() throws ProcessException
     {
     	// get lat,lon,alt coordinates from input and convert to SI
-    	double lat = latData.getData().getDoubleValue() * Math.PI/180;
-    	double lon = lonData.getData().getDoubleValue() * Math.PI/180;
+    	double lat = latData.getData().getDoubleValue();
+    	double lon = lonData.getData().getDoubleValue();
     	double alt = altData.getData().getDoubleValue();
         
         // convert to ECEF
