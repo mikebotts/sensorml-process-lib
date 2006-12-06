@@ -47,9 +47,10 @@ import org.vast.process.*;
 public class Counter_Process extends DataProcess
 {
     protected DataComponent inputPassThrough, outputPassThrough;
-    protected DataValue inputStart, inputStop, inputStep;
-    protected DataValue outputIndex, outputVariable;
-    protected int countIndex;
+    protected DataValue inputStart, inputStop, inputStep, inputStepCount;
+    protected DataValue outputIndex, outputVariable, outputStepCount;
+    protected int stepOutputIndex;
+    protected int count, stepCount;
     protected double start, stop, step, var;
     protected boolean useStepCount, done;
     
@@ -78,15 +79,17 @@ public class Counter_Process extends DataProcess
             inputStep = (DataValue) group.getComponent("stepSize");
             if (inputStep == null)
             {
-                inputStep = (DataValue) group.getComponent("stepCount");
+                inputStepCount = (DataValue) group.getComponent("stepCount");
                 useStepCount = true;
             }
 
-            int outputNum = outputData.getComponentIndex("pass-through");
-            outputPassThrough = outputData.getComponent(outputNum);
+            outputPassThrough = outputData.getComponent("pass-through");
             DataGroup countOutput = (DataGroup) outputData.getComponent("count");
             outputIndex = (DataValue) countOutput.getComponent("index");
             outputVariable = (DataValue) countOutput.getComponent("variable");
+            
+            stepOutputIndex = outputData.getComponentIndex("stepCount");
+            outputStepCount = (DataValue) outputData.getComponent(stepOutputIndex);
         }
         catch (Exception e)
         {
@@ -105,42 +108,58 @@ public class Counter_Process extends DataProcess
         {
             start = inputStart.getData().getDoubleValue();
             stop = inputStop.getData().getDoubleValue();
-            step = inputStep.getData().getDoubleValue();
             if (useStepCount)
-                step = (stop - start) / step;
+            {
+                stepCount = inputStepCount.getData().getIntValue();
+                step = (stop - start) / stepCount;
+                outputStepCount.getData().setIntValue((int)stepCount);
+            }
+            else
+            {
+                step = inputStep.getData().getDoubleValue();
+                stepCount = (int) ((stop - start) / step);
+                outputStepCount.getData().setIntValue((int)stepCount);
+            }
+            
+            //System.out.println(step + " - " + stepCount);
             
             // forward pass-through data
             ((DataGroup)inputPassThrough).combineDataBlocks();
             outputPassThrough.setData(inputPassThrough.getData());//.clone()??);
             
-            // set inputs as not needed so that we can continue looping
-            // without requiring inputs
-            for (int i=0; i<inputConnections.size(); i++)
-                inputConnections.get(i).setNeeded(false);
+            // set some inputs/outputs as not needed so that we can continue looping
+            setNeededSignals(false);
+            this.setAvailability(outputConnections.get(stepOutputIndex), true);
             
             // output first value
             var = start;
-            countIndex = 0;
+            count = 0;
             done = false;
         }
         
         // set output variable
         outputVariable.getData().setDoubleValue(var);
-        outputIndex.getData().setIntValue(countIndex);
-        //System.out.println("index = " + countIndex + ", var = " + var);
+        outputIndex.getData().setIntValue(count);
+        //System.out.println("count = " + count + ", var = " + var);
         
         // reset stuffs if end of loop
-        countIndex++;
+        count++;
         var += step;
-        if (var >= stop)
+        if (count >= stepCount)
         {
-            done = true;
-            
-            // set inputs as needed since loop has ended
-            // and we need another set of inputs
-            for (int i=0; i<inputConnections.size(); i++)
-                inputConnections.get(i).setNeeded(true);            
-            this.setAvailability(inputConnections, false);
+            done = true;            
+            setNeededSignals(true);
         }
+    }
+    
+    
+    protected void setNeededSignals(boolean needed)
+    {
+        // set all inputs needed flag to specified value
+        for (int i=0; i<inputConnections.size(); i++)
+            inputConnections.get(i).setNeeded(needed);
+        
+        // set stepCount output needed flag to specified value
+        outputConnections.get(stepOutputIndex).setNeeded(needed);
     }
 }
