@@ -23,9 +23,9 @@
 
 package org.sensorML.process;
 
+import org.vast.cdm.common.DataType;
 import org.vast.data.*;
 import org.vast.process.*;
-import org.ogc.cdm.common.*;
 
 
 /**

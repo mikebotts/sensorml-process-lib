@@ -23,7 +23,7 @@
 
 package org.sensorML.process;
 
-import org.ogc.cdm.common.DataComponent;
+import org.vast.cdm.common.DataComponent;
 import org.vast.data.*;
 import org.vast.process.*;
 

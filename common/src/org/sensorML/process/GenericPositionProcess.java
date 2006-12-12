@@ -24,7 +24,7 @@
 package org.sensorML.process;
 
 import java.util.*;
-import org.ogc.cdm.common.*;
+import org.vast.cdm.common.DataBlock;
 import org.vast.data.*;
 import org.vast.math.*;
 import org.vast.process.*;

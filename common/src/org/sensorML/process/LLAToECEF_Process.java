@@ -23,8 +23,8 @@
 
 package org.sensorML.process;
 
-import org.ogc.cdm.common.DataComponent;
 import org.vast.process.*;
+import org.vast.cdm.common.DataComponent;
 import org.vast.data.*;
 import org.vast.math.*;
 import org.vast.physics.*;
@@ -178,7 +178,7 @@ public class LLAToECEF_Process extends DataProcess
 					break;
 					
 				case 'Z':
-                    rotMatrix.rotateZ(-rz);
+                    rotMatrix.rotateZ(rz); // reverse rz 
 					break;
 			}
 		}
