@@ -84,7 +84,7 @@ public class LLAToECEF_Process extends DataProcess
             	rotationOrder = rotOrder.toCharArray();
             
             // set up upAxis and northAxis depending on the frame (ENU, NED, etc...)
-            String refFrame = (String)orientationData.getProperty(DataComponent.REF);
+            String refFrame = (String)orientationData.getProperty(DataComponent.REF_FRAME);
             if (refFrame != null)
             {
             	if (refFrame.contains("NED"))
