@@ -1,0 +1,148 @@
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License Version
+ 1.1 (the "License"); you may not use this file except in compliance with
+ the License. You may obtain a copy of the License at
+ http://www.mozilla.org/MPL/MPL-1.1.html
+ 
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+ 
+ The Original Code is the "SensorML DataProcessing Engine".
+ 
+ The Initial Developer of the Original Code is the
+ University of Alabama in Huntsville (UAH).
+ Portions created by the Initial Developer are Copyright (C) 2006
+ the Initial Developer. All Rights Reserved.
+ 
+ Contributor(s): 
+    Alexandre Robin <robin@nsstc.uah.edu>
+    Gregoire Berthiau <berthiau@nsstc.uah.edu>
+ 
+******************************* END LICENSE BLOCK ***************************/
+
+package org.sensorML.process;
+
+import org.vast.cdm.common.DataBlock;
+import org.vast.cdm.common.DataType;
+import org.vast.data.*;
+import org.vast.process.*;
+import org.vast.math.*;
+
+
+/**
+ * <p><b>Title:</b><br/>
+ * Position Transform Process
+ * </p>
+ *
+ * <p><b>Description:</b><br/>
+ * Implementation of the Position Transformation Process
+ * using homogeneous matrices
+ * </p>
+ *
+ * <p>Copyright (c) 2005</p>
+ * @author Alexandre Robin & Gregoire Berthiau
+ * @date Sep 2, 2005
+ * @version 1.0
+ */
+public class VectorMatrixMultiplication_Process extends DataProcess
+{
+	AbstractDataComponent localMat, resultPos;
+    private DataValue vxData, vyData, vzData;
+    private DataValue nvxData, nvyData, nvzData;
+
+	//private Matrix3D newVector = new Matrix3D()
+    
+    public VectorMatrixMultiplication_Process()
+    {
+    	
+    }
+    
+    
+    protected void buildIO()
+    {
+    	// create inputs
+    	DataArray localMatrix = new DataArray(9);
+    	localMatrix.addComponent(new DataValue(DataType.DOUBLE));    	
+    	this.addInput("transformatiomMatrix", localMatrix);    	
+    }
+
+    
+    public void init() throws ProcessException
+    {
+    	if (inputData.getComponentCount() == 0)
+    		buildIO();
+    	
+    	try
+        {
+            //I/O mappings
+            vxData = (DataValue) inputData.getComponent("vector").getComponent("x");
+            vyData = (DataValue) inputData.getComponent("vector").getComponent("y");
+            vzData = (DataValue) inputData.getComponent("vector").getComponent("z");
+         
+            nvxData = (DataValue) outputData.getComponent("newVector").getComponent("x");
+            nvyData = (DataValue) outputData.getComponent("newVector").getComponent("y");
+            nvzData = (DataValue) outputData.getComponent("newVector").getComponent("z");
+            
+            localMat = inputData.getComponent("transformatiomMatrix");
+            
+            resultPos.assignNewDataBlock();
+        }
+        catch (RuntimeException e)
+        {
+            throw new ProcessException("Invalid i/o structure");
+        }
+    }
+    
+
+    public void execute() throws ProcessException
+    {
+        double vx = 0.0;
+        double vy = 0.0;
+        double vz = 0.0;
+        
+        if (vxData != null)
+            vx = vxData.getData().getDoubleValue();
+
+        if (vyData != null)
+            vy = vyData.getData().getDoubleValue();
+
+        if (vzData != null)
+            vz = vzData.getData().getDoubleValue();
+        
+    	Vector3d vector = new Vector3d(vx, vy, vz);
+    	
+        DataBlock locMatrixData = localMat.getData();
+        
+        Matrix3d locMatrix = new Matrix3d();
+        for (int i=0; i<9; i++)
+        	locMatrix.setElement(i/3, i%3, locMatrixData.getDoubleValue(i));
+        
+        locMatrix.transform(vector);
+        
+        // assign output values
+        DataBlock resultMatrixData = resultPos.getData();
+        for (int i=0; i<3; i++)
+        	resultMatrixData.setDoubleValue(i, locMatrix.getElement(i/1,i%1));
+
+        double nvx = resultMatrixData.getDoubleValue(0);
+        double nvy = resultMatrixData.getDoubleValue(0);
+        double nvz = resultMatrixData.getDoubleValue(0);
+        
+  //      double nvx = 0.0;
+  //      double nvy = 0.0;
+  //      double nvz = 0.0;
+        
+  //      	for (int i=0; i<3; i++)
+  //      		nvx=vx*locMatrix.getElement(1,1)+vy*locMatrix.getElement(1,2)+vz*locMatrix.getElement(1,3);
+  //      		nvy=vx*locMatrix.getElement(2,1)+vy*locMatrix.getElement(2,2)+vz*locMatrix.getElement(2,3);
+  //      		nvz=vx*locMatrix.getElement(3,1)+vy*locMatrix.getElement(3,2)+vz*locMatrix.getElement(3,3);
+		        
+        //double nvx=locMatrix.getElement(1,1)
+		nvxData.getData().setDoubleValue(nvx);
+		nvyData.getData().setDoubleValue(nvy);
+		nvzData.getData().setDoubleValue(nvz);
+        
+    } 
+}
