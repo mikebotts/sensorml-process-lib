@@ -25,7 +25,6 @@
 package org.sensorML.process;
 
 import org.vast.cdm.common.DataBlock;
-import org.vast.cdm.common.DataType;
 import org.vast.data.*;
 import org.vast.process.*;
 import org.vast.math.*;
@@ -52,28 +51,15 @@ public class VectorMatrixMultiplication_Process extends DataProcess
     private DataValue vxData, vyData, vzData;
     private DataValue nvxData, nvyData, nvzData;
 
-	//private Matrix3D newVector = new Matrix3D()
     
     public VectorMatrixMultiplication_Process()
     {
     	
     }
-    
-    
-    protected void buildIO()
-    {
-    	// create inputs
-    	DataArray localMatrix = new DataArray(9);
-    	localMatrix.addComponent(new DataValue(DataType.DOUBLE));    	
-    	this.addInput("transformatiomMatrix", localMatrix);    	
-    }
 
     
     public void init() throws ProcessException
     {
-    	if (inputData.getComponentCount() == 0)
-    		buildIO();
-    	
     	try
         {
             //I/O mappings
@@ -91,7 +77,7 @@ public class VectorMatrixMultiplication_Process extends DataProcess
         }
         catch (RuntimeException e)
         {
-            throw new ProcessException("Invalid i/o structure");
+            throw new ProcessException(ioError);
         }
     }
     
@@ -120,29 +106,9 @@ public class VectorMatrixMultiplication_Process extends DataProcess
         	locMatrix.setElement(i/3, i%3, locMatrixData.getDoubleValue(i));
         
         locMatrix.transform(vector);
-        
-        // assign output values
-        DataBlock resultMatrixData = resultPos.getData();
-        for (int i=0; i<3; i++)
-        	resultMatrixData.setDoubleValue(i, locMatrix.getElement(i/1,i%1));
 
-        double nvx = resultMatrixData.getDoubleValue(0);
-        double nvy = resultMatrixData.getDoubleValue(0);
-        double nvz = resultMatrixData.getDoubleValue(0);
-        
-  //      double nvx = 0.0;
-  //      double nvy = 0.0;
-  //      double nvz = 0.0;
-        
-  //      	for (int i=0; i<3; i++)
-  //      		nvx=vx*locMatrix.getElement(1,1)+vy*locMatrix.getElement(1,2)+vz*locMatrix.getElement(1,3);
-  //      		nvy=vx*locMatrix.getElement(2,1)+vy*locMatrix.getElement(2,2)+vz*locMatrix.getElement(2,3);
-  //      		nvz=vx*locMatrix.getElement(3,1)+vy*locMatrix.getElement(3,2)+vz*locMatrix.getElement(3,3);
-		        
-        //double nvx=locMatrix.getElement(1,1)
-		nvxData.getData().setDoubleValue(nvx);
-		nvyData.getData().setDoubleValue(nvy);
-		nvzData.getData().setDoubleValue(nvz);
-        
+        nvxData.getData().setDoubleValue(vector.x);
+		nvyData.getData().setDoubleValue(vector.y);
+		nvzData.getData().setDoubleValue(vector.z);        
     } 
 }

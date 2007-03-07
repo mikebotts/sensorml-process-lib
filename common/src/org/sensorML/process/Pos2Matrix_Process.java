@@ -85,7 +85,7 @@ public class Pos2Matrix_Process extends DataProcess
         }
         catch (RuntimeException e)
         {
-            e.printStackTrace();
+            throw new ProcessException(ioError);
         }
     }
     
