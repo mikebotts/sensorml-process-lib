@@ -47,7 +47,7 @@ import org.vast.math.*;
  */
 public class VectorMatrixMultiplication_Process extends DataProcess
 {
-	AbstractDataComponent localMat, resultPos;
+	AbstractDataComponent localMat;
     private DataValue vxData, vyData, vzData;
     private DataValue nvxData, nvyData, nvzData;
 
@@ -72,8 +72,6 @@ public class VectorMatrixMultiplication_Process extends DataProcess
             nvzData = (DataValue) outputData.getComponent("newVector").getComponent("z");
             
             localMat = inputData.getComponent("transformatiomMatrix");
-            
-            resultPos.assignNewDataBlock();
         }
         catch (RuntimeException e)
         {
