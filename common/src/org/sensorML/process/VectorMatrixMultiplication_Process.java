@@ -32,17 +32,16 @@ import org.vast.math.*;
 
 /**
  * <p><b>Title:</b><br/>
- * Position Transform Process
+ * Vector by Matrix Multiplication Process
  * </p>
  *
  * <p><b>Description:</b><br/>
- * Implementation of the Position Transformation Process
- * using homogeneous matrices
+ * Multiplication of a 3D vector by a 3D matrix
  * </p>
  *
  * <p>Copyright (c) 2005</p>
  * @author Alexandre Robin & Gregoire Berthiau
- * @date Sep 2, 2005
+ * @date Mar 7, 2007
  * @version 1.0
  */
 public class VectorMatrixMultiplication_Process extends DataProcess
