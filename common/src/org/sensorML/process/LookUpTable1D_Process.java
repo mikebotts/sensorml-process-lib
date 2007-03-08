@@ -123,9 +123,9 @@ public class LookUpTable1D_Process extends DataProcess
             lastIndexVal = Double.POSITIVE_INFINITY;
             lastTupleIndex = 0;
         }
-        catch (ClassCastException e)
+        catch (Exception e)
         {
-            throw new ProcessException("Invalid I/O data", e);
+            throw new ProcessException(ioError, e);
         }
     }
     

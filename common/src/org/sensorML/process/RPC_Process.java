@@ -67,123 +67,130 @@ public class RPC_Process extends DataProcess
 	 */
 	public void init() throws ProcessException
 	{
-		//I/O mappings
-		inputX = (DataValue) inputData.getComponent("target_location").getComponent("x");
-		inputY = (DataValue) inputData.getComponent("target_location").getComponent("y");
-		inputZ = (DataValue) inputData.getComponent("target_location").getComponent("z");
-		outputX = (DataValue) outputData.getComponent("image_location").getComponent("x");
-		outputY = (DataValue) outputData.getComponent("image_location").getComponent("y");
-		
-		//Parameter mappings
-		// time, offsets, and scalings
-		time = (DataValue) paramData.getComponent("time");
-		img_xo = (DataValue) paramData.getComponent("image_x_offset");
-		img_xs = (DataValue) paramData.getComponent("image_x_scale");
-		img_yo = (DataValue) paramData.getComponent("image_y_offset");
-		img_ys = (DataValue) paramData.getComponent("image_y_scale");
-		
-		tar_xo = (DataValue) paramData.getComponent("target_x_offset");
-		tar_xs = (DataValue) paramData.getComponent("target_x_scale");
-		tar_yo = (DataValue) paramData.getComponent("target_y_offset");
-		tar_ys = (DataValue) paramData.getComponent("target_y_scale");
-		tar_zo = (DataValue) paramData.getComponent("target_z_offset");
-		tar_zs = (DataValue) paramData.getComponent("target_z_scale");
-		
-		// x numerator coefficients
-		DataGroup x_num_coefs = (DataGroup) paramData.getComponent("x_numerator_coefficients");
-		x_num = new DataValue[20];
-		x_num[0] = (DataValue) x_num_coefs.getComponent("constant");
-		x_num[1] = (DataValue) x_num_coefs.getComponent("x");
-		x_num[2] = (DataValue) x_num_coefs.getComponent("y");
-		x_num[3] = (DataValue) x_num_coefs.getComponent("z");
-		x_num[4] = (DataValue) x_num_coefs.getComponent("xy");
-		x_num[5] = (DataValue) x_num_coefs.getComponent("xz");
-		x_num[6] = (DataValue) x_num_coefs.getComponent("yz");
-		x_num[7] = (DataValue) x_num_coefs.getComponent("xx");
-		x_num[8] = (DataValue) x_num_coefs.getComponent("yy");
-		x_num[9] = (DataValue) x_num_coefs.getComponent("zz");
-		x_num[10] = (DataValue) x_num_coefs.getComponent("xyz");
-		x_num[11] = (DataValue) x_num_coefs.getComponent("xxx");
-		x_num[12] = (DataValue) x_num_coefs.getComponent("xyy");
-		x_num[13] = (DataValue) x_num_coefs.getComponent("xzz");
-		x_num[14] = (DataValue) x_num_coefs.getComponent("xxy");
-		x_num[15] = (DataValue) x_num_coefs.getComponent("yyy");
-		x_num[16] = (DataValue) x_num_coefs.getComponent("yzz");
-		x_num[17] = (DataValue) x_num_coefs.getComponent("xxz");
-		x_num[18] = (DataValue) x_num_coefs.getComponent("yyz");
-		x_num[19] = (DataValue) x_num_coefs.getComponent("zzz");
-		
-		// x denominator coefficients
-		DataGroup x_denom_coefs = (DataGroup) paramData.getComponent("x_denominator_coefficients");
-		x_den = new DataValue[20];
-		x_den[0] = (DataValue) x_denom_coefs.getComponent("constant");
-		x_den[1] = (DataValue) x_denom_coefs.getComponent("x");
-		x_den[2] = (DataValue) x_denom_coefs.getComponent("y");
-		x_den[3] = (DataValue) x_denom_coefs.getComponent("z");
-		x_den[4] = (DataValue) x_denom_coefs.getComponent("xy");
-		x_den[5] = (DataValue) x_denom_coefs.getComponent("xz");
-		x_den[6] = (DataValue) x_denom_coefs.getComponent("yz");
-		x_den[7] = (DataValue) x_denom_coefs.getComponent("xx");
-		x_den[8] = (DataValue) x_denom_coefs.getComponent("yy");
-		x_den[9] = (DataValue) x_denom_coefs.getComponent("zz");
-		x_den[10] = (DataValue) x_denom_coefs.getComponent("xyz");
-		x_den[11] = (DataValue) x_denom_coefs.getComponent("xxx");
-		x_den[12] = (DataValue) x_denom_coefs.getComponent("xyy");
-		x_den[13] = (DataValue) x_denom_coefs.getComponent("xzz");
-		x_den[14] = (DataValue) x_denom_coefs.getComponent("xxy");
-		x_den[15] = (DataValue) x_denom_coefs.getComponent("yyy");
-		x_den[16] = (DataValue) x_denom_coefs.getComponent("yzz");
-		x_den[17] = (DataValue) x_denom_coefs.getComponent("xxz");
-		x_den[18] = (DataValue) x_denom_coefs.getComponent("yyz");
-		x_den[19] = (DataValue) x_denom_coefs.getComponent("zzz");
-		
-		// y numerator coefficients
-		DataGroup y_num_coefs = (DataGroup) paramData.getComponent("y_numerator_coefficients");
-		y_num = new DataValue[20];
-		y_num[0] = (DataValue) y_num_coefs.getComponent("constant");
-		y_num[1] = (DataValue) y_num_coefs.getComponent("x");
-		y_num[2] = (DataValue) y_num_coefs.getComponent("y");
-		y_num[3] = (DataValue) y_num_coefs.getComponent("z");
-		y_num[4] = (DataValue) y_num_coefs.getComponent("xy");
-		y_num[5] = (DataValue) y_num_coefs.getComponent("xz");
-		y_num[6] = (DataValue) y_num_coefs.getComponent("yz");
-		y_num[7] = (DataValue) y_num_coefs.getComponent("xx");
-		y_num[8] = (DataValue) y_num_coefs.getComponent("yy");
-		y_num[9] = (DataValue) y_num_coefs.getComponent("zz");
-		y_num[10] = (DataValue) y_num_coefs.getComponent("xyz");
-		y_num[11] = (DataValue) y_num_coefs.getComponent("xxx");
-		y_num[12] = (DataValue) y_num_coefs.getComponent("xyy");
-		y_num[13] = (DataValue) y_num_coefs.getComponent("xzz");
-		y_num[14] = (DataValue) y_num_coefs.getComponent("xxy");
-		y_num[15] = (DataValue) y_num_coefs.getComponent("yyy");
-		y_num[16] = (DataValue) y_num_coefs.getComponent("yzz");
-		y_num[17] = (DataValue) y_num_coefs.getComponent("xxz");
-		y_num[18] = (DataValue) y_num_coefs.getComponent("yyz");
-		y_num[19] = (DataValue) y_num_coefs.getComponent("zzz");
-		
-		// y denominator coefficients
-		DataGroup y_denom_coefs = (DataGroup) paramData.getComponent("y_denominator_coefficients");
-		y_den = new DataValue[20];
-		y_den[0] = (DataValue) y_denom_coefs.getComponent("constant");
-		y_den[1] = (DataValue) y_denom_coefs.getComponent("x");
-		y_den[2] = (DataValue) y_denom_coefs.getComponent("y");
-		y_den[3] = (DataValue) y_denom_coefs.getComponent("z");
-		y_den[4] = (DataValue) y_denom_coefs.getComponent("xy");
-		y_den[5] = (DataValue) y_denom_coefs.getComponent("xz");
-		y_den[6] = (DataValue) y_denom_coefs.getComponent("yz");
-		y_den[7] = (DataValue) y_denom_coefs.getComponent("xx");
-		y_den[8] = (DataValue) y_denom_coefs.getComponent("yy");
-		y_den[9] = (DataValue) y_denom_coefs.getComponent("zz");
-		y_den[10] = (DataValue) y_denom_coefs.getComponent("xyz");
-		y_den[11] = (DataValue) y_denom_coefs.getComponent("xxx");
-		y_den[12] = (DataValue) y_denom_coefs.getComponent("xyy");
-		y_den[13] = (DataValue) y_denom_coefs.getComponent("xzz");
-		y_den[14] = (DataValue) y_denom_coefs.getComponent("xxy");
-		y_den[15] = (DataValue) y_denom_coefs.getComponent("yyy");
-		y_den[16] = (DataValue) y_denom_coefs.getComponent("yzz");
-		y_den[17] = (DataValue) y_denom_coefs.getComponent("xxz");
-		y_den[18] = (DataValue) y_denom_coefs.getComponent("yyz");
-		y_den[19] = (DataValue) y_denom_coefs.getComponent("zzz");	
+		try
+        {
+            //I/O mappings
+    		inputX = (DataValue) inputData.getComponent("target_location").getComponent("x");
+    		inputY = (DataValue) inputData.getComponent("target_location").getComponent("y");
+    		inputZ = (DataValue) inputData.getComponent("target_location").getComponent("z");
+    		outputX = (DataValue) outputData.getComponent("image_location").getComponent("x");
+    		outputY = (DataValue) outputData.getComponent("image_location").getComponent("y");
+    		
+    		//Parameter mappings
+    		// time, offsets, and scalings
+    		time = (DataValue) paramData.getComponent("time");
+    		img_xo = (DataValue) paramData.getComponent("image_x_offset");
+    		img_xs = (DataValue) paramData.getComponent("image_x_scale");
+    		img_yo = (DataValue) paramData.getComponent("image_y_offset");
+    		img_ys = (DataValue) paramData.getComponent("image_y_scale");
+    		
+    		tar_xo = (DataValue) paramData.getComponent("target_x_offset");
+    		tar_xs = (DataValue) paramData.getComponent("target_x_scale");
+    		tar_yo = (DataValue) paramData.getComponent("target_y_offset");
+    		tar_ys = (DataValue) paramData.getComponent("target_y_scale");
+    		tar_zo = (DataValue) paramData.getComponent("target_z_offset");
+    		tar_zs = (DataValue) paramData.getComponent("target_z_scale");
+    		
+    		// x numerator coefficients
+    		DataGroup x_num_coefs = (DataGroup) paramData.getComponent("x_numerator_coefficients");
+    		x_num = new DataValue[20];
+    		x_num[0] = (DataValue) x_num_coefs.getComponent("constant");
+    		x_num[1] = (DataValue) x_num_coefs.getComponent("x");
+    		x_num[2] = (DataValue) x_num_coefs.getComponent("y");
+    		x_num[3] = (DataValue) x_num_coefs.getComponent("z");
+    		x_num[4] = (DataValue) x_num_coefs.getComponent("xy");
+    		x_num[5] = (DataValue) x_num_coefs.getComponent("xz");
+    		x_num[6] = (DataValue) x_num_coefs.getComponent("yz");
+    		x_num[7] = (DataValue) x_num_coefs.getComponent("xx");
+    		x_num[8] = (DataValue) x_num_coefs.getComponent("yy");
+    		x_num[9] = (DataValue) x_num_coefs.getComponent("zz");
+    		x_num[10] = (DataValue) x_num_coefs.getComponent("xyz");
+    		x_num[11] = (DataValue) x_num_coefs.getComponent("xxx");
+    		x_num[12] = (DataValue) x_num_coefs.getComponent("xyy");
+    		x_num[13] = (DataValue) x_num_coefs.getComponent("xzz");
+    		x_num[14] = (DataValue) x_num_coefs.getComponent("xxy");
+    		x_num[15] = (DataValue) x_num_coefs.getComponent("yyy");
+    		x_num[16] = (DataValue) x_num_coefs.getComponent("yzz");
+    		x_num[17] = (DataValue) x_num_coefs.getComponent("xxz");
+    		x_num[18] = (DataValue) x_num_coefs.getComponent("yyz");
+    		x_num[19] = (DataValue) x_num_coefs.getComponent("zzz");
+    		
+    		// x denominator coefficients
+    		DataGroup x_denom_coefs = (DataGroup) paramData.getComponent("x_denominator_coefficients");
+    		x_den = new DataValue[20];
+    		x_den[0] = (DataValue) x_denom_coefs.getComponent("constant");
+    		x_den[1] = (DataValue) x_denom_coefs.getComponent("x");
+    		x_den[2] = (DataValue) x_denom_coefs.getComponent("y");
+    		x_den[3] = (DataValue) x_denom_coefs.getComponent("z");
+    		x_den[4] = (DataValue) x_denom_coefs.getComponent("xy");
+    		x_den[5] = (DataValue) x_denom_coefs.getComponent("xz");
+    		x_den[6] = (DataValue) x_denom_coefs.getComponent("yz");
+    		x_den[7] = (DataValue) x_denom_coefs.getComponent("xx");
+    		x_den[8] = (DataValue) x_denom_coefs.getComponent("yy");
+    		x_den[9] = (DataValue) x_denom_coefs.getComponent("zz");
+    		x_den[10] = (DataValue) x_denom_coefs.getComponent("xyz");
+    		x_den[11] = (DataValue) x_denom_coefs.getComponent("xxx");
+    		x_den[12] = (DataValue) x_denom_coefs.getComponent("xyy");
+    		x_den[13] = (DataValue) x_denom_coefs.getComponent("xzz");
+    		x_den[14] = (DataValue) x_denom_coefs.getComponent("xxy");
+    		x_den[15] = (DataValue) x_denom_coefs.getComponent("yyy");
+    		x_den[16] = (DataValue) x_denom_coefs.getComponent("yzz");
+    		x_den[17] = (DataValue) x_denom_coefs.getComponent("xxz");
+    		x_den[18] = (DataValue) x_denom_coefs.getComponent("yyz");
+    		x_den[19] = (DataValue) x_denom_coefs.getComponent("zzz");
+    		
+    		// y numerator coefficients
+    		DataGroup y_num_coefs = (DataGroup) paramData.getComponent("y_numerator_coefficients");
+    		y_num = new DataValue[20];
+    		y_num[0] = (DataValue) y_num_coefs.getComponent("constant");
+    		y_num[1] = (DataValue) y_num_coefs.getComponent("x");
+    		y_num[2] = (DataValue) y_num_coefs.getComponent("y");
+    		y_num[3] = (DataValue) y_num_coefs.getComponent("z");
+    		y_num[4] = (DataValue) y_num_coefs.getComponent("xy");
+    		y_num[5] = (DataValue) y_num_coefs.getComponent("xz");
+    		y_num[6] = (DataValue) y_num_coefs.getComponent("yz");
+    		y_num[7] = (DataValue) y_num_coefs.getComponent("xx");
+    		y_num[8] = (DataValue) y_num_coefs.getComponent("yy");
+    		y_num[9] = (DataValue) y_num_coefs.getComponent("zz");
+    		y_num[10] = (DataValue) y_num_coefs.getComponent("xyz");
+    		y_num[11] = (DataValue) y_num_coefs.getComponent("xxx");
+    		y_num[12] = (DataValue) y_num_coefs.getComponent("xyy");
+    		y_num[13] = (DataValue) y_num_coefs.getComponent("xzz");
+    		y_num[14] = (DataValue) y_num_coefs.getComponent("xxy");
+    		y_num[15] = (DataValue) y_num_coefs.getComponent("yyy");
+    		y_num[16] = (DataValue) y_num_coefs.getComponent("yzz");
+    		y_num[17] = (DataValue) y_num_coefs.getComponent("xxz");
+    		y_num[18] = (DataValue) y_num_coefs.getComponent("yyz");
+    		y_num[19] = (DataValue) y_num_coefs.getComponent("zzz");
+    		
+    		// y denominator coefficients
+    		DataGroup y_denom_coefs = (DataGroup) paramData.getComponent("y_denominator_coefficients");
+    		y_den = new DataValue[20];
+    		y_den[0] = (DataValue) y_denom_coefs.getComponent("constant");
+    		y_den[1] = (DataValue) y_denom_coefs.getComponent("x");
+    		y_den[2] = (DataValue) y_denom_coefs.getComponent("y");
+    		y_den[3] = (DataValue) y_denom_coefs.getComponent("z");
+    		y_den[4] = (DataValue) y_denom_coefs.getComponent("xy");
+    		y_den[5] = (DataValue) y_denom_coefs.getComponent("xz");
+    		y_den[6] = (DataValue) y_denom_coefs.getComponent("yz");
+    		y_den[7] = (DataValue) y_denom_coefs.getComponent("xx");
+    		y_den[8] = (DataValue) y_denom_coefs.getComponent("yy");
+    		y_den[9] = (DataValue) y_denom_coefs.getComponent("zz");
+    		y_den[10] = (DataValue) y_denom_coefs.getComponent("xyz");
+    		y_den[11] = (DataValue) y_denom_coefs.getComponent("xxx");
+    		y_den[12] = (DataValue) y_denom_coefs.getComponent("xyy");
+    		y_den[13] = (DataValue) y_denom_coefs.getComponent("xzz");
+    		y_den[14] = (DataValue) y_denom_coefs.getComponent("xxy");
+    		y_den[15] = (DataValue) y_denom_coefs.getComponent("yyy");
+    		y_den[16] = (DataValue) y_denom_coefs.getComponent("yzz");
+    		y_den[17] = (DataValue) y_denom_coefs.getComponent("xxz");
+    		y_den[18] = (DataValue) y_denom_coefs.getComponent("yyz");
+    		y_den[19] = (DataValue) y_denom_coefs.getComponent("zzz");
+        }
+        catch (Exception e)
+        {
+            throw new ProcessException(ioError, e);
+        }
 	}
 	
 	/**

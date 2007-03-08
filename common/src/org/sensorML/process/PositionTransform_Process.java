@@ -24,7 +24,6 @@
 package org.sensorML.process;
 
 import org.vast.cdm.common.DataBlock;
-import org.vast.cdm.common.DataType;
 import org.vast.data.*;
 import org.vast.process.*;
 import org.vast.math.*;
@@ -54,30 +53,10 @@ public class PositionTransform_Process extends DataProcess
     {
     	
     }
-    
-    
-    protected void buildIO()
-    {
-    	// create inputs
-    	DataArray refMatrix = new DataArray(16);
-    	refMatrix.addComponent(new DataValue(DataType.DOUBLE));
-    	this.addInput("localPosition", refMatrix);
-    	DataArray localMatrix = new DataArray(16);
-    	localMatrix.addComponent(new DataValue(DataType.DOUBLE));    	
-    	this.addInput("referencePosition", localMatrix);    	
-     	
-    	// create outputs
-    	DataArray outMatrix = new DataArray(16);
-    	outMatrix.addComponent(new DataValue(DataType.DOUBLE));    	
-    	this.addOutput("position", outMatrix);
-    }
 
     
     public void init() throws ProcessException
-    {
-    	if (inputData.getComponentCount() == 0 && outputData.getComponentCount() == 0)
-    		buildIO();
-    	
+    {   	
     	try
         {
             refPos = inputData.getComponent("referencePosition");
@@ -86,9 +65,9 @@ public class PositionTransform_Process extends DataProcess
             resultPos = outputData.getComponent("position");
             resultPos.assignNewDataBlock();
         }
-        catch (RuntimeException e)
+        catch (Exception e)
         {
-            throw new ProcessException("Invalid i/o structure");
+            throw new ProcessException(ioError, e);
         }
     }
     

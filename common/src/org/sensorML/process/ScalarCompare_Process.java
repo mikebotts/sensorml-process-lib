@@ -77,9 +77,9 @@ public class ScalarCompare_Process extends DataProcess
             equalOutputIndex = outputData.getComponentIndex("equal");
             outputValueEqual = (DataValue) outputData.getComponent(equalOutputIndex);            
         }
-        catch (ClassCastException e)
+        catch (Exception e)
         {
-            throw new ProcessException("Invalid I/O data", e);
+            throw new ProcessException(ioError, e);
         }
     }
     

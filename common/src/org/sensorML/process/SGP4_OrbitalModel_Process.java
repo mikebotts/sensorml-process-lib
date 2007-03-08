@@ -91,12 +91,12 @@ public class SGP4_OrbitalModel_Process extends DataProcess
         try
         {
         	// set Datum values to WGS84
-        	// equatorial radius = 6378137.0
-        	// flattening = 1/298.257223563
+            // equatorial radius = 6378137.0
+            // flattening = 1/298.257223563
             ae = 1 - 1/298.257223563;
             re = 6378137.0/1000;  // scale equatorial radius to km for sgp4
-     	
-        	 // I/O and parameter mappings
+            
+             // I/O and parameter mappings
              inputTime = (DataValue) inputData.getComponent("julianTime");
             
              DataGroup outputPosition = (DataGroup) outputData.getComponent("ECI_location");  
@@ -119,10 +119,10 @@ public class SGP4_OrbitalModel_Process extends DataProcess
              paramMeanAnomaly = (DataValue) paramElements.getComponent("meanAnomaly");
              paramMeanMotion = (DataValue) paramElements.getComponent("meanMotion");
              paramRevNumber = (DataValue) paramElements.getComponent("revNumber");
-         }
-        catch (ClassCastException e)
+        }
+        catch (Exception e)
         {
-            throw new ProcessException("Invalid I/O data", e);
+            throw new ProcessException(ioError, e);
         }
     }
 

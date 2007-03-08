@@ -117,24 +117,31 @@ public class TLEParser_Process extends DataProcess
      */
     public void init() throws ProcessException
     {
-        // Input mappings
-        time = (DataValue) inputData.getComponent("julianTime");
-        
-        // Output mappings
-        DataGroup paramElements = (DataGroup) outputData.getComponent("elements");
-        paramEpochYear = (DataValue) paramElements.getComponent("epochYear");
-        paramEpochDay = (DataValue) paramElements.getComponent("epochDay");
-        paramBstar = (DataValue) paramElements.getComponent("bstar");
-        paramInclination = (DataValue) paramElements.getComponent("inclination");
-        paramRightAscension = (DataValue) paramElements.getComponent("rightAscension");
-        paramEccentricity = (DataValue) paramElements.getComponent("eccentricity");
-        paramArgOfPerigee = (DataValue) paramElements.getComponent("argOfPerigee");
-        paramMeanAnomaly = (DataValue) paramElements.getComponent("meanAnomaly");
-        paramMeanMotion = (DataValue) paramElements.getComponent("meanMotion");
-        paramRevNumber = (DataValue) paramElements.getComponent("revNumber");
-        
-        // Get TLE file name
-        tlePath = paramData.getComponent("tleDataUrl").getData().getStringValue();
+        try
+        {
+            // Input mappings
+            time = (DataValue) inputData.getComponent("julianTime");
+            
+            // Output mappings
+            DataGroup paramElements = (DataGroup) outputData.getComponent("elements");
+            paramEpochYear = (DataValue) paramElements.getComponent("epochYear");
+            paramEpochDay = (DataValue) paramElements.getComponent("epochDay");
+            paramBstar = (DataValue) paramElements.getComponent("bstar");
+            paramInclination = (DataValue) paramElements.getComponent("inclination");
+            paramRightAscension = (DataValue) paramElements.getComponent("rightAscension");
+            paramEccentricity = (DataValue) paramElements.getComponent("eccentricity");
+            paramArgOfPerigee = (DataValue) paramElements.getComponent("argOfPerigee");
+            paramMeanAnomaly = (DataValue) paramElements.getComponent("meanAnomaly");
+            paramMeanMotion = (DataValue) paramElements.getComponent("meanMotion");
+            paramRevNumber = (DataValue) paramElements.getComponent("revNumber");
+            
+            // Get TLE file name
+            tlePath = paramData.getComponent("tleDataUrl").getData().getStringValue();
+        }
+        catch (Exception e)
+        {
+            throw new ProcessException(ioError, e);
+        }
         
         reset();
     }

@@ -122,9 +122,9 @@ public class GenericPositionProcess extends DataProcess
             lookUpTables = new DataProcess[processList.size()];
             lookUpTables = processList.toArray(lookUpTables);
         }
-        catch (RuntimeException e)
+        catch (Exception e)
         {
-            e.printStackTrace();
+            throw new ProcessException(ioError, e);
         }
     }
     

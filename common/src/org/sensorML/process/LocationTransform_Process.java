@@ -75,7 +75,7 @@ public class LocationTransform_Process extends DataProcess
             outputY = (DataValue)locationData.getComponent("y");
             outputZ = (DataValue)locationData.getComponent("z");
         }
-        catch (RuntimeException e)
+        catch (Exception e)
         {
             throw new ProcessException(ioError, e);
         }

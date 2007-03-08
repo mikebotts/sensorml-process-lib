@@ -69,9 +69,9 @@ public class WindChill_Process extends DataProcess
             inputWindSpeed = (DataValue) inputData.getComponent("wind_speed");
             outputTemp = (DataValue) outputData.getComponent("windchill_temperature");
         }
-        catch (ClassCastException e)
+        catch (Exception e)
         {
-            throw new ProcessException("Invalid I/O data", e);
+            throw new ProcessException(ioError, e);
         }
     }
 

@@ -60,13 +60,20 @@ public class ECEFtoECI_Process extends DataProcess
     public void init() throws ProcessException
     {
         //I/O mappings
-        posX = (DataValue) inputData.getComponent("ECEF_location").getComponent("x");
-        posY = (DataValue) inputData.getComponent("ECEF_location").getComponent("y");
-        posZ = (DataValue) inputData.getComponent("ECEF_location").getComponent("z");
-        julianTime = (DataValue) inputData.getComponent("julianTime");
-        Xo = (DataValue) outputData.getComponent("ECI_location").getComponent("x");
-        Yo = (DataValue) outputData.getComponent("ECI_location").getComponent("y");
-        Zo = (DataValue) outputData.getComponent("ECI_location").getComponent("z");
+        try
+        {
+            posX = (DataValue) inputData.getComponent("ECEF_location").getComponent("x");
+            posY = (DataValue) inputData.getComponent("ECEF_location").getComponent("y");
+            posZ = (DataValue) inputData.getComponent("ECEF_location").getComponent("z");
+            julianTime = (DataValue) inputData.getComponent("julianTime");
+            Xo = (DataValue) outputData.getComponent("ECI_location").getComponent("x");
+            Yo = (DataValue) outputData.getComponent("ECI_location").getComponent("y");
+            Zo = (DataValue) outputData.getComponent("ECI_location").getComponent("z");
+        }
+        catch (Exception e)
+        {
+            throw new ProcessException(ioError, e);
+        }
     }
 
 

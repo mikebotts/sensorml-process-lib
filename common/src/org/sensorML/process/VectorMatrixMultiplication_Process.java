@@ -72,9 +72,9 @@ public class VectorMatrixMultiplication_Process extends DataProcess
             
             localMat = inputData.getComponent("transformatiomMatrix");
         }
-        catch (RuntimeException e)
+        catch (Exception e)
         {
-            throw new ProcessException(ioError);
+            throw new ProcessException(ioError, e);
         }
     }
     

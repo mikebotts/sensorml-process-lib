@@ -83,9 +83,9 @@ public class Pos2Matrix_Process extends DataProcess
             int rzIndex = rotVector.getComponentIndex("z");
             rotationOrder[rzIndex] = 'Z';
         }
-        catch (RuntimeException e)
+        catch (Exception e)
         {
-            throw new ProcessException(ioError);
+            throw new ProcessException(ioError, e);
         }
     }
     

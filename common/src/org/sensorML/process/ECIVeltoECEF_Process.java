@@ -59,18 +59,25 @@ public class ECIVeltoECEF_Process extends DataProcess
      */
     public void init() throws ProcessException
     {
-        // Inputs Mappings
-        julianTime = (DataValue) inputData.getComponent("julianTime");
-        DataGroup eciVector = (DataGroup)inputData.getComponent("ECI_velocity");
-        eciX = (DataValue) eciVector.getComponent("x");
-        eciY = (DataValue) eciVector.getComponent("y");
-        eciZ = (DataValue) eciVector.getComponent("z");        
-        
-        // Outputs Mappings
-        DataGroup ecefVector = (DataGroup)outputData.getComponent("ECEF_velocity");
-        ecfX = (DataValue) ecefVector.getComponent("x");
-        ecfY = (DataValue) ecefVector.getComponent("y");
-        ecfZ = (DataValue) ecefVector.getComponent("z");
+        try
+        {
+            // Inputs Mappings
+            julianTime = (DataValue) inputData.getComponent("julianTime");
+            DataGroup eciVector = (DataGroup)inputData.getComponent("ECI_velocity");
+            eciX = (DataValue) eciVector.getComponent("x");
+            eciY = (DataValue) eciVector.getComponent("y");
+            eciZ = (DataValue) eciVector.getComponent("z");        
+            
+            // Outputs Mappings
+            DataGroup ecefVector = (DataGroup)outputData.getComponent("ECEF_velocity");
+            ecfX = (DataValue) ecefVector.getComponent("x");
+            ecfY = (DataValue) ecefVector.getComponent("y");
+            ecfZ = (DataValue) ecefVector.getComponent("z");
+        }
+        catch (Exception e)
+        {
+            throw new ProcessException(ioError, e);
+        }
     }
 
 

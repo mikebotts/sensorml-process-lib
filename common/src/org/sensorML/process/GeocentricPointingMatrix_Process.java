@@ -82,9 +82,9 @@ public class GeocentricPointingMatrix_Process extends DataProcess
             upAxis = paramData.getComponent("upAxis").getData().getStringValue().charAt(0);
             forwardAxis = paramData.getComponent("forwardAxis").getData().getStringValue().charAt(0);
         }
-        catch (RuntimeException e)
+        catch (Exception e)
         {
-            e.printStackTrace();
+            throw new ProcessException(ioError, e);
         }
     }
     

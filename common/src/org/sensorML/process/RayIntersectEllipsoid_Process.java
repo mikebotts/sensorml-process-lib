@@ -102,7 +102,7 @@ public class RayIntersectEllipsoid_Process extends DataProcess
         }
         catch (Exception e)
         {
-            throw new ProcessException("Invalid Output structure");
+            throw new ProcessException(ioError, e);
         }
     }
     

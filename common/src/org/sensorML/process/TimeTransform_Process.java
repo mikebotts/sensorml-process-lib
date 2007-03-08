@@ -23,7 +23,6 @@
 
 package org.sensorML.process;
 
-import org.vast.cdm.common.DataType;
 import org.vast.data.*;
 import org.vast.process.*;
 
@@ -50,32 +49,19 @@ public class TimeTransform_Process extends DataProcess
     public TimeTransform_Process()
     {    	
     }
-    
-    
-    protected void buildIO()
-    {
-    	this.addInput("referenceTime", new DataValue(DataType.DOUBLE));
-    	this.addInput("localTime", new DataValue(DataType.DOUBLE));
-    	inputData.assignNewDataBlock();
-    	
-    	this.addOutput("time", new DataValue(DataType.DOUBLE));
-    }
 
     
     public void init() throws ProcessException
-    {
-    	if (inputData.getComponentCount() == 0 && outputData.getComponentCount() == 0)
-    		buildIO();
-    	
+    {   	
     	try
         {
             refTime = inputData.getComponent("referenceTime");
             localTime = inputData.getComponent("localTime");
             resultTime = outputData.getComponent("time");
         }
-        catch (RuntimeException e)
+        catch (Exception e)
         {
-            throw new ProcessException("Invalid i/o structure");
+            throw new ProcessException(ioError, e);
         }
     }
     

@@ -70,9 +70,9 @@ public class DewPoint_Process extends DataProcess
             inputRelHumidity = (DataValue) inputData.getComponent("relative_humidity");
             outputTemp = (DataValue) outputData.getComponent("dewpoint_temperature");
         }
-        catch (ClassCastException e)
+        catch (Exception e)
         {
-            throw new ProcessException("Invalid I/O data", e);
+            throw new ProcessException(ioError, e);
         }
     }
 
