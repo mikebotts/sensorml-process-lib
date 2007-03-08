@@ -24,10 +24,8 @@
 
 package org.sensorML.process;
 
-import org.vast.cdm.common.DataBlock;
 import org.vast.data.*;
 import org.vast.process.*;
-import org.vast.math.*;
 
 
 /**
