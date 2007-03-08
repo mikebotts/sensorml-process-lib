@@ -42,7 +42,7 @@ import org.vast.math.*;
  *
  * <p>Copyright (c) 2005</p>
  * @author Alexandre Robin & Gregoire Berthiau
- * @date Sep 2, 2005
+ * @date Mar 7, 2007
  * @version 1.0
  */
 public class BinaryOperation_Process extends DataProcess
