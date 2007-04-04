@@ -119,7 +119,7 @@ public class NadirPointingMatrix3_Process extends DataProcess
         if (vzData != null)
             vz = vzData.getData().getDoubleValue();
 
-        Matrix4d newMatrix = null;        
+        Matrix3d newMatrix = null;        
         Vector3d heading = new Vector3d();
         Vector3d other = new Vector3d();
         Vector3d up = new Vector3d();
@@ -139,7 +139,7 @@ public class NadirPointingMatrix3_Process extends DataProcess
             other.cross(up, velocity);
             other.normalize();
             heading.cross(other, up);
-            newMatrix = new Matrix4d(heading, other, up);
+            newMatrix = new Matrix3d(heading, other, up);
         }
 
         else if ((forwardAxis == 'X') && (upAxis == 'Y'))
@@ -147,7 +147,7 @@ public class NadirPointingMatrix3_Process extends DataProcess
             other.cross(velocity, up);
             other.normalize();
             heading.cross(up, other);
-            newMatrix = new Matrix4d(heading, up, other);
+            newMatrix = new Matrix3d(heading, up, other);
         }
 
         else if ((forwardAxis == 'Y') && (upAxis == 'X'))
@@ -155,7 +155,7 @@ public class NadirPointingMatrix3_Process extends DataProcess
             other.cross(up, velocity);
             other.normalize();
             heading.cross(other, up);
-            newMatrix = new Matrix4d(up, heading, other);
+            newMatrix = new Matrix3d(up, heading, other);
         }
 
         else if ((forwardAxis == 'Y') && (upAxis == 'Z'))
@@ -163,7 +163,7 @@ public class NadirPointingMatrix3_Process extends DataProcess
             other.cross(velocity, up);
             other.normalize();
             heading.cross(up, other);
-            newMatrix = new Matrix4d(other, heading, up);
+            newMatrix = new Matrix3d(other, heading, up);
         }
 
         else if ((forwardAxis == 'Z') && (upAxis == 'X'))
@@ -171,7 +171,7 @@ public class NadirPointingMatrix3_Process extends DataProcess
             other.cross(velocity, up);
             other.normalize();
             heading.cross(up, other);
-            newMatrix = new Matrix4d(up, other, heading);
+            newMatrix = new Matrix3d(up, other, heading);
         }
 
         else if ((forwardAxis == 'Z') && (upAxis == 'Y'))
@@ -179,15 +179,15 @@ public class NadirPointingMatrix3_Process extends DataProcess
             other.cross(up, velocity);
             other.normalize();
             heading.cross(other, up);
-            newMatrix = new Matrix4d(other, up, heading);
+            newMatrix = new Matrix3d(other, up, heading);
         }
         
-        newMatrix.setTranslation(x, y, z);
+        //newMatrix.setTranslation(x, y, z);
         
         // assign values to output matrix
         DataBlock data = outputMatrix.getData();
-        for (int i=0; i<16; i++)
-            data.setDoubleValue(i, newMatrix.getElement(i/4, i%4));
+        for (int i=0; i<9; i++)
+            data.setDoubleValue(i, newMatrix.getElement(i/3, i%3));
     }
     
     
