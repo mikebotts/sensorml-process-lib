@@ -35,7 +35,7 @@ import org.vast.process.*;
  *
  * <p><b>Description:</b><br/>
  * Implementation of a binary operation with respect to a parameter (addition, 
- * soustraction, multiplication, division)
+ * soustraction, multiplication, division, power)
  * </p>
  *
  * <p>Copyright (c) 2005</p>
