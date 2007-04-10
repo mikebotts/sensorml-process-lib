@@ -43,7 +43,7 @@ import org.vast.process.*;
  * @date Sep 2, 2005
  * @version 1.0
  */
-public class Pos2Matrix_Process extends DataProcess
+public class Pos2Matrix4_Process extends DataProcess
 {
     private DataValue txData, tyData, tzData;
     private DataValue rxData, ryData, rzData;
@@ -52,7 +52,7 @@ public class Pos2Matrix_Process extends DataProcess
     private Matrix4d newMatrix = new Matrix4d();
     
     
-    public Pos2Matrix_Process()
+    public Pos2Matrix4_Process()
     {    	
     }
 
