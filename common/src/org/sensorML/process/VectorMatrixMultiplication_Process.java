@@ -70,7 +70,7 @@ public class VectorMatrixMultiplication_Process extends DataProcess
             nvyData = (DataValue) outputData.getComponent("newVector").getComponent("y");
             nvzData = (DataValue) outputData.getComponent("newVector").getComponent("z");
             
-            localMat = inputData.getComponent("transformatiomMatrix");
+            localMat = inputData.getComponent("transformMatrix");
         }
         catch (Exception e)
         {
