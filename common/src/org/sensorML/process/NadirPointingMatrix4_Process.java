@@ -49,7 +49,7 @@ import org.vast.process.*;
  * @date Sep 2, 2005
  * @version 1.0
  */
-public class NadirPointingMatrix_Process extends DataProcess
+public class NadirPointingMatrix4_Process extends DataProcess
 {
     private DataValue xData, yData, zData;
     private DataValue vxData, vyData, vzData;
@@ -57,7 +57,7 @@ public class NadirPointingMatrix_Process extends DataProcess
     char forwardAxis, upAxis;
     
     
-    public NadirPointingMatrix_Process()
+    public NadirPointingMatrix4_Process()
     {    	
     }
 
