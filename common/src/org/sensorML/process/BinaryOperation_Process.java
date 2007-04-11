@@ -47,7 +47,9 @@ public class BinaryOperation_Process extends DataProcess
 {
 	AbstractDataComponent operatorData;
     private DataValue operand1, operand2, result;
-    int operator;
+    private OperatorEnum operator;
+    enum OperatorEnum {ADD, MIN, MUL, DIV, POW}
+    
     
     public BinaryOperation_Process()
     {
@@ -69,15 +71,15 @@ public class BinaryOperation_Process extends DataProcess
             DataValue operatorData = (DataValue)paramData.getComponent("operator");
  
             if (operatorData.getData().getStringValue().equalsIgnoreCase("addition"))
-              	operator = 0;
+              	operator = OperatorEnum.ADD;
             else if (operatorData.getData().getStringValue().equalsIgnoreCase("soustraction"))
-               	operator = 1;
+               	operator = OperatorEnum.MIN;
             else if (operatorData.getData().getStringValue().equalsIgnoreCase("multiplication"))
-               	operator = 2;
+               	operator = OperatorEnum.MUL;
             else if (operatorData.getData().getStringValue().equalsIgnoreCase("division"))
-              	operator = 3;
+              	operator = OperatorEnum.DIV;
             else if (operatorData.getData().getStringValue().equalsIgnoreCase("power"))
-               	operator = 4;
+               	operator = OperatorEnum.POW;
             
         }
         catch (RuntimeException e)
@@ -101,27 +103,28 @@ public class BinaryOperation_Process extends DataProcess
         
         switch (operator)
         {
-            case '0':
-                Nr=N1+N2;
+            case ADD:
+                Nr = N1 + N2;
                 break;
                 
-            case '1':
-                Nr=N1-N2;
+            case MIN:
+                Nr = N1 - N2;
                 break;
                 
-            case '2':
-                Nr=N1*N2;
+            case MUL:
+                Nr = N1 * N2;
                 break;
                 
-            case '3':
-                Nr=N1/N2;
+            case DIV:
+                Nr = N1 / N2;
                 break;
                 
-            case '4':
-                Nr=Math.pow(N1,N2);
+            case POW:
+                Nr = Math.pow(N1, N2);
                 break;
         }
 
+        System.out.println(Nr);
         result.getData().setDoubleValue(Nr);
  
     } 
