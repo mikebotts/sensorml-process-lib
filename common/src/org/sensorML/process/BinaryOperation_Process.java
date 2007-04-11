@@ -124,7 +124,7 @@ public class BinaryOperation_Process extends DataProcess
                 break;
         }
 
-        System.out.println(operator + " = " + Nr);
+        //System.out.println(operator + " = " + Nr);
         result.getData().setDoubleValue(Nr);
     } 
 }
