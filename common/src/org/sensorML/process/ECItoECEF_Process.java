@@ -89,7 +89,7 @@ public class ECItoECEF_Process extends DataProcess
         double Xi = eciX.getData().getDoubleValue();
         double Yi = eciY.getData().getDoubleValue();
         double Zi = eciZ.getData().getDoubleValue();
-
+        
         double c, s;
         double GHA;
 
