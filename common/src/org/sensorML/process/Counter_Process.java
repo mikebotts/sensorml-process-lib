@@ -111,7 +111,7 @@ public class Counter_Process extends DataProcess
             if (useStepCount)
             {
                 stepCount = inputStepCount.getData().getIntValue();
-                step = (stop - start) / stepCount;
+                step = (stop - start) / (stepCount - 1);
                 outputStepCount.getData().setIntValue((int)stepCount);
             }
             else
@@ -124,8 +124,11 @@ public class Counter_Process extends DataProcess
             //System.out.println(step + " - " + stepCount);
             
             // forward pass-through data
-            ((DataGroup)inputPassThrough).combineDataBlocks();
-            outputPassThrough.setData(inputPassThrough.getData());//.clone()??);
+            if (inputPassThrough != null && outputPassThrough != null)
+            {
+                ((DataGroup)inputPassThrough).combineDataBlocks();
+                outputPassThrough.setData(inputPassThrough.getData());//.clone()??);
+            }
             
             // set some inputs/outputs as not needed so that we can continue looping
             setNeededSignals(false);
@@ -140,12 +143,12 @@ public class Counter_Process extends DataProcess
         // set output variable
         outputVariable.getData().setDoubleValue(var);
         outputIndex.getData().setIntValue(count);
-        //System.out.println("count = " + count + ", var = " + var);
+        //System.out.println(name + ": " + "count = " + count + ", var = " + var);
         
         // reset stuffs if end of loop
         count++;
         var += step;
-        if (count >= stepCount)
+        if (count == stepCount)
         {
             done = true;            
             setNeededSignals(true);
