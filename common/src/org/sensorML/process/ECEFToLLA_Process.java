@@ -89,6 +89,10 @@ public class ECEFToLLA_Process extends DataProcess
     	latData.getData().setDoubleValue(lla[0]);
         lonData.getData().setDoubleValue(lla[1]);
         altData.getData().setDoubleValue(lla[2]);
+        double aa = latData.getData().getDoubleValue();
+        double bb = lonData.getData().getDoubleValue();
+        double cc = altData.getData().getDoubleValue();
+        System.out.println("Lat: " + aa*180/3.141592 + "   lon: " + bb*180/3.141592 + "   alt: " + cc*180/3.141592);
         
         //System.out.println("lla: " + lla[0] + "," + lla[1] + "," + lla[2]);
     }

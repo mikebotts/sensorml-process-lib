@@ -121,7 +121,7 @@ public class RayIntersectEllipsoid_Process extends DataProcess
         P0[0] = matrixData.getDoubleValue(3);
         P0[1] = matrixData.getDoubleValue(7);
         P0[2] = matrixData.getDoubleValue(11);
-        
+
         // rotate ray direction to global coordinates
         U0_ = new double[3];
         for (int i=0; i<3; i++)

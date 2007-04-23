@@ -110,12 +110,14 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
         // get ray origin in global coordinate (from matrix)
         P0[0] = xInput.getData().getDoubleValue();
         P0[1] = yInput.getData().getDoubleValue();
-        P0[2] = zInput.getData().getDoubleValue();
+        P0[2] = zInput.getData().getDoubleValue();       
+        System.out.println("rayorigin:   " + P0[0] + "    " + P0[1] + "    " + P0[2]); 
         
         // get ray direction in local coordinates
         U0[0] = dxInput.getData().getDoubleValue();
         U0[1] = dyInput.getData().getDoubleValue();
-        U0[2] = dzInput.getData().getDoubleValue();
+        U0[2] = dzInput.getData().getDoubleValue();       
+        System.out.println("rayDirection:   " + U0[0] + "    " + U0[1] + "    " + U0[2]);       
 
         // scale vectors using ellipsoid radius
         for (int i=0; i<3; i++)
@@ -170,5 +172,9 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
         xOutput.getData().setDoubleValue(P0[0] + (U0[0] * scalar));
         yOutput.getData().setDoubleValue(P0[1] + (U0[1] * scalar));
         zOutput.getData().setDoubleValue(P0[2] + (U0[2] * scalar));
+        double aa = xOutput.getData().getDoubleValue();
+        double bb = yOutput.getData().getDoubleValue();
+        double cc = zOutput.getData().getDoubleValue();
+        System.out.println("ECEF intersection: " + aa + "   " + bb + "   " + cc);
     }
 }
