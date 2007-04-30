@@ -95,7 +95,6 @@ public class VectorMatrixMultiplication_Process extends DataProcess
             vz = vzData.getData().getDoubleValue();
 
     	Vector3d vector = new Vector3d(vx, vy, vz);
-    	
         DataBlock locMatrixData = localMat.getData();
 
         Matrix3d locMatrix = new Matrix3d();
@@ -106,7 +105,7 @@ public class VectorMatrixMultiplication_Process extends DataProcess
 
         nvxData.getData().setDoubleValue(vector.x);
 		nvyData.getData().setDoubleValue(vector.y);
-		nvzData.getData().setDoubleValue(vector.z);   
+		nvzData.getData().setDoubleValue(vector.z); 
 		
     } 
 }
