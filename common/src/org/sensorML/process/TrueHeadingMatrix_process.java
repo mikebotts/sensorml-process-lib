@@ -36,9 +36,9 @@ import org.vast.process.*;
  *
  * <p><b>Description:</b><br/>
  * Construct a 3D matrix of transformation from an orientation where the  
- * upAxis is aligned with the geocentric direction, forwardAxis orthogonal 
- * to upAxis and in the plane of the true heading and the third axis chosen  
- * so that the result XYZ reference frame is direct.
+ * upAxis is -nadir, forwardAxis orthogonal to upAxis and in the plane of the
+ * true heading and the third axis chosen so that the result XYZ reference
+ * frame is direct.
  * </p>
  *
  * <p>Copyright (c) 2007</p>
@@ -88,15 +88,21 @@ public class TrueHeadingMatrix_process extends DataProcess
         
         if (longitude != null)
         	lon = longitude.getData().getDoubleValue();
-
+        	
         if (latitude != null)
-        	lat = latitude.getData().getDoubleValue();
+        	lat = latitude.getData().getDoubleValue();        	
 
         if (trueHeading != null)
         	trueHD = trueHeading.getData().getDoubleValue();
         
+        lon = lon*Math.PI/180;
+        lat = lat*Math.PI/180;
+        trueHD = trueHD*Math.PI/180;
+        
         Matrix3d matrix = new Matrix3d();
         matrix.setIdentity();// return identity matrix
+        
+       // System.out.println("lon " + lon + " lat " + lat + " trueheading " + trueHD);
         
         matrix.rotateZ(lon);
         matrix.rotateY(Math.PI/2.0 - lat);        // Z points up (- nadir)
