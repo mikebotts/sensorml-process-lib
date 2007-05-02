@@ -33,10 +33,10 @@ import org.vast.process.*;
  * </p>
  *
  * <p><b>Description:</b><br/>
- * Compare input to treshold.
- * If input < treshold, input is sent to 'less' output.
- * If input > treshold, input is sent to 'more' output.
- * If input = treshold, input is sent to 'equal' output.
+ * Compare input to threshold.
+ * If input < threshold, input is sent to 'less' output.
+ * If input > threshold, input is sent to 'more' output.
+ * If input = threshold, input is sent to 'equal' output.
  * </p>
  *
  * <p>Copyright (c) 2005</p>
