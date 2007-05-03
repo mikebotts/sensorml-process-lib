@@ -95,20 +95,16 @@ public class TrueHeadingMatrix_process extends DataProcess
         if (trueHeading != null)
         	trueHD = trueHeading.getData().getDoubleValue();
         
-        lon = lon*Math.PI/180;
-        lat = lat*Math.PI/180;
-        trueHD = trueHD*Math.PI/180;
-        
         Matrix3d matrix = new Matrix3d();
         matrix.setIdentity();// return identity matrix
         
-       // System.out.println("lon " + lon + " lat " + lat + " trueheading " + trueHD);
+        // System.out.println("lon " + lon + " lat " + lat + " trueheading " + trueHD);
         
+        matrix.rotateZ(trueHD - Math.PI);         // X points North + heading (heading = angleToNorth)
+        matrix.rotateY(lat - Math.PI/2.0);        // Z points up (- nadir)
         matrix.rotateZ(lon);
-        matrix.rotateY(Math.PI/2.0 - lat);        // Z points up (- nadir)
-        matrix.rotateZ(Math.PI - trueHD);         // X points North + heading
 
-//      assign values to output matrix
+        // assign values to output matrix
         DataBlock data = outputMatrix.getData();
         for (int i=0; i<9; i++)
             data.setDoubleValue(i, matrix.getElement(i/3, i%3));
