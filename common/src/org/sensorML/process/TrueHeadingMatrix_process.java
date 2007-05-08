@@ -100,11 +100,11 @@ public class TrueHeadingMatrix_process extends DataProcess
         
         // System.out.println("lon " + lon + " lat " + lat + " trueheading " + trueHD);
 
-        //mine without inverse
+        //Greg's without inverse
         matrix.rotateZ(-(Math.PI - trueHD));
         matrix.rotateY((Math.PI/2.0 - lat));
         matrix.rotateZ(-lon);
-        //mine with inverse
+        //Greg's with inverse
         //matrix.rotateZ(lon);
         //matrix.rotateY(-(Math.PI/2.0 - lat));        // Z points up (- nadir)
         //matrix.rotateZ((Math.PI - trueHD));
