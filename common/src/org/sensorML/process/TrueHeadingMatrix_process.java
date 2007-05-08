@@ -96,19 +96,25 @@ public class TrueHeadingMatrix_process extends DataProcess
         	trueHD = trueHeading.getData().getDoubleValue();
         
         Matrix3d matrix = new Matrix3d();
-        //Matrix3d matrixMinusIdentity = new Matrix3d(1,0,0,0,1,0,0,0,1);
         matrix.setIdentity();// return identity matrix
         
         // System.out.println("lon " + lon + " lat " + lat + " trueheading " + trueHD);
-        matrix.rotateZ(lon);
-        matrix.rotateY(-(Math.PI/2.0 - lat));        // Z points up (- nadir)
-        matrix.rotateZ((Math.PI - trueHD)); 
+
+        //mine without inverse
+        matrix.rotateZ(-(Math.PI - trueHD));
+        matrix.rotateY((Math.PI/2.0 - lat));
+        matrix.rotateZ(-lon);
+        //mine with inverse
+        //matrix.rotateZ(lon);
+        //matrix.rotateY(-(Math.PI/2.0 - lat));        // Z points up (- nadir)
+        //matrix.rotateZ((Math.PI - trueHD));
+        //matrix.inverse();	
+        
+        //Alex's
         //matrix.rotateZ(trueHD - Math.PI);         // X points North + heading (heading = angleToNorth)
         //matrix.rotateY(lat - Math.PI/2.0);        // Z points up (- nadir)
         //matrix.rotateZ(lon);
 
-        matrix.inverse();	
-        //matrix.mul(matrixMinusIdentity);
         
         // assign values to output matrix
         DataBlock data = outputMatrix.getData();
