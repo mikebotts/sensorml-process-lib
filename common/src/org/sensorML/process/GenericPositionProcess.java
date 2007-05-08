@@ -189,7 +189,7 @@ public class GenericPositionProcess extends DataProcess
     	{
     		DataProcess process = lookUpTables[i];
     		process.getInputList().getComponent(0).setData(index);
-    		process.runProcess();
+    		process.execute();
     	}
        
         // set output matrix values
