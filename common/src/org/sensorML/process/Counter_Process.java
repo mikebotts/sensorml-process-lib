@@ -90,6 +90,8 @@ public class Counter_Process extends DataProcess
             
             stepOutputIndex = outputData.getComponentIndex("stepCount");
             outputStepCount = (DataValue) outputData.getComponent(stepOutputIndex);
+            
+            setNeededSignals(true);
         }
         catch (Exception e)
         {
@@ -150,7 +152,7 @@ public class Counter_Process extends DataProcess
         var += step;
         if (count == stepCount)
         {
-            done = true;            
+            done = true;           
             setNeededSignals(true);
         }
     }
