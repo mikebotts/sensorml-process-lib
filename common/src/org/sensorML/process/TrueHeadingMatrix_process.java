@@ -90,7 +90,7 @@ public class TrueHeadingMatrix_process extends DataProcess
         	lon = longitude.getData().getDoubleValue();
         	
         if (latitude != null)
-        	lat = latitude.getData().getDoubleValue();        	
+        	lat = latitude.getData().getDoubleValue();
 
         if (trueHeading != null)
         	trueHD = trueHeading.getData().getDoubleValue();
@@ -104,17 +104,6 @@ public class TrueHeadingMatrix_process extends DataProcess
         matrix.rotateZ(-(Math.PI - trueHD));
         matrix.rotateY((Math.PI/2.0 - lat));
         matrix.rotateZ(-lon);
-        //Greg's with inverse
-        //matrix.rotateZ(lon);
-        //matrix.rotateY(-(Math.PI/2.0 - lat));        // Z points up (- nadir)
-        //matrix.rotateZ((Math.PI - trueHD));
-        //matrix.inverse();	
-        
-        //Alex's
-        //matrix.rotateZ(trueHD - Math.PI);         // X points North + heading (heading = angleToNorth)
-        //matrix.rotateY(lat - Math.PI/2.0);        // Z points up (- nadir)
-        //matrix.rotateZ(lon);
-
         
         // assign values to output matrix
         DataBlock data = outputMatrix.getData();

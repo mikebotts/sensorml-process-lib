@@ -103,6 +103,7 @@ public class TimeSynchronizer_Process extends DataProcess
         if (nextMasterTime)
         {
             masterTime = masterTimeData.getData().getDoubleValue();
+            System.out.println("Master Time: " + masterTime);
             
             if (slaveDataStack.size() > 0 &&
                 slaveDataStack.getLast().time >= masterTime)
@@ -121,6 +122,7 @@ public class TimeSynchronizer_Process extends DataProcess
             DataBlock slaveBlock = dataIn.getData();
             SlaveData newData = new SlaveData(slaveTime, slaveBlock);
             slaveDataStack.add(newData);
+            System.out.println("Slave Time: " + slaveTime);
             
             // remove oldest item if stack size reached interp order
             if (slaveDataStack.size() > 2)
@@ -141,22 +143,29 @@ public class TimeSynchronizer_Process extends DataProcess
     
     protected void interpolateOrder1()
     {
-        double currentTime = slaveDataStack.get(1).time;
-        DataBlock currentData = slaveDataStack.get(1).data;
-        double previousTime = slaveDataStack.get(0).time;
-        DataBlock previousData = slaveDataStack.get(0).data;
-        
-        // first order interpolation factor
-        double a = (masterTime - previousTime) / (currentTime - previousTime);
-        
-        // interpolate all values
-        int valueCount = dataIn.getData().getAtomCount();
-        for (int i=0; i<valueCount; i++)
+        if (slaveDataStack.size() > 1)
         {
-            double currentValue = currentData.getDoubleValue(i);
-            double previousValue = previousData.getDoubleValue(i);                
-            double outputValue = previousValue + a*(currentValue - previousValue);
-            dataOut.getData().setDoubleValue(i, outputValue);
+            double currentTime = slaveDataStack.get(1).time;
+            DataBlock currentData = slaveDataStack.get(1).data;
+            double previousTime = slaveDataStack.get(0).time;
+            DataBlock previousData = slaveDataStack.get(0).data;
+            
+            // first order interpolation factor
+            double a = (masterTime - previousTime) / (currentTime - previousTime);
+            
+            // interpolate all values
+            int valueCount = dataIn.getData().getAtomCount();
+            for (int i=0; i<valueCount; i++)
+            {
+                double currentValue = currentData.getDoubleValue(i);
+                double previousValue = previousData.getDoubleValue(i);
+                double outputValue = previousValue + a*(currentValue - previousValue);
+                dataOut.getData().setDoubleValue(i, outputValue);
+            }
+        }
+        else
+        {
+            dataOut.setData(slaveDataStack.get(0).data);
         }
     }
     
@@ -166,7 +175,7 @@ public class TimeSynchronizer_Process extends DataProcess
         inputConnections.get(masterTimeIndex).setNeeded(true);
         inputConnections.get(slaveTimeIndex).setNeeded(false);
         inputConnections.get(dataInIndex).setNeeded(false);
-        inputConnections.get(dataOutIndex).setNeeded(false);
+        outputConnections.get(dataOutIndex).setNeeded(false);
         nextMasterTime = true;
         nextSlaveTime = false;
         nextOutput = false;
@@ -178,7 +187,7 @@ public class TimeSynchronizer_Process extends DataProcess
         inputConnections.get(masterTimeIndex).setNeeded(false);
         inputConnections.get(slaveTimeIndex).setNeeded(true);
         inputConnections.get(dataInIndex).setNeeded(true);
-        inputConnections.get(dataOutIndex).setNeeded(false);
+        outputConnections.get(dataOutIndex).setNeeded(false);
         nextMasterTime = false;
         nextSlaveTime = true;
         nextOutput = false;
@@ -190,7 +199,7 @@ public class TimeSynchronizer_Process extends DataProcess
         inputConnections.get(masterTimeIndex).setNeeded(false);
         inputConnections.get(slaveTimeIndex).setNeeded(false);
         inputConnections.get(dataInIndex).setNeeded(false);
-        inputConnections.get(dataOutIndex).setNeeded(true);
+        outputConnections.get(dataOutIndex).setNeeded(true);
         nextMasterTime = false;
         nextSlaveTime = false;
         nextOutput = true;
