@@ -68,6 +68,7 @@ public class TimeSynchronizer_Process extends DataProcess
 	}
 
     
+    @Override
     public void init() throws ProcessException
     {
         try
@@ -83,9 +84,6 @@ public class TimeSynchronizer_Process extends DataProcess
         	dataOut = outputData.getComponent(dataOutIndex);
         	
         	// TODO check if dataIn and dataOut have the same structure
-            
-            nextMasterTimeNeeded();
-            slaveDataStack.clear();
         }
         catch (Exception e)
         {
@@ -93,17 +91,23 @@ public class TimeSynchronizer_Process extends DataProcess
         }
     }
     
+    
+    @Override
+    public void reset()
+    {
+        nextMasterTimeNeeded();
+        slaveDataStack.clear();
+    }
+    
 
-    /**
-     * Executes process algorithm on inputs and set output data
-     */
+    @Override
     public void execute() throws ProcessException
     {
         // get next master time when needed
         if (nextMasterTime)
         {
             masterTime = masterTimeData.getData().getDoubleValue();
-            System.out.println("Master Time: " + masterTime);
+            //System.out.println("Master Time: " + masterTime);
             
             if (slaveDataStack.size() > 0 &&
                 slaveDataStack.getLast().time >= masterTime)
@@ -122,7 +126,7 @@ public class TimeSynchronizer_Process extends DataProcess
             DataBlock slaveBlock = dataIn.getData();
             SlaveData newData = new SlaveData(slaveTime, slaveBlock);
             slaveDataStack.add(newData);
-            System.out.println("Slave Time: " + slaveTime);
+            //System.out.println("Slave Time: " + slaveTime);
             
             // remove oldest item if stack size reached interp order
             if (slaveDataStack.size() > 2)
