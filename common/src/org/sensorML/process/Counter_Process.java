@@ -49,7 +49,7 @@ public class Counter_Process extends DataProcess
     protected DataComponent inputPassThrough, outputPassThrough;
     protected DataValue inputStart, inputStop, inputStep, inputStepCount;
     protected DataValue outputIndex, outputVariable, outputStepCount;
-    protected int stepOutputIndex;
+    protected int outputStepCountIndex;
     protected int count, stepCount;
     protected double start, stop, step, var;
     protected boolean useStepCount, done;
@@ -88,8 +88,8 @@ public class Counter_Process extends DataProcess
             outputIndex = (DataValue) countOutput.getComponent("index");
             outputVariable = (DataValue) countOutput.getComponent("variable");
             
-            stepOutputIndex = outputData.getComponentIndex("stepCount");
-            outputStepCount = (DataValue) outputData.getComponent(stepOutputIndex);
+            outputStepCountIndex = outputData.getComponentIndex("stepCount");
+            outputStepCount = (DataValue) outputData.getComponent(outputStepCountIndex);
             
             setNeededSignals(true);
         }
@@ -134,7 +134,7 @@ public class Counter_Process extends DataProcess
             
             // set some inputs/outputs as not needed so that we can continue looping
             setNeededSignals(false);
-            this.setAvailability(outputConnections.get(stepOutputIndex), true);
+            this.setAvailability(outputConnections.get(outputStepCountIndex), true);
             
             // output first value
             var = start;
@@ -165,6 +165,6 @@ public class Counter_Process extends DataProcess
             inputConnections.get(i).setNeeded(needed);
         
         // set stepCount output needed flag to specified value
-        outputConnections.get(stepOutputIndex).setNeeded(needed);
+        outputConnections.get(outputStepCountIndex).setNeeded(needed);
     }
 }
