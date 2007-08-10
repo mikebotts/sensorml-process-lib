@@ -38,6 +38,7 @@ import org.vast.process.*;
 import java.io.File;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.*;
 
 /**
  * <p><b>Title:</b><br/>
@@ -150,27 +151,25 @@ public class TLEParser2_Process extends DataProcess
             
             File tleDir = new File(tleDirPath);
             boolean DirExist = tleDir.isDirectory();
+            
             File tleFile = new File(tlePath);
             
             if(DirExist){	
-            	Boolean FileExist = tleFile.exists();
+            	boolean FileExist = tleFile.exists();
+            	System.out.println(FileExist);
             	if(!FileExist){
-            		download(tleURL, tlePath);	
+            		downloadFromUrl(tleURL, tlePath,(long)0);	
             	}
             	if(FileExist){
-            		if(t<System.currentTimeMillis()){
-            			tleFile.delete();
-            			download(tleURL, tlePath);
-            		}     			
+            		downloadFromUrl(tleURL, tlePath, tleFile.length());            		     			
             	}
             }
             
             if(!DirExist){
             	tleDir.mkdirs();
-            	download(tleURL, tlePath);
+            	downloadFromUrl(tleURL, tlePath, (long)0);
             } 
             
-            tleDir.delete();
         }
         catch (Exception e)
         {
@@ -180,12 +179,18 @@ public class TLEParser2_Process extends DataProcess
         reset();
     }
     
-    public static void download(String address, String localFileName) {
+    public static void downloadFromUrl(String address, String localFileName, Long OnDiskFileSize) {
 		OutputStream out = null;
 		URLConnection conn = null;
 		InputStream  in = null;
 		try {
 			URL url = new URL(address);
+			
+			HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+			long contentLength = httpConn.getContentLength();
+
+			if (OnDiskFileSize!=contentLength)
+			{
 			out = new BufferedOutputStream(
 				new FileOutputStream(localFileName));
 			conn = url.openConnection();
@@ -198,6 +203,7 @@ public class TLEParser2_Process extends DataProcess
 				numWritten += numRead;
 			}
 			System.out.println(localFileName + "\t" + numWritten);
+			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		} finally {
