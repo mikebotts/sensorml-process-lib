@@ -144,7 +144,6 @@ public class TLEParser2_Process extends DataProcess
             
             // Get TLE file name
             tleFileName = paramData.getComponent("tleDataUrl").getData().getStringValue();
-            double t = time.getData().getDoubleValue();
             String tleURL = "http://vast.uah.edu/VASTData/satdata/tledata/" + tleFileName;
             tleDirPath = "C:/SensorML components/TleData/";
             tlePath = tleDirPath + tleFileName; 
