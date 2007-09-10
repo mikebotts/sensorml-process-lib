@@ -51,7 +51,7 @@ import java.net.*;
  * </p>
  * 
  * <p>Copyright (c) 2006</p>
- * @author Alexandre Robin
+ * @author Alexandre Robin, Gregoire Berthiau
  * @date February 27, 2006
  * @version 1.0
  */
