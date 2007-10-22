@@ -11,10 +11,7 @@
 
  The Original Code is the "SensorML DataProcessing Engine".
 
- The Initial Developer of the Original Code is the
- University of Alabama in Huntsville (UAH).
- Portions created by the Initial Developer are Copyright (C) 2006
- the Initial Developer. All Rights Reserved.
+ The Initial Developer of the Original Code is the VAST team at the University of Alabama in Huntsville (UAH). <http://vast.uah.edu> Portions created by the Initial Developer are Copyright (C) 2007 the Initial Developer. All Rights Reserved. Please Contact Mike Botts <mike.botts@uah.edu> for more information.
 
  Contributor(s):
  Kevin Carter <kcarter@nsstc.uah.edu> 
@@ -37,7 +34,7 @@ import org.vast.process.*;
  * Converts an ECI velocity vector to ECEF coordinates
  * </p>
  * 
- * <p>Copywrite (c) 2005</p>
+ * <p>Copywrite (c) 2007</p>
  * @author Kevin Carter
  * @date March 2, 2006
  * @version 1.0
