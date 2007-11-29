@@ -74,7 +74,7 @@ public class DataArrayBuilder_Process extends DataProcess
     	
     	nextInputNeeded();
     	
-    	if(i==ArrayElementCount-1){
+    	if(i==ArrayElementCount){
     		nextOutput();
     		i = 0;
     	}
