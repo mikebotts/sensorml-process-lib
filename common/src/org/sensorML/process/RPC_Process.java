@@ -42,22 +42,23 @@ import org.vast.process.*;
 * ---------
 * @author Mike Botts
 * @date May 11, 2006
-* 
 * corrected, cleaned up, and validated
-* ---------
-* @author Mike Botts
-* @date October 5, 2007
+*
+* @date October 5, 2007 
+* updated for revised schema
 * 
+* @date January 3, 2008
 * updated for revised schema
 */
 public class RPC_Process extends DataProcess
 {
 	DataValue inputX, inputY, inputZ;
 	DataValue outputX, outputY;
-	DataValue time;
+	//DataValue minX, minY, maxX, maxY;      NOT CURRENTLY USED
 	DataValue img_xo, img_xs, img_yo, img_ys;
 	DataValue tar_xo, tar_xs, tar_yo, tar_ys, tar_zo, tar_zs;
 	DataValue[] x_num, x_den, y_num, y_den;
+	//DataValue errorBias, errorRandom;    NOT CURRENTLY USED
 
 	public RPC_Process(){
 		
@@ -79,23 +80,34 @@ public class RPC_Process extends DataProcess
     		outputY = (DataValue) outputData.getComponent("image_location").getComponent("y");
     		
     		//Parameter mappings
-    		// time, offsets, and scalings
-    		DataGroup rpcParams = (DataGroup) paramData.getComponent("rpc_parameters"); 
-    		time = (DataValue) rpcParams.getComponent("time");
-    		img_xo = (DataValue) rpcParams.getComponent("image_x_offset");
-    		img_xs = (DataValue) rpcParams.getComponent("image_x_scale");
-    		img_yo = (DataValue) rpcParams.getComponent("image_y_offset");
-    		img_ys = (DataValue) rpcParams.getComponent("image_y_scale");
+    		DataGroup rpcParams = (DataGroup) paramData.getComponent("rpc_parameter_series"); 
+    		DataGroup rpcParamSet = (DataGroup) rpcParams.getComponent("rpc_parameter_set"); 
+
+    		// image region - NOT CURRENTLY USED
+//    		DataGroup rpcImageRegion = (DataGroup) rpcParamSet.getComponent("image_region"); 
+//    		minX = (DataValue) rpcImageRegion.getComponent("zone_minX");
+//    		minY = (DataValue) rpcImageRegion.getComponent("zone_minY");
+//    		maxX = (DataValue) rpcImageRegion.getComponent("zone_maxX");
+//    		maxY = (DataValue) rpcImageRegion.getComponent("zone_maxY");
     		
-    		tar_xo = (DataValue) rpcParams.getComponent("target_x_offset");
-    		tar_xs = (DataValue) rpcParams.getComponent("target_x_scale");
-    		tar_yo = (DataValue) rpcParams.getComponent("target_y_offset");
-    		tar_ys = (DataValue) rpcParams.getComponent("target_y_scale");
-    		tar_zo = (DataValue) rpcParams.getComponent("target_z_offset");
-    		tar_zs = (DataValue) rpcParams.getComponent("target_z_scale");
+    		// image adjustment parameters
+    		DataGroup rpcImageAdj = (DataGroup) rpcParamSet.getComponent("image_adjustment"); 
+    		img_xo = (DataValue) rpcImageAdj.getComponent("image_x_offset");
+    		img_xs = (DataValue) rpcImageAdj.getComponent("image_x_scale");
+    		img_yo = (DataValue) rpcImageAdj.getComponent("image_y_offset");
+    		img_ys = (DataValue) rpcImageAdj.getComponent("image_y_scale");
+    		
+    		// target adjustment parameters
+    		DataGroup rpcTargetAdj = (DataGroup) rpcParamSet.getComponent("target_adjustment"); 
+    		tar_xo = (DataValue) rpcTargetAdj.getComponent("target_x_offset");
+    		tar_xs = (DataValue) rpcTargetAdj.getComponent("target_x_scale");
+    		tar_yo = (DataValue) rpcTargetAdj.getComponent("target_y_offset");
+    		tar_ys = (DataValue) rpcTargetAdj.getComponent("target_y_scale");
+    		tar_zo = (DataValue) rpcTargetAdj.getComponent("target_z_offset");
+    		tar_zs = (DataValue) rpcTargetAdj.getComponent("target_z_scale");
     		
     		// x numerator coefficients
-    		DataGroup x_num_coefs = (DataGroup) rpcParams.getComponent("x_numerator_coefficients");
+    		DataGroup x_num_coefs = (DataGroup) rpcParamSet.getComponent("x_numerator_coefficients");
     		x_num = new DataValue[20];
     		x_num[0] = (DataValue) x_num_coefs.getComponent("constant");
     		x_num[1] = (DataValue) x_num_coefs.getComponent("x");
@@ -119,7 +131,7 @@ public class RPC_Process extends DataProcess
     		x_num[19] = (DataValue) x_num_coefs.getComponent("zzz");
     		
     		// x denominator coefficients
-    		DataGroup x_denom_coefs = (DataGroup) rpcParams.getComponent("x_denominator_coefficients");
+    		DataGroup x_denom_coefs = (DataGroup) rpcParamSet.getComponent("x_denominator_coefficients");
     		x_den = new DataValue[20];
     		x_den[0] = (DataValue) x_denom_coefs.getComponent("constant");
     		x_den[1] = (DataValue) x_denom_coefs.getComponent("x");
@@ -143,7 +155,7 @@ public class RPC_Process extends DataProcess
     		x_den[19] = (DataValue) x_denom_coefs.getComponent("zzz");
     		
     		// y numerator coefficients
-    		DataGroup y_num_coefs = (DataGroup) rpcParams.getComponent("y_numerator_coefficients");
+    		DataGroup y_num_coefs = (DataGroup) rpcParamSet.getComponent("y_numerator_coefficients");
     		y_num = new DataValue[20];
     		y_num[0] = (DataValue) y_num_coefs.getComponent("constant");
     		y_num[1] = (DataValue) y_num_coefs.getComponent("x");
@@ -167,7 +179,7 @@ public class RPC_Process extends DataProcess
     		y_num[19] = (DataValue) y_num_coefs.getComponent("zzz");
     		
     		// y denominator coefficients
-    		DataGroup y_denom_coefs = (DataGroup) rpcParams.getComponent("y_denominator_coefficients");
+    		DataGroup y_denom_coefs = (DataGroup) rpcParamSet.getComponent("y_denominator_coefficients");
     		y_den = new DataValue[20];
     		y_den[0] = (DataValue) y_denom_coefs.getComponent("constant");
     		y_den[1] = (DataValue) y_denom_coefs.getComponent("x");
@@ -189,7 +201,13 @@ public class RPC_Process extends DataProcess
     		y_den[17] = (DataValue) y_denom_coefs.getComponent("xxz");
     		y_den[18] = (DataValue) y_denom_coefs.getComponent("yyz");
     		y_den[19] = (DataValue) y_denom_coefs.getComponent("zzz");
-        }
+    		
+    		// error parameters   - NOT CURRENTLY USED
+//    		DataGroup rpcError = (DataGroup) rpcParamSet.getComponent("error_parameters"); 
+//    		errorBias = (DataValue) rpcError.getComponent("error_bias");
+//    		errorRandom = (DataValue) rpcError.getComponent("error_random");
+    		
+       }
         catch (Exception e)
         {
             throw new ProcessException(ioError, e);
@@ -235,7 +253,7 @@ public class RPC_Process extends DataProcess
 		double scaleY = (posY-yo)/ys;
 		double scaleZ = (posZ-zo)/zs;
 		
-		//Ratio of two cubic fuctions calculated for sample and line
+		//Ratio of two cubic functions calculated for sample and line
 		double u_num=0;
 			u_num+=x_num_coef[0];
 			u_num+=x_num_coef[1]*scaleX;
