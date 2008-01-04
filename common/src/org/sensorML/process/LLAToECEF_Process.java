@@ -117,7 +117,7 @@ public class LLAToECEF_Process extends DataProcess
     	double alt = altData.getData().getDoubleValue();
         
         // convert to ECEF
-        double[] ecefPos = MapProjection.LLAtoECF(lat, lon, alt, new Datum());
+        double[] ecefPos = MapProjection.LLAtoECF(lon, lat, alt, new Datum());
         toEcefMatrix.setIdentity();
                 
         // compute nadir orientation if needed
