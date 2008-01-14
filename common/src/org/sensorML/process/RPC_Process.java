@@ -54,14 +54,21 @@ public class RPC_Process extends DataProcess
 {
 	DataValue inputX, inputY, inputZ;
 	DataValue outputX, outputY;
-	//DataValue minX, minY, maxX, maxY;      NOT CURRENTLY USED
+	DataValue minX, minY, maxX, maxY;    //  NOT CURRENTLY USED
 	DataValue img_xo, img_xs, img_yo, img_ys;
 	DataValue tar_xo, tar_xs, tar_yo, tar_ys, tar_zo, tar_zs;
 	DataValue[] x_num, x_den, y_num, y_den;
 	//DataValue errorBias, errorRandom;    NOT CURRENTLY USED
+	private DataGroup rpcImageRegion;
 
 	public RPC_Process(){
 		
+	}
+	
+	public void setInputLatLonAlt(double lat, double lon, double alt){
+		inputX.getData().setDoubleValue(lon);
+		inputY.getData().setDoubleValue(lat);
+		inputZ.getData().setDoubleValue(alt);
 	}
 	
 	/**
@@ -80,15 +87,14 @@ public class RPC_Process extends DataProcess
     		outputY = (DataValue) outputData.getComponent("image_location").getComponent("y");
     		
     		//Parameter mappings
-    		DataGroup rpcParams = (DataGroup) paramData.getComponent("rpc_parameter_series"); 
+    		DataArray rpcParams = (DataArray) paramData.getComponent("rpc_parameter_series"); 
     		DataGroup rpcParamSet = (DataGroup) rpcParams.getComponent("rpc_parameter_set"); 
 
-    		// image region - NOT CURRENTLY USED
-//    		DataGroup rpcImageRegion = (DataGroup) rpcParamSet.getComponent("image_region"); 
-//    		minX = (DataValue) rpcImageRegion.getComponent("zone_minX");
-//    		minY = (DataValue) rpcImageRegion.getComponent("zone_minY");
-//    		maxX = (DataValue) rpcImageRegion.getComponent("zone_maxX");
-//    		maxY = (DataValue) rpcImageRegion.getComponent("zone_maxY");
+    		rpcImageRegion = (DataGroup) rpcParamSet.getComponent("image_region");
+			minX = (DataValue) rpcImageRegion.getComponent("zone_minX");
+    		minY = (DataValue) rpcImageRegion.getComponent("zone_minY");
+    		maxX = (DataValue) rpcImageRegion.getComponent("zone_maxX");
+    		maxY = (DataValue) rpcImageRegion.getComponent("zone_maxY");
     		
     		// image adjustment parameters
     		DataGroup rpcImageAdj = (DataGroup) rpcParamSet.getComponent("image_adjustment"); 
@@ -96,6 +102,7 @@ public class RPC_Process extends DataProcess
     		img_xs = (DataValue) rpcImageAdj.getComponent("image_x_scale");
     		img_yo = (DataValue) rpcImageAdj.getComponent("image_y_offset");
     		img_ys = (DataValue) rpcImageAdj.getComponent("image_y_scale");
+    		System.err.println("Im Sc " + img_xs.getData().getDoubleValue() + " " + img_ys.getData().getDoubleValue());
     		
     		// target adjustment parameters
     		DataGroup rpcTargetAdj = (DataGroup) rpcParamSet.getComponent("target_adjustment"); 
@@ -219,6 +226,10 @@ public class RPC_Process extends DataProcess
 	 */
 	public void execute() throws ProcessException
 	{	
+//		maxY = (DataValue) rpcImageRegion.getComponent("zone_maxY");
+		double xSize = maxX.getData().getIntValue();
+		double ySize = maxY.getData().getIntValue();
+		
 		double posX = inputX.getData().getDoubleValue();
 		double posY = inputY.getData().getDoubleValue();
 		double posZ = inputZ.getData().getDoubleValue();
@@ -351,5 +362,13 @@ public class RPC_Process extends DataProcess
 		//Set Output Data
 		outputX.getData().setDoubleValue(S);
 		outputY.getData().setDoubleValue(L);
+	}
+
+	public double getOutputY() {
+		return outputY.getData().getDoubleValue();
+	}
+
+	public double getOutputX() {
+		return outputX.getData().getDoubleValue();
 	}
 }
