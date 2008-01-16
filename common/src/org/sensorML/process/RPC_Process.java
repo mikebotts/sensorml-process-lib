@@ -68,7 +68,75 @@ public class RPC_Process extends DataProcess
 	public void setInputLatLonAlt(double lat, double lon, double alt){
 		inputX.getData().setDoubleValue(lon);
 		inputY.getData().setDoubleValue(lat);
+//		inputX.getData().setDoubleValue(lat);
+//		inputY.getData().setDoubleValue(lon);
 		inputZ.getData().setDoubleValue(alt);
+	}
+	
+	public void setImageScale(double xs, double ys){
+		img_xs.getData().setDoubleValue(xs);
+		img_ys.getData().setDoubleValue(ys);
+	}
+	
+	public void setImageOffset(double xo, double yo){
+		img_xo.getData().setDoubleValue(xo);
+		img_yo.getData().setDoubleValue(yo);
+	}
+	
+	public void setTargetScale(double xs, double ys, double zs){
+		tar_xs.getData().setDoubleValue(xs);
+		tar_ys.getData().setDoubleValue(ys);
+		tar_zs.getData().setDoubleValue(zs);
+	}
+	
+	public void setTargetOffset(double xo, double yo, double zo){
+		tar_xo.getData().setDoubleValue(xo);
+		tar_yo.getData().setDoubleValue(yo);
+		tar_zo.getData().setDoubleValue(zo);
+	}
+	
+	public void setX_Numerator(double [] xn){
+		if(xn.length != 20){
+			System.err.println("Wrong array size for xnum.  Values not loaded.");
+			return;
+		}
+		
+		for(int i=0; i<20; i++){
+			x_num[i].getData().setDoubleValue(xn[i]);
+		}
+	}
+	
+	public void setY_Numerator(double [] yn){
+		if(yn.length != 20){
+			System.err.println("Wrong array size for ynum.  Values not loaded.");
+			return;
+		}
+		
+		for(int i=0; i<20; i++){
+			y_num[i].getData().setDoubleValue(yn[i]);
+		}
+	}
+	
+	public void setX_Denominator(double [] xd){
+		if(xd.length != 20){
+			System.err.println("Wrong array size for xden.  Values not loaded.");
+			return;
+		}
+		
+		for(int i=0; i<20; i++){
+			x_den[i].getData().setDoubleValue(xd[i]);
+		}
+	}
+	
+	public void setY_Denominator(double [] yd){
+		if(yd.length != 20){
+			System.err.println("Wrong array size for yden.  Values not loaded.");
+			return;
+		}
+		
+		for(int i=0; i<20; i++){
+			y_den[i].getData().setDoubleValue(yd[i]);
+		}	
 	}
 	
 	/**
