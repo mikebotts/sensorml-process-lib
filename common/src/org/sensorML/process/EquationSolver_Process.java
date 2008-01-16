@@ -27,17 +27,21 @@ import com.bestcode.mathparser.MathParserFactory;
 
 /**
  * <p><b>Title:</b><br/>
- * Time Synchronization Process
+ * Equation Solver Process
  * </p>
  *
  * <p><b>Description:</b><br/>
- * This process synchronizes two asynchronous streams by interpolating
- * the slave data stream at times given by the master time stream
+ * This process solves equation inputed as a string. It handles many
+ * mathematical functions.
+ * It uses the jbcParser 3.3 library.
+ * X and Y shall not be used as variable name.
+ * For clarity, and parsing-conflict avoidance, the variables should
+ * be named V1, V2, ...  
  * </p>
  *
  * <p>Copyright (c) 2007</p>
  * @author Gregoire Berthiau
- * @date Nov 24, 2007
+ * @date Jan 16, 2008
  * @version 1.0
  */
 public class EquationSolver_Process extends DataProcess
