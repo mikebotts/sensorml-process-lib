@@ -1,0 +1,100 @@
+/***************************** BEGIN LICENSE BLOCK ***************************
+
+ The contents of this file are subject to the Mozilla Public License Version
+ 1.1 (the "License"); you may not use this file except in compliance with
+ the License. You may obtain a copy of the License at
+ http://www.mozilla.org/MPL/MPL-1.1.html
+ 
+ Software distributed under the License is distributed on an "AS IS" basis,
+ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ for the specific language governing rights and limitations under the License.
+ 
+ The Original Code is the "SensorML DataProcessing Engine".
+ 
+ The Initial Developer of the Original Code is the VAST team at the University of Alabama in Huntsville (UAH). <http://vast.uah.edu> Portions created by the Initial Developer are Copyright (C) 2007 the Initial Developer. All Rights Reserved. Please Contact Mike Botts <mike.botts@uah.edu> for more information.
+ 
+ Contributor(s): 
+    Alexandre Robin <robin@nsstc.uah.edu>
+ 
+******************************* END LICENSE BLOCK ***************************/
+
+package org.sensorML.process;
+
+import org.vast.data.*;
+import org.vast.process.*;
+import com.bestcode.mathparser.IMathParser;
+import com.bestcode.mathparser.MathParserFactory;
+
+/**
+ * <p><b>Title:</b><br/>
+ * Time Synchronization Process
+ * </p>
+ *
+ * <p><b>Description:</b><br/>
+ * This process synchronizes two asynchronous streams by interpolating
+ * the slave data stream at times given by the master time stream
+ * </p>
+ *
+ * <p>Copyright (c) 2007</p>
+ * @author Gregoire Berthiau
+ * @date Nov 24, 2007
+ * @version 1.0
+ */
+public class EquationSolver_Process extends DataProcess
+{
+	int numberOfInputs;
+	double result;
+	String equation;
+	Error e;
+	AbstractDataComponent inputsData[], equationData, resultData;
+	
+    @Override
+    public void init() throws ProcessException
+    {
+        try
+        {
+        	equationData = paramData.getComponent("equation");
+        	resultData = outputData.getComponent("result");
+        	numberOfInputs = inputData.getComponentCount();
+        	
+        	for(int i=0; i<numberOfInputs; i++){
+        		inputsData[i] = inputData.getComponent(i);
+        	}
+
+        }
+        catch (Exception e)
+        {
+            throw new ProcessException(ioError, e);
+        }
+    }
+    
+    @Override
+    public void execute() throws ProcessException
+    {
+    	equation = equationData.getData().getStringValue();
+    	if(equation.contains("=")){
+    		int equalSignPosition = equation.indexOf("=");
+    		equation = equation.substring(equalSignPosition);
+    	}
+    	
+    	IMathParser parser = MathParserFactory.create();
+		parser.setExpression(equation);
+
+		try {
+			for(int i = 0; i<numberOfInputs; i++){
+				parser.setVariable(inputsData[i].getName(),inputsData[i].getData().getDoubleValue());
+				result = parser.getValue();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		if(String.valueOf(result).contains("infinity")){
+			throw new ProcessException("The result is infinity, you must have divided by 0.", e);
+		}
+		
+		resultData.getData().setDoubleValue(result);
+		
+    }
+}
