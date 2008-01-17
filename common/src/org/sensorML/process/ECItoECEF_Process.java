@@ -41,7 +41,9 @@ import org.vast.process.*;
  */
 public class ECItoECEF_Process extends DataProcess
 {
-    DataValue ecfX, ecfY, ecfZ, julianTime;
+    protected final static double RTD = 180. / Math.PI;
+    protected final static double DTR = Math.PI / 180.;
+	DataValue ecfX, ecfY, ecfZ, julianTime;
     DataValue eciX, eciY, eciZ;
 
 
@@ -95,18 +97,17 @@ public class ECItoECEF_Process extends DataProcess
         double d__1, d__2, d__3;
 
         /* Local variables */
-        double tsec, tday, gmst, t, omega, tfrac, pi, tu, dat, rtd;
+        double tsec, tday, gmst, t, omega, tfrac, tu, dat;
 
         /*     INPUT IS TIME "secondsSince1970" IN SECONDS AND "TDAY" */
         /*     WHICH IS WHOLE DAYS FROM 1970 JAN 1 0H */
         /*     THE OUTPUT IS GREENWICH HOUR ANGLE IN DEGREES */
         /*     XOMEGA IS ROTATION RATE IN DEGREES/SEC */
-        pi = 3.141592653589793238;
-        rtd = 180. / pi;
 
         /*     FOR COMPATABILITY */
-        tday = (double) ((int) (julianTime.getData().getDoubleValue() / 86400.));
-        tsec = (int) (julianTime.getData().getDoubleValue()) % 86400;
+        double julian = julianTime.getData().getDoubleValue();
+        tday = (double) ((int) (julian / 86400.));
+        tsec = julian - tday*86400;
 
         /*     THE NUMBER OF DAYS FROM THE J2000 EPOCH */
         /*     TO 1970 JAN 1 0H UT1 IS -10957.5 */
@@ -131,14 +132,14 @@ public class ECItoECEF_Process extends DataProcess
         /*     COMPUTE THE GMST AND GHA */
         //  da is earth nutation - currently unused
         double da = 0.0;
-        gmst = gmst + omega * tfrac + da * rtd * 86400. / 360.;
+        gmst = gmst + omega * tfrac + da * RTD * 86400. / 360.;
         gmst = gmst % 86400;
         if (gmst < 0.)
             gmst += 86400.;
         gmst = gmst / 86400. * 360.;
         //ghan = gmst;
         //  returns gha in radians
-        gmst = gmst * Math.PI / 180.0;
+        gmst = gmst * DTR;
         GHA = gmst;
 
         //RotateZ
