@@ -144,7 +144,7 @@ public class SGP4_OrbitalModel_Process extends DataProcess
         double omegao = paramArgOfPerigee.getData().getDoubleValue() * DTR;
         double eo = paramEccentricity.getData().getDoubleValue();
         double xincl = paramInclination.getData().getDoubleValue() * DTR;
-        double xno = paramMeanMotion.getData().getDoubleValue() * 2*Math.PI / 1440; //? not 86400 ?
+        double xno = paramMeanMotion.getData().getDoubleValue() * 2*Math.PI / 1440;
         double bstar = paramBstar.getData().getDoubleValue();
     	
         // Local variables
@@ -417,7 +417,7 @@ public class SGP4_OrbitalModel_Process extends DataProcess
             cosu = temp2 * (cosepw - axn + ayn * esine * temp3);
             sinu = temp2 * (sinepw - ayn - axn * esine * temp3);
 
-            u = getactan(sinu, cosu);
+            u = Math.atan2(sinu, cosu);
             sin2u = sinu * 2. * cosu;
             cos2u = cosu * 2. * cosu - 1.;
             temp = 1. / pl;
@@ -488,55 +488,24 @@ public class SGP4_OrbitalModel_Process extends DataProcess
 
     private double getfmod2p(double x)
     {
-    // System generated locals 
-    double ret_val=0.0;
-
-    // CONSTANTS 
-    double pi = 3.141592653589793238;
-    //double dtr = pi / 180.;
-    //double pi2 = pi / 2;
-    double tpi = pi * 2;
-    //double thpi = pi * 1.5;
-
-    ret_val = x;
-    int i = (int) (ret_val / tpi);
-    ret_val -= i * tpi;
-    if (ret_val < 0.) {
-        ret_val += tpi;
-    	}
-
-    return ret_val;
-    }
-    
-    private double getactan(double sinx, double cosx)
-    {
-
-    double pi = 3.141592653589793238;
-    //double dtr = pi / 180.;
-    double pi2 = pi / 2;
-    double tpi = pi * 2;
-    double thpi = pi * 1.5;
-    //double ret_val = 0.;
-    //double temp=0.;
-
-    if (cosx == 0.){
-        if (sinx == 0.) return 0;
-        if (sinx < 0.) return thpi;
-        return pi2;  //  cosx==0 && sinx>0
-    }
-
-    if (cosx > 0.){
-        if (sinx == 0.) return 0;
-        if (sinx > 0.)  return(Math.atan(sinx/cosx));
-        return(tpi+Math.atan(sinx/cosx));  //  cosx>0 && sinx <0
-    }
-
-    if(cosx < 0.0)
-        return(pi+Math.atan(sinx/cosx));
-
-//    System.out.println("Error:  actan reached impossible case");
-//    System.out.println("sinx, cosx ==> " + sinx + ", " + cosx);
-    return(-9999.0);
+	    // System generated locals 
+	    double ret_val=0.0;
+	
+	    // CONSTANTS 
+	    double pi = 3.141592653589793238;
+	    //double dtr = pi / 180.;
+	    //double pi2 = pi / 2;
+	    double tpi = pi * 2;
+	    //double thpi = pi * 1.5;
+	
+	    ret_val = x;
+	    int i = (int) (ret_val / tpi);
+	    ret_val -= i * tpi;
+	    if (ret_val < 0.) {
+	        ret_val += tpi;
+	    	}
+	
+	    return ret_val;
     }
 
 }
