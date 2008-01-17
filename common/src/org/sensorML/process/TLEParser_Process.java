@@ -206,7 +206,7 @@ public class TLEParser_Process extends DataProcess
      * @param timeRange
      * @return list of TLE objects
      */
-    public List<TLEInfo> readTle(double startTime, double stopTime) throws IOException
+    public List<TLEInfo> readTLEList(double startTime, double stopTime) throws IOException
     {
         List<TLEInfo> tleList = new ArrayList<TLEInfo>();
         
@@ -225,7 +225,7 @@ public class TLEParser_Process extends DataProcess
      * @return
      * @throws IOException
      */
-    protected TLEInfo readNextTLE(double stopTime) throws IOException
+    public TLEInfo readNextTLE(double stopTime) throws IOException
     {
         boolean isLastEntry = readNextEntry();
         if (isLastEntry)
@@ -245,7 +245,7 @@ public class TLEParser_Process extends DataProcess
      * @return
      * @throws IOException
      */
-    protected TLEInfo readTLE(double desiredTime) throws IOException
+    public TLEInfo readTLE(double desiredTime) throws IOException
     {
         boolean isLastEntry = false;
         
@@ -334,7 +334,7 @@ public class TLEParser_Process extends DataProcess
      * @param lineBuffer2
      * @return
      */
-    private TLEInfo parseTLE(String lineBuffer1, String lineBuffer2)
+    protected TLEInfo parseTLE(String lineBuffer1, String lineBuffer2)
     {
         TLEInfo tle = new TLEInfo();
 
