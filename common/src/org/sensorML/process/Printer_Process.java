@@ -116,6 +116,13 @@ public class Printer_Process extends DataProcess
     	for(int i=0; i<InputCount; i++){
     		outputData.getComponent(i).setData(inputData.getComponent(i).getData());
     	}
+    	DataComponent a = InputComponents[0];
+    	System.out.println(a.getComponentCount());
+    	DataComponent b = InputComponents[0].getComponent(0);
+    	System.out.println(b.getComponentCount());
+    	System.out.println(b.getComponentCount());
+    	DataComponent c = InputComponents[0].getComponent(0).getComponent(0);
+    	System.out.println(c.getComponentCount());
     	
     	printHeader();
     	printLog.flush();
