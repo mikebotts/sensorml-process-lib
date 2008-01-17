@@ -37,8 +37,8 @@ import org.vast.process.*;
  * </p>
  *
  * <p>Copyright (c) 2007</p>
- * @author Alexandre Robin
- * @date May 2, 2007
+ * @author Gregoire Berthiau
+ * @date Nov 24, 2007
  * @version 1.0
  */
 public class Atomizer_Process extends DataProcess
