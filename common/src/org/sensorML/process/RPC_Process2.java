@@ -76,7 +76,8 @@ public class RPC_Process2 extends DataProcess
     		outputY = (DataValue) outputData.getComponent("image_location").getComponent("y");
     		
     		//Parameter mappings
-    		DataArray rpcParams = (DataArray) paramData.getComponent("rpc_parameter_series"); 
+    		DataArray rpcParams = (DataArray) paramData.getComponent("rpc_parameter_series");
+    		//System.out.println(rpcParams.getComponentCount());
     		rpcParamSet = (DataGroup) rpcParams.getComponent("rpc_parameter_set"); 
     		
        }
