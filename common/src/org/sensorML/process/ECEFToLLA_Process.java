@@ -83,8 +83,8 @@ public class ECEFToLLA_Process extends DataProcess
     	
         double[] lla = MapProjection.ECFtoLLA(x, y, z, new Datum());
     	
-    	latData.getData().setDoubleValue(lla[0]);
-        lonData.getData().setDoubleValue(lla[1]);
+        lonData.getData().setDoubleValue(lla[0]);
+        latData.getData().setDoubleValue(lla[1]);        
         altData.getData().setDoubleValue(lla[2]);
 
     }
