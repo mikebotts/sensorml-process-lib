@@ -21,10 +21,10 @@
 package org.sensorML.process;
 
 import org.vast.process.*;
-import org.vast.cdm.common.DataComponent;
 import org.vast.data.*;
 import org.vast.math.*;
 import org.vast.physics.*;
+import org.vast.sweCommon.SweConstants;
 
 
 /**
@@ -81,7 +81,7 @@ public class LLAToECEF_Process extends DataProcess
             	rotationOrder = rotOrder.toCharArray();
             
             // set up upAxis and northAxis depending on the frame (ENU, NED, etc...)
-            String refFrame = (String)orientationData.getProperty(DataComponent.REF_FRAME);
+            String refFrame = (String)orientationData.getProperty(SweConstants.REF_FRAME);
             if (refFrame != null)
             {
             	if (refFrame.contains("NED"))
