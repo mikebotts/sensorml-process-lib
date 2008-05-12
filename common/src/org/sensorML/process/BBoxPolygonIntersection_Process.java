@@ -94,11 +94,13 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
    public void execute() throws ProcessException {
 	   
 	// Set up the polygon against which line intersection will be tested
-	   	double URLongitude = URLongitudeData.getData().getDoubleValue();
-	   	double URLatitude = URLatitudeData.getData().getDoubleValue();
-	   	double LLLongitude = LLLongitudeData.getData().getDoubleValue();
-	   	double LLLatitude = LLLatitudeData.getData().getDoubleValue();
+	   	double URLongitude = (URLongitudeData.getData().getDoubleValue()) / 180 * Math.PI;
+	   	double URLatitude = (URLatitudeData.getData().getDoubleValue()) / 180 * Math.PI;
+	   	double LLLongitude = (LLLongitudeData.getData().getDoubleValue()) / 180 * Math.PI;
+	   	double LLLatitude = (LLLatitudeData.getData().getDoubleValue()) / 180 * Math.PI;
 	   
+	   	int numberOfFollowingIntersection = 0;
+	   	
 	   	GeometryFactory geomFactoryBB = new GeometryFactory();
 		Coordinate[] coordinatesBB = new Coordinate[] {
 				new Coordinate(LLLatitude, LLLongitude), new Coordinate(LLLatitude, URLongitude),
@@ -121,7 +123,7 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
 	    d = i%(numberOfLines*numberOfPointsPerLine);
 	    b = ((int)Math.floor((double)i/2))%(2*numberOfPointsPerLine);
 	    c = ((int)Math.floor((double)i/2/numberOfPointsPerLine))%(2*numberOfPointsPerLine*numberOfLines);
-	    System.out.println(i+"   "+a+"   "+b+"   "+c+"    "+d+"   "+elements[i]);
+	    //System.out.println(i+"   "+a+"   "+b+"   "+c+"    "+d+"   "+elements[i]);
 	    points[w][a] = elements[i];
 	    if(a==1){
 	    	w++;
@@ -133,7 +135,8 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
 	    Coordinate[] coordinates = new Coordinate[2*numberOfPointsPerLine+1];
 
 	    Geometry C = null, intersection = null;
-		
+	    intersectionExists = false;
+	    
 	    for(int j=0; j<numberOfLines-1; j++){
 	    	for(int i=0; i<2*numberOfPointsPerLine; i++){
 	    		if(i<numberOfPointsPerLine-1){
@@ -151,16 +154,19 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
 
 	    	if(swath.intersects(boundingBox)){
 	    		intersectionExists = true;
+	    		numberOfFollowingIntersection = numberOfFollowingIntersection++;
 	    		if(j==0){
 	    			intersection = swath.intersection(boundingBox);
 		    		C = intersection;
 		    	}
 	    		intersection = swath.intersection(boundingBox);
-	    		C = C.union(intersection);
+	    		if(numberOfFollowingIntersection==0){
+	    			C = intersection;
+	    		}
 	    		}	    	
 	    	}
 	    
-	    intersectionExists = false;
+	    
 	    if (intersectionExists) {
 			C = C.union(intersection);
 			numberOfPointsData.getData().setIntValue(C.getNumPoints());
