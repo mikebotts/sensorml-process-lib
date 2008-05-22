@@ -35,9 +35,10 @@ import org.vast.cdm.common.DataStreamParser;
 import org.vast.cdm.common.DataType;
 import org.vast.data.*;
 import org.vast.math.Vector3d;
+import org.vast.ogc.OGCRegistry;
 import org.vast.ows.OWSUtils;
+import org.vast.ows.om.ObservationStreamReader;
 import org.vast.ows.sos.GetObservationRequest;
-import org.vast.ows.sos.SOSResponseReader;
 import org.vast.ows.util.TimeInfo;
 import org.vast.physics.TimeExtent;
 import org.vast.process.*;
@@ -240,9 +241,6 @@ public class SOS_Process extends DataProcess implements DataHandler
                             // init request using spatial + time extent
                             initRequest();
                             
-                            // create reader
-                            SOSResponseReader reader = new SOSResponseReader();
-                            
                             // select request type (post or get)
                             boolean usePost = (request.getPostServer() != null);
                             //System.out.println(owsUtils.buildURLQuery(query));
@@ -250,6 +248,10 @@ public class SOS_Process extends DataProcess implements DataHandler
                             	dataStream = owsUtils.sendPostRequest(request).getInputStream();
                             else 
                             	dataStream = owsUtils.sendGetRequest(request).getInputStream();
+                            
+                            // create the right reader
+                            ObservationStreamReader reader =
+                                (ObservationStreamReader)OGCRegistry.createReader("OM", "ObservationStream", request.getVersion());
                             
                             // parse response
                             reader.parse(dataStream);
