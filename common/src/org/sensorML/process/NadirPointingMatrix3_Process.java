@@ -186,14 +186,4 @@ public class NadirPointingMatrix3_Process extends DataProcess
         for (int i=0; i<9; i++)
             data.setDoubleValue(i, newMatrix.getElement(i/3, i%3));
     }
-    
-    
-    public static Vector3d getEcfVectorToNorth(Vector3d ecfPosition)
-    {
-        double polarRadius = (new Datum()).polarRadius;
-        Vector3d northPole = new Vector3d(0.0, 0.0, polarRadius);
-        Vector3d res = new Vector3d();
-        res.sub(northPole, ecfPosition);
-        return res;
-    }
 }
