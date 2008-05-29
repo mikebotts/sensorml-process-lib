@@ -23,7 +23,7 @@
  
 ******************************* END LICENSE BLOCK ***************************/
 
-package org.sensorML.process;
+package org.vast.stt.process;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,6 +167,7 @@ public class SOS_Process extends DataProcess implements DataHandler
             request.setOffering(offeringID);
             
             // procedure IDs
+            request.getProcedures().clear();
             if (sosParams.existComponent("procedures"))
             {
                 procedures = sosParams.getComponent("procedures").getData().getStringValue();            
@@ -176,6 +177,7 @@ public class SOS_Process extends DataProcess implements DataHandler
             }
             
             // observable IDs
+            request.getObservables().clear();
             if (sosParams.existComponent("observables"))
             {
             	observables = sosParams.getComponent("observables").getData().getStringValue();
@@ -191,8 +193,7 @@ public class SOS_Process extends DataProcess implements DataHandler
             // request name
             request.setOperation("GetObservation");
             
-            checkData();
-            
+            checkData();            
     }
     
     catch (Exception e)
@@ -206,7 +207,7 @@ public class SOS_Process extends DataProcess implements DataHandler
     @Override
     public void reset() throws ProcessException
     {
-        endRequest();
+        endRequest();        
         outputReady = false;
         done = true;        
         error = false;        
@@ -225,11 +226,12 @@ public class SOS_Process extends DataProcess implements DataHandler
     @Override
     public void execute() throws ProcessException
     {
-    	setRequest();
-       // get input variables only if previous request is done
+    	// get input variables only if previous request is done
         if (done)
         {
+            setRequest();
             final DataHandler handler = this;
+            
             Runnable initiateRequest = new Runnable()
             {
                 public void run()
@@ -249,11 +251,10 @@ public class SOS_Process extends DataProcess implements DataHandler
                             else 
                             	dataStream = owsUtils.sendGetRequest(request).getInputStream();
                             
-                            // create the right reader
-                            ObservationStreamReader reader =
-                                (ObservationStreamReader)OGCRegistry.createReader("OM", "ObservationStream", request.getVersion());
-                            
-                            // parse response
+                            // create reader and parse response
+                            ObservationStreamReader reader = (ObservationStreamReader)OGCRegistry.createReader("OM", "ObservationStream", request.getVersion());
+
+                            // parse XML header
                             reader.parse(dataStream);
                             dataParser = reader.getDataParser();
                             dataParser.setDataHandler(handler);
@@ -263,7 +264,7 @@ public class SOS_Process extends DataProcess implements DataHandler
                             obsProcedure = reader.getProcedure();
                             obsLocation = reader.getFoiLocation();
                             
-                            // start parsing
+                            // parse data stream
                             dataParser.parse(reader.getDataStream());
                             done = true;
                         }
