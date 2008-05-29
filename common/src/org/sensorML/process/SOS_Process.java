@@ -23,7 +23,7 @@
  
 ******************************* END LICENSE BLOCK ***************************/
 
-package org.vast.stt.process;
+package org.sensorML.process;
 
 import java.io.IOException;
 import java.io.InputStream;
