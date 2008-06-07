@@ -75,7 +75,7 @@ public class SOS_Process extends DataProcess implements DataHandler
     protected OWSUtils owsUtils;
     protected DataStreamParser dataParser;
     protected Thread workerThread;
-    protected boolean hasTime, hasBbox; 
+    protected boolean hasTime, hasBbox, usePost; 
     protected boolean done, error, outputReady;
     protected Exception lastException;
     protected Hashtable<DataComponent, UnitConverter> converters;
@@ -154,7 +154,10 @@ public class SOS_Process extends DataProcess implements DataHandler
             url = sosParams.getComponent("endPoint").getData().getStringValue();
             requestMethod = sosParams.getComponent("requestMethod").getData().getStringValue();
             if (requestMethod.equalsIgnoreCase("post"))
+            {
                 request.setPostServer(url);
+                usePost = true;
+            }
             else
                 request.setGetServer(url);
             
@@ -209,8 +212,8 @@ public class SOS_Process extends DataProcess implements DataHandler
     {
         endRequest();        
         outputReady = false;
-        done = true;        
-        error = false;        
+        done = true;      
+        error = false;
         lastException = null;
         for (int i=0; i<inputConnections.size(); i++)
             inputConnections.get(i).setNeeded(true);
@@ -244,8 +247,6 @@ public class SOS_Process extends DataProcess implements DataHandler
                             initRequest();
                             
                             // select request type (post or get)
-                            boolean usePost = (request.getPostServer() != null);
-                            //System.out.println(owsUtils.buildURLQuery(query));
                             if(usePost)
                             	dataStream = owsUtils.sendPostRequest(request).getInputStream();
                             else 
