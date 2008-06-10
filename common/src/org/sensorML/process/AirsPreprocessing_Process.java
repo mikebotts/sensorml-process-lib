@@ -174,7 +174,7 @@ public class AirsPreprocessing_Process extends DataProcess
 		
 		 		
 		PrintWriter printLand = null;		
-		File land = new File("C:/Data/Airs/essaiAIRSLand.txt");
+		File land = new File("C:/Data/Airs/PreprocessedAirsLand.txt");
 		try {
 			printLand = new PrintWriter(land);
 		} catch (FileNotFoundException e) {
@@ -184,7 +184,7 @@ public class AirsPreprocessing_Process extends DataProcess
 
 		
 		PrintWriter printWater = null;		
-		File water = new File("C:/Data/Airs/essaiAIRSWater.txt");
+		File water = new File("C:/Data/Airs/PreprocessedAirsWater.txt");
 		try {
 			printWater = new PrintWriter(water);
 		} catch (FileNotFoundException e) {
@@ -408,7 +408,7 @@ for(int i=0; i<30; i++){
     		   StringBuilder sbW1 = new StringBuilder();
      		   // Send all output to the Appendable object sb    write(15,'(6f15.4)')
      		    Formatter formatterW1 = new Formatter(sbW1, Locale.US);
-     		    formatterW1.format(Locale.US, "%12d", n);
+     		    formatterW1.format(Locale.US, "%12d", m);
      		    formatterW1.format(Locale.US, "%12d", 54);
      		    formatterW1.format(Locale.US, "%11.4f", latitude[i][j]);
      		    formatterW1.format(Locale.US, "%15.4f", longitude[i][j]);
