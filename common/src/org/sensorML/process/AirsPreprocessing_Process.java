@@ -25,7 +25,11 @@
 
 package org.sensorML.process;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
+
 import org.vast.cdm.common.DataBlock;
 import org.vast.data.*;
 import org.vast.process.*;
@@ -47,9 +51,14 @@ import org.vast.process.*;
  */
 public class AirsPreprocessing_Process extends DataProcess
 {
-	int ArrayDataIndex, ValueDataIndex, ArrayElementCount, i=0;
-	AbstractDataComponent statusData, AirsData;    
+	int  scanLineNumber;
+	AbstractDataComponent statusData, scanLineData, AirsData;    
 	DataBlock AirsDataBlock;
+	double startTime, stopTime;
+	double[][] latitude, longitude;
+	float[][] landFrac, topog, time, PSurfStd, PBest;
+	float[][][] TAirSup, H2OCDSup;
+	Calendar cal;
 	
     @Override
     public void init() throws ProcessException
@@ -58,7 +67,6 @@ public class AirsPreprocessing_Process extends DataProcess
         {
         	AirsData = inputData.getComponent(0);
         	statusData = outputData.getComponent("airsPreprocessingStatus");        	
-
         }
         catch (Exception e)
         {
@@ -69,21 +77,122 @@ public class AirsPreprocessing_Process extends DataProcess
     @Override
     public void execute() throws ProcessException
     {
-    	DataBlock AirsDataBlock = AirsData.getData();
+    	int m = 3;
+    	DataBlock AirsDataBlock = AirsData.getData(); 
+    	startTime = AirsDataBlock.getDoubleValue(0);
+    	stopTime = AirsDataBlock.getDoubleValue(1);
+    	scanLineNumber = (int)AirsDataBlock.getDoubleValue(2);
     	
-    	for(int i=0; i<AirsData.getData().getAtomCount(); i++){  		
-    			System.out.println(i + "     " + AirsData.getData().getDoubleValue(i));
+    	double[][] latitude = new double[30][scanLineNumber], longitude = new double[30][scanLineNumber];
+    	float[][] landFrac = new float[30][scanLineNumber], topog = new float[30][scanLineNumber];
+    	float[][] time = new float[30][scanLineNumber], PSurfStd = new float[30][scanLineNumber], PBest = new float[30][scanLineNumber];
+    	float[][][] TAirSup = new float[100][30][scanLineNumber], H2OCDSup = new float[100][30][scanLineNumber];
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			latitude[i][j] = AirsDataBlock.getDoubleValue(m);
+    			m++;
+    		}
     	}
-    	//System.out.println("tree");
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			longitude[i][j] = AirsDataBlock.getFloatValue(m);
+    			m++;
+    		}
+    	}
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			time[i][j] = AirsDataBlock.getFloatValue(m);
+    			m++;
+    		}
+    	}
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			topog[i][j] = AirsDataBlock.getFloatValue(m);
+    			m++;
+    		}
+    	}
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			landFrac[i][j] = AirsDataBlock.getFloatValue(m);
+    			m++;
+    		}
+    	}
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			PSurfStd[i][j] = AirsDataBlock.getFloatValue(m);
+    			m++;
+    		}
+    	}
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			PBest[i][j] = AirsDataBlock.getFloatValue(m);
+    			m++;
+    		}
+    	}
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			for(int k=0; k<100; k++){
+    				TAirSup[k][i][j] = AirsDataBlock.getFloatValue(m);
+    				m++;
+    			}
+    		}
+    	}
+    	
+    	for(int i=0; i<30; i++){
+    		for(int j=0; j<scanLineNumber; j++){
+    			for(int k=0; k<100; k++){
+    				H2OCDSup[k][i][j] = AirsDataBlock.getFloatValue(m);
+    				m++;
+    			}
+    		}
+    	}
+    
+    	cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT"));
+    	cal.setTimeInMillis((long)(startTime*1000.00));
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int minute = cal.get(Calendar.MINUTE);
+    	
+    	processAndWriteData(latitude, longitude, landFrac, PSurfStd, topog, PBest, TAirSup, H2OCDSup,
+    			hour, minute);
+    	
+    	statusData.getData().setStringValue("completed");
     	
      } 	 
 
 
 	public static void processAndWriteData(double[][] latitude, double[][] longitude, float[][] landfrac,
-			float[][] psurf, float[][] elev, int[][] plevmax, float[][][] tprofK, float[][][] wcd,
+			float[][] psurf, float[][] elev, float[][] plevmax, float[][][] tprofK, float[][][] wcd,
 			int hour, int minute) {
 		
-		  
+		 		
+		PrintWriter printLand = null;		
+		File land = new File("C:/Data/Airs/essaiAIRSLand.txt");
+		try {
+			printLand = new PrintWriter(land);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		PrintWriter printWater = null;		
+		File water = new File("C:/Data/Airs/essaiAIRSWater.txt");
+		try {
+			printWater = new PrintWriter(water);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 /////////////////  inputs  originally read from files  //////////////////////
 
 //   double[][] latitude = new double[30][45];
@@ -101,8 +210,6 @@ public class AirsPreprocessing_Process extends DataProcess
 
 int numberOfScanLines = latitude[1].length;		
 		
-int[] pobs = new int[100];
-int[][] n = new int[30][numberOfScanLines];
 int[][] counter = new int[30][numberOfScanLines];
 double[][][] tprof = new double[100][30][numberOfScanLines];
 double[][][] LCDd = new double[100][30][numberOfScanLines];
@@ -113,17 +220,24 @@ double[][][] vap_pres = new double[100][30][numberOfScanLines];
 double[][][] tdprof = new double[100][30][numberOfScanLines];
 double[][][] hght = new double[100][30][numberOfScanLines];
 
-//int[] pobs;
-int x = 0;
-while (x==12){
-//readf,12,a,b
-int a=0, b=0, dummy=a;
-pobs[x]=b;
-x=x+1;
-}
-
 double nobs_w=0;
 double nobs_l=0;
+
+double [] pobs = {0.01610000059, 0.03840000182, 0.07689999789, 0.136999995, 0.224399999, 
+		0.345400006, 0.506399989, 0.713999987, 0.975300014, 1.29719996, 1.68719995, 
+		2.1526000, 2.70090008, 3.33979988, 4.07700014, 4.92040014, 5.87760019, 6.95669985, 
+		8.16549969, 9.51189995, 11.0038004, 12.6492004, 14.4559002, 16.4318008, 18.5846996, 
+		20.9223995, 23.4526005, 26.1828995, 29.1210003, 32.2743988, 35.6505013, 39.2565994, 
+		43.1001015, 47.1882019, 51.5278015, 56.1259995, 60.9894981, 66.1252975, 71.5398026, 
+		77.2396011, 83.2310028, 89.520401, 96.1138, 103.017197, 110.236603, 117.777496, 
+		125.645599, 133.846207, 142.384796, 151.266403, 160.495895, 170.0784, 180.018295, 
+		190.320297, 200.988693, 212.027695, 223.441498, 235.233795, 247.408493, 259.969086, 
+		272.919098, 286.261688, 300., 314.136902, 328.675293, 343.617615, 358.966492, 
+		374.724091, 390.892609, 407.473785, 424.469788, 441.881897, 459.711792, 477.960693, 
+		496.629791, 515.719971, 535.232178, 555.16687, 575.52478, 596.306213, 617.51123, 
+		639.139771, 661.192017, 683.667297, 706.56543, 729.885681, 753.627502, 777.789673, 
+		802.371399, 827.371277, 852.788025, 878.620117, 904.865906, 931.523621, 958.591125, 
+		986.066589, 1013.94757, 1042.2319, 1070.91699, 1100};
 
 
     // printf,90,hour,minute
@@ -143,7 +257,7 @@ for(int i=0; i<30; i++){
 
 //             printf,70,latitude(i,j),longitude(i,j),plevmax(i,j)
 
-       for(int k=0; k<100; k++){ 
+       for(int k=1; k<100; k++){ 
     	   
     	   l=k-1;
     	   if(tprofK[k][i][j]!=-9999){
@@ -156,7 +270,7 @@ for(int i=0; i<30; i++){
     	   if(wcd[k][i][j]!=-9999){
 
 //		First calculate the total air layer column density (LCD)
-    		   LCDt[k][i][j] = 1000.0 * (((pobs[k] - pobs[l]) * avogandro) / (float)(mmd * go));
+    		   LCDt[k][i][j] = 1000.0 * (((pobs[k] - pobs[l]) * avogandro) / (double)(mmd * go));
 
 //		Subtract the LCD of water (from the L2 profiles) to get dry air LCD
     		   LCDd[k][i][j] = LCDt[k][i][j] - wcd[k][i][j];
@@ -222,21 +336,57 @@ for(int i=0; i<30; i++){
  }
 }
 
+String codeLand, codeWater;
+int n = 0, m = 0;
+
 for(int i=0; i<30; i++){
  for(int j=0; j<numberOfScanLines; j++){
        if(plevmax[i][j] >= 100.0){
     	   if(landfrac[i][j] == 0.0){
     		   
     		   nobs_w = nobs_w + 1;
-
-//         printf,20,'54',latitude(i,j),longitude(i,j),elev(i,j)
-       
-       		   for(int k=43; k<96; k++){
+    		   
+    		   codeLand = "A000"+ Integer.toString(n);
+    		   if(n>9){
+    			   codeLand = "A00"+ Integer.toString(n);
+    		   }
+    		   if(n>99){
+    			   codeLand = "A0"+ Integer.toString(n);
+    		   }
+    		   if(n>999){
+    			   codeLand = "A"+ Integer.toString(n);
+    		   }
+    		      		   
+    		   StringBuilder sbL1 = new StringBuilder();
+     		   // Send all output to the Appendable object sb    write(15,'(6f15.4)')
+     		    Formatter formatterL1 = new Formatter(sbL1, Locale.US);
+     		    formatterL1.format(Locale.US, "%12d", n);
+     		    formatterL1.format(Locale.US, "%12d", 54);
+     		    formatterL1.format(Locale.US, "%11.4f", latitude[i][j]);
+     		    formatterL1.format(Locale.US, "%15.4f", longitude[i][j]);
+     		    formatterL1.format(Locale.US, "%15.0f", elev[i][j]);
+     		    String elementL1 = formatterL1.toString();
+    		   printLand.println(elementL1 + "          " + codeLand);
+    		   n++;
+    		   
+       		   for(int k=96; k>42; k--){
        		   	   if (pobs[k] >= plevmax[i][j]){
        		   	   		hght[k][i][j]=-999;
        		   	   		tprof[k][i][j]=-999;
        		   	   		tdprof[k][i][j]=-999;
        		       }
+       		   	   
+       		   	StringBuilder sbL2 = new StringBuilder();
+     		   // Send all output to the Appendable object sb    write(15,'(6f15.4)')
+     		    Formatter formatterL2 = new Formatter(sbL2, Locale.US);
+     		    formatterL2.format(Locale.US, "%15.4f", hght[k][i][j]);
+     		    formatterL2.format(Locale.US, "%15.4f", pobs[k]);
+     		    formatterL2.format(Locale.US, "%15.4f", tprof[k][i][j]);
+     		    formatterL2.format(Locale.US, "%15.4f", tdprof[k][i][j]);
+     		    String elementL2 = formatterL2.toString();
+     		   
+       		   	printLand.println(elementL2 + "      -999.0000      -999.0000");
+   		   
    //    		   	   		printf,20,pobs(k),hght(k,i,j),tprof(k,i,j),tdprof(k,i,j)
        		   }
 
@@ -244,15 +394,50 @@ for(int i=0; i<30; i++){
     	   if(landfrac[i][j] != 0.0){
     		   nobs_l = nobs_l + 1;
 
+    		   codeWater = "A000"+ Integer.toString(m);
+    		   if(n>9){
+    			   codeWater = "A00"+ Integer.toString(m);
+    		   }
+    		   if(n>99){
+    			   codeWater = "A0"+ Integer.toString(m);
+    		   }
+    		   if(n>999){
+    			   codeWater = "A"+ Integer.toString(m);
+    		   }
+    		   
+    		   StringBuilder sbW1 = new StringBuilder();
+     		   // Send all output to the Appendable object sb    write(15,'(6f15.4)')
+     		    Formatter formatterW1 = new Formatter(sbW1, Locale.US);
+     		    formatterW1.format(Locale.US, "%12d", n);
+     		    formatterW1.format(Locale.US, "%12d", 54);
+     		    formatterW1.format(Locale.US, "%11.4f", latitude[i][j]);
+     		    formatterW1.format(Locale.US, "%15.4f", longitude[i][j]);
+     		    formatterW1.format(Locale.US, "%15.0f", elev[i][j]);
+     		    String elementW1 = formatterW1.toString();
+    		   printWater.println(elementW1 + "          " + codeWater);
+    		   m++;
+    		   
 //              printf,25,'54',latitude(i,j),longitude(i,j),elev(i,j)
 
 //              for k=43,loop_end do begin
-    		   for(int k=43; k<96; k++){
+    		   for(int k=96; k>42; k--){
     			   if (pobs[k] >= plevmax[i][j]){
     				   hght[k][i][j]=-999;
     				   tprof[k][i][j]=-999;
     				   tdprof[k][i][j]=-999;
     			   }
+    			   
+    			   StringBuilder sbW2 = new StringBuilder();
+         		   // Send all output to the Appendable object sb    write(15,'(6f15.4)')
+         		    Formatter formatterW2 = new Formatter(sbW2, Locale.US);
+         		    formatterW2.format(Locale.US, "%15.4f", hght[k][i][j]);
+         		    formatterW2.format(Locale.US, "%15.4f", pobs[k]);
+         		    formatterW2.format(Locale.US, "%15.4f", tprof[k][i][j]);
+         		    formatterW2.format(Locale.US, "%15.4f", tdprof[k][i][j]);
+         		    String elementW2 = formatterW2.toString();
+         		   
+           		   	printWater.println(elementW2 + "      -999.0000      -999.0000");
+    			   
 //          printf,25,pobs(k),hght(k,i,j),tprof(k,i,j),tdprof(k,i,j)
     		   }
     	   }
@@ -262,6 +447,8 @@ for(int i=0; i<30; i++){
 
 }
 
+printWater.flush();
+printLand.flush();
 
 		}
 	
