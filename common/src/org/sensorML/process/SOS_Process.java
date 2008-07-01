@@ -40,11 +40,11 @@ import org.vast.ows.OWSUtils;
 import org.vast.ows.om.ObservationStreamReader;
 import org.vast.ows.sos.GetObservationRequest;
 import org.vast.ows.util.TimeInfo;
-import org.vast.physics.TimeExtent;
 import org.vast.process.*;
 import org.vast.sweCommon.SweConstants;
 import org.vast.unit.UnitConversion;
 import org.vast.unit.UnitConverter;
+import org.vast.util.TimeExtent;
 
 
 /**
