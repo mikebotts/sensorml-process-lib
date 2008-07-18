@@ -42,9 +42,10 @@ import org.vast.data.*;
  */
 public class RayIntersectEllipsoid2_Process extends DataProcess
 {
-    protected DataValue xInput, yInput, zInput;
+    protected DataValue xInput, yInput, zInput, heightAboveEllipsoidData;
     protected DataValue dxInput, dyInput, dzInput;
     protected DataValue xOutput, yOutput, zOutput;
+    protected double heightAboveEllipsoid = 0;
     protected double[] R = new double[3];
     protected double[] U0 = new double[3];
     protected double[] U1 = new double[3];
@@ -60,9 +61,8 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
     public void init() throws ProcessException
     {
     	try
-        {
-    	    // get handle to ray origin vector data
-            DataGroup rayOriginData = (DataGroup)inputData.getComponent("rayOrigin");
+        {	// get handle to ray origin vector data
+    	    DataGroup rayOriginData = (DataGroup)inputData.getComponent("rayOrigin");
             xInput = (DataValue)rayOriginData.getComponent("x");           
             yInput = (DataValue)rayOriginData.getComponent("y");         
             zInput = (DataValue)rayOriginData.getComponent("z");
@@ -79,19 +79,26 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
             yOutput = (DataValue)intersectionData.getComponent("y");         
             zOutput = (DataValue)intersectionData.getComponent("z");
             
+            // get handle to  heightAboveEllipsoid data
+    		DataValue heightAboveEllipsoidData = (DataValue)paramData.getComponent("heightAboveEllipsoid");
+    		if (heightAboveEllipsoidData != null)
+    		{
+                heightAboveEllipsoid = heightAboveEllipsoidData.getData().getDoubleValue();
+            }
+            
             // read ellipsoid datum (or defaults to WGS84 if none provided)
             DataGroup datumData = (DataGroup)paramData.getComponent("datum");
             if (datumData != null)
             {
-                R[0] = datumData.getComponent("xRadius").getData().getDoubleValue();
-                R[1] = datumData.getComponent("yRadius").getData().getDoubleValue();
-                R[2] = datumData.getComponent("zRadius").getData().getDoubleValue();
+                R[0] = datumData.getComponent("xRadius").getData().getDoubleValue() + heightAboveEllipsoid;
+                R[1] = datumData.getComponent("yRadius").getData().getDoubleValue() + heightAboveEllipsoid;
+                R[2] = datumData.getComponent("zRadius").getData().getDoubleValue()+ heightAboveEllipsoid;
             }
             else
             {
-                R[0] = 6378137.0;
+                R[0] = 6378137.0 + heightAboveEllipsoid;
                 R[1] = R[0];
-                R[2] = 6356752.3142451795;
+                R[2] = 6356752.3142451795 + heightAboveEllipsoid;
             }
         }
         catch (Exception e)
