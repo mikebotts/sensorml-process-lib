@@ -25,7 +25,7 @@ import org.vast.data.*;
 import org.vast.process.*;
 
 
-public class GridBuilder_Process extends DataProcess
+public class GridBuilderEC_Process extends DataProcess
 {
 	
     private DataGroup groundPoint;
@@ -33,7 +33,7 @@ public class GridBuilder_Process extends DataProcess
     private int elementCount;
     
     
-    public GridBuilder_Process()
+    public GridBuilderEC_Process()
     {
     }
 
