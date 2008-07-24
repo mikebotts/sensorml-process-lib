@@ -141,30 +141,8 @@ public class TLEParser2_Process extends DataProcess
             
             // Get TLE file name
             tleFileName = paramData.getComponent("tleDataUrl").getData().getStringValue();
-            String tleURL = "http://vast.uah.edu/VASTData/satdata/tledata/" + tleFileName;
-            tleDirPath = "C:/SensorML components/TleData/";
+            tleDirPath = "C:/TleData/";
             tlePath = tleDirPath + tleFileName; 
-            
-            File tleDir = new File(tleDirPath);
-            boolean DirExist = tleDir.isDirectory();
-            
-            File tleFile = new File(tlePath);
-            
-            if(DirExist){	
-            	boolean FileExist = tleFile.exists();
-            	System.out.println(FileExist);
-            	if(!FileExist){
-            		downloadFromUrl(tleURL, tlePath,(long)0);	
-            	}
-            	if(FileExist){
-            		downloadFromUrl(tleURL, tlePath, tleFile.length());            		     			
-            	}
-            }
-            
-            if(!DirExist){
-            	tleDir.mkdirs();
-            	downloadFromUrl(tleURL, tlePath, (long)0);
-            } 
             
         }
         catch (Exception e)
