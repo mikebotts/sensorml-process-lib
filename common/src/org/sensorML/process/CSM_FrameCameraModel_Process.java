@@ -26,12 +26,13 @@
 package org.sensorML.process;
 
 import org.vast.data.*;
+import org.vast.math.Vector3d;
 import org.vast.process.*;
 
 
 /**
  * <p><b>Title:</b><br/>
- * BBoxandPolygonIntersection_Process
+ * CSM_FrameCameraModel_Process
  * </p>
  *
  * <p><b>Description:</b><br/>
@@ -40,7 +41,7 @@ import org.vast.process.*;
  *
  * <p>Copyright (c) 2007</p>
  * @author Gregoire Berthiau
- * @date Jul 22, 2008
+ * @date July 22, 2008
  * @version 1.0
  */
 public class CSM_FrameCameraModel_Process extends DataProcess {
@@ -167,12 +168,21 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
 
 	  x = x2;
 	  y = y2;
-	  z = focalLength;
+	  z = focalLength;   
+	  
+	  // normalize the look vector (meb - 2007.07.24)
+	  Vector3d v = new Vector3d(x,y,z);
+	  v.normalize();
       
-	// get the value to the outputs
-	  xData.getData().setDoubleValue(x);
-	  yData.getData().setDoubleValue(y);
-	  zData.getData().setDoubleValue(z);
+	  xData.getData().setDoubleValue(v.x);
+	  yData.getData().setDoubleValue(v.y);
+	  zData.getData().setDoubleValue(v.z);
+
+	  
+	  // get the value to the outputs
+//	  xData.getData().setDoubleValue(x);
+//	  yData.getData().setDoubleValue(y);
+//	  zData.getData().setDoubleValue(z);
 	  
 	 }
 
