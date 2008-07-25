@@ -58,19 +58,29 @@ public class SRTMUtil {
 		file = new RandomAccessFile(filepath, "r");
 	}
 
+	//  Convenience method to do everything in one call.
+	//  If optimization is needed, don't use this method, but do the steps individually
 	public double getInterpolatedElevation(double lat, double lon) throws IOException{
 		//  Is lat lon actually in the currently opened file?
-		//  if !fileContains(lat, lon)
-		//     bitchAndMoan();
+		openFile(lat,lon);
 		//  Compute the 4 corners containing this lat lon
 		Vector3d [] corners = getCorners(lat, lon);
 		BilinearInterpolation bi = new BilinearInterpolation();
 		bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
-		double result = bi.interpolate(lat, lon);
+		double result = bi.interpolate(lon, lat);
 
 		return result;
 	}
 
+	private boolean fileContains(double lat, double lon){
+		if(lat < lat0 || lat > lat0 + 1.0)
+			return false;
+		if(lon < lon0 || lon > lon0 + 1.0)
+			return false;
+		
+		return true;
+	}
+	
 	public Vector3d [] getCorners(double lat, double lon) throws IOException {
 		Vector3d [] corners = new Vector3d[4];
 		
@@ -185,12 +195,13 @@ public class SRTMUtil {
 		SRTMUtil util = new SRTMUtil();
 //		util.speedTest(10000);
 		double lat = 35.0, lon = -115.0;
-		util.openFile(lat, lon);
 		long t1 = System.currentTimeMillis();
-		Vector3d[] corners = util.getCorners(lat, lon);
-		BilinearInterpolation bi = new BilinearInterpolation();
-		bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
-		System.err.println("Rseult = " + bi.interpolate(lon, lat));
+		double result = util.getInterpolatedElevation(lat, lon);
+//		Vector3d[] corners = util.getCorners(lat, lon);
+//		BilinearInterpolation bi = new BilinearInterpolation();
+//		bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
+//		double result = bi.interpolate(lon, lat);
+		System.err.println("Rseult = " + result);
 		long t2 = System.currentTimeMillis();
 		System.err.println("Took " + (t2 -t1) + " millis");
 		//double result = util.getInterpolatedElevation(lat, lon);

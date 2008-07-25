@@ -99,17 +99,14 @@ public class SRTMElevationProcess extends DataProcess {
 		 *    SRTM lookup and interpolation      *
 		 *****************************************/
 		SRTMUtil util = new SRTMUtil();
-		Vector3d[] corners;
+		double elevOut;
 		try {
 			util.openFile(lat_in, lon_in);
-			corners = util.getCorners(lat_in, lon_in);
+			elevOut = util.getInterpolatedElevation(lat_in, lon_in);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new ProcessException(e.getMessage(), e);
 		}
-		BilinearInterpolation bi = new BilinearInterpolation();
-		bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
-		double elevOut = bi.interpolate(lon_in, lat_in);
 
 		// set values for output components
 		CoverageOut_lon.getData().setDoubleValue(lon_in);
