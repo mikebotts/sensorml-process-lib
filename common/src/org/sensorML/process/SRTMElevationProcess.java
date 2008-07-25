@@ -4,11 +4,10 @@ package org.sensorML.process;
 
 import java.io.IOException;
 
-import javax.vecmath.Vector3d;
-
-import org.vast.data.*;
-import org.vast.math.BilinearInterpolation;
-import org.vast.process.*;
+import org.vast.data.DataGroup;
+import org.vast.data.DataValue;
+import org.vast.process.DataProcess;
+import org.vast.process.ProcessException;
 
 
 /**
@@ -101,7 +100,6 @@ public class SRTMElevationProcess extends DataProcess {
 		SRTMUtil util = new SRTMUtil();
 		double elevOut;
 		try {
-			util.openFile(lat_in, lon_in);
 			elevOut = util.getInterpolatedElevation(lat_in, lon_in);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
