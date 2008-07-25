@@ -1,4 +1,4 @@
-package org.vast.srtm;
+package org.sensorML.process;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.Properties;
 
 import javax.vecmath.Vector3d;
+
+import org.vast.math.BilinearInterpolation;
 
 
 //Utility class to do some common SRTM lookup stuff- extracted some of this from SRTMReader
