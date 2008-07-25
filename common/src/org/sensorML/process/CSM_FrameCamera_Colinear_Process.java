@@ -4,6 +4,7 @@ package org.sensorML.process;
 
 import org.vast.data.*;
 import org.vast.process.*;
+import org.vast.math.*;
 
 
 /**
@@ -55,6 +56,7 @@ public class CSM_FrameCamera_Colinear_Process extends DataProcess {
    DataValue radial_k3;
    DataValue decentering_p1;
    DataValue decentering_p2;
+
 
    // declare any other class variables needed
 
@@ -114,6 +116,8 @@ public class CSM_FrameCamera_Colinear_Process extends DataProcess {
          DataGroup decentering = (DataGroup) paramData.getComponent("decentering");
          decentering_p1 = (DataValue) decentering.getComponent("p1");
          decentering_p2 = (DataValue) decentering.getComponent("p2");
+ 
+         
 
       }
       catch (ClassCastException e) {
@@ -175,7 +179,36 @@ public class CSM_FrameCamera_Colinear_Process extends DataProcess {
          /****************************************
           *    PUT YOUR EXECUTION CODE HERE      *
           ****************************************/
+         //Create the vector that includes location of the lens center with respect to a parallel Earth coordinate system
+         Vector3d lensCenter = new Vector3d(lens_Xc_value,lens_Yc_value , lens_Zc_value);
+         //Create the vector that translates from the location of lens coordinate system to the actual image plane coordinate system (this is where the pixels lie)
+         Vector3d focalLeng = new Vector3d(0,0 ,focalLength_value);
+         //Create the vector that holds the location of the object on the ground with respect to an Earth coordinate system
+         Vector3d objectLoc = new Vector3d(ground_Xa_value,ground_Ya_value , ground_Za_value);
+         //Create the first column of the orientation matrix M (accounts for pitch, roll, and true heading)
+         Vector3d M1 = new Vector3d(Math.cos(attitude_pitch_value)*Math.cos(attitude_heading_value),
+        		 (-1*Math.cos(attitude_pitch_value)*Math.sin(attitude_heading_value)),
+        		 Math.sin(attitude_pitch_value));
+         //Create the second column of the orientation matrix M (accounts for pitch, roll, and true heading)
+         Vector3d M2 = new Vector3d((Math.cos(attitude_roll_value)*Math.sin(attitude_heading_value))+
+        		 ((Math.sin(attitude_roll_value)*Math.sin(attitude_pitch_value)*Math.cos(attitude_heading_value))),
+        		 ((Math.cos(attitude_roll_value)*Math.cos(attitude_heading_value))-(Math.sin(attitude_roll_value)*Math.sin(attitude_pitch_value)*
+        				 Math.sin(attitude_heading_value))), (-1*Math.sin(attitude_roll_value)*Math.cos(attitude_pitch_value)));
+         //Create the third column of the orientation matrix M (accounts for pitch, roll, and true heading)
+         Vector3d M3 = new Vector3d(((Math.sin(attitude_roll_value)*Math.sin(attitude_heading_value))-
+        		 (Math.cos(attitude_roll_value)*Math.sin(attitude_pitch_value)*Math.cos(attitude_heading_value))),
+        		 ((Math.sin(attitude_roll_value)*Math.cos(attitude_heading_value))
+        		+(Math.cos(attitude_roll_value)*Math.sin(attitude_pitch_value)*Math.sin(attitude_heading_value))),
+        		Math.cos(attitude_roll_value)*Math.cos(attitude_pitch_value));
+         //Combine M1, M2, and M3 to create the 3x3 orientation matrix
+         Matrix3d M = new Matrix3d(M1, M2, M3);
 
+         Vector3d subtraction = Vector3d.subtract(objectLoc, lensCenter);
+
+         
+         
+         
+         
 
 
          // set values for output components
