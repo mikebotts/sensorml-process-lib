@@ -20,6 +20,7 @@
 
 package org.sensorML.process;
 
+import org.vast.physics.Datum;
 import org.vast.process.*;
 import org.vast.cdm.common.DataBlock;
 import org.vast.data.*;
@@ -92,9 +93,15 @@ public class RayIntersectEllipsoid_Process extends DataProcess
             }
             else
             {
-                R[0] = 6378137.0;
-                R[1] = R[0];
-                R[2] = 6356752.3142451795;
+            	// use WGS84
+            	 Datum datum = new Datum();
+            	 R[0] = datum.equatorRadius;
+            	 R[1] = R[0];
+            	 R[2] = datum.polarRadius;
+            	 
+//                R[0] = 6378137.0;
+//                R[1] = R[0];
+//                R[2] = 6356752.3142451795;
             }
         }
         catch (Exception e)
