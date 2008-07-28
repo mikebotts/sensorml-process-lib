@@ -39,6 +39,8 @@ import org.vast.data.*;
  * of the local reference frame and the ray direction coordinates
  * are expressed in that same local frame. This process outputs
  * coordinates of the intersection point expressed in the global frame.
+ * 
+ * This version does not allow Height Above Ellipsoid adjustment
  * </p>
  *
  * <p>Copyright (c) 2007</p>

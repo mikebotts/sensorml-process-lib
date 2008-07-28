@@ -35,6 +35,8 @@ import org.vast.data.*;
  * aligned with the axes of the referential of the ray. This process outputs
  * coordinates of the intersection point expressed in the same frame.
  * </p>
+ * 
+ *  This version allows Height Above Ellipsoid adjustment
  *
  * <p>Copyright (c) 2007</p>
  * @author Alexandre Robin
@@ -85,6 +87,7 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
     		if (heightAboveEllipsoidData != null)
     		{
                 heightAboveEllipsoid = heightAboveEllipsoidData.getData().getDoubleValue();
+                System.out.println("RayIntersect2: heightAboveEllipsoid = "+heightAboveEllipsoid);
             }
             
             // read ellipsoid datum (or defaults to WGS84 if none provided)
@@ -99,13 +102,9 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
             {
             	// use WGS84
 	           	 Datum datum = new Datum();
-	           	 R[0] = datum.equatorRadius;
-	           	 R[1] = R[0];
-	           	 R[2] = datum.polarRadius;
-
-//	           	  R[0] = 6378137.0 + heightAboveEllipsoid;
-//                R[1] = R[0];
-//                R[2] = 6356752.3142451795 + heightAboveEllipsoid;
+	           	 R[0] = datum.equatorRadius + heightAboveEllipsoid;
+	           	 R[1] = R[0] + heightAboveEllipsoid;
+	           	 R[2] = datum.polarRadius + heightAboveEllipsoid;
             }
         }
         catch (Exception e)
