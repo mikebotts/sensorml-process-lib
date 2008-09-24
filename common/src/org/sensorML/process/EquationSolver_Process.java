@@ -87,8 +87,8 @@ public class EquationSolver_Process extends DataProcess
 		try {
 			for(int i = 0; i<numberOfInputs; i++){
 				parser.setVariable(inputsData[i].getName(),inputsData[i].getData().getDoubleValue());
-				result = parser.getValue();
 			}
+			result = parser.getValue();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
