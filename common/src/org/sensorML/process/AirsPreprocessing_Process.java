@@ -27,6 +27,7 @@ package org.sensorML.process;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -59,6 +60,9 @@ public class AirsPreprocessing_Process extends DataProcess
 	float[][] landFrac, topog, time, PSurfStd, PBest;
 	float[][][] TAirSup, H2OCDSup;
 	Calendar cal;
+	String filepathLand, filepathWater;
+	String dirPrefix = "C:/Data/Airs/ADAS/";
+	//String dirPrefix = "/data/publicweb/";
 	
     @Override
     public void init() throws ProcessException
@@ -156,25 +160,68 @@ public class AirsPreprocessing_Process extends DataProcess
     	}
     
     	cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT"));
-    	cal.setTimeInMillis((long)(startTime*1000.00));
+    	cal.setTimeInMillis((long)((stopTime+startTime)*500.00));
+    	
+    	int year = cal.get(Calendar.YEAR);
+    	int month = cal.get(Calendar.MONTH)+1;
+    	int day = cal.get(Calendar.DATE);
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minute = cal.get(Calendar.MINUTE);
+
+		if(minute<31){
+			minute = 0;
+		}
+		else if(minute>30){
+			minute = 0;
+			hour = hour + 1;
+		}
+		
+		String prefix = "0", monthS, dayS, hourS, minuteS;
+		
+		if(month<10){
+			monthS = prefix + Integer.toString(month);
+		}
+		else monthS = Integer.toString(month);
+		
+		if(day<10){
+			dayS = prefix + Integer.toString(day);
+		}
+		else dayS = Integer.toString(day);
+
+		if(hour<10){
+			hourS = prefix + Integer.toString(hour);
+		}
+		else hourS = Integer.toString(hour);
+		
+		if(minute<10){
+			minuteS = prefix + Integer.toString(minute);
+		}
+		else minuteS = Integer.toString(minute);
+		
+    	processAndWriteData(latitude, longitude, landFrac, PSurfStd, topog, PBest, TAirSup, H2OCDSup, year, monthS, dayS,
+    			hourS, minuteS);
     	
-    	processAndWriteData(latitude, longitude, landFrac, PSurfStd, topog, PBest, TAirSup, H2OCDSup,
-    			hour, minute);
-    	
+    	try {
+			Runtime.getRuntime().exec("chmod 664 " + filepathWater); 
+			Runtime.getRuntime().exec("chmod 664 " + filepathLand);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	statusData.getData().setStringValue("completed");
     	
      } 	 
 
 
-	public static void processAndWriteData(double[][] latitude, double[][] longitude, float[][] landfrac,
-			float[][] psurf, float[][] elev, float[][] plevmax, float[][][] tprofK, float[][][] wcd,
-			int hour, int minute) {
+	public void processAndWriteData(double[][] latitude, double[][] longitude, float[][] landfrac,
+			float[][] psurf, float[][] elev, float[][] plevmax, float[][][] tprofK, float[][][] wcd, int year, String monthS, String dayS,
+			String hourS, String minuteS) {
 		
 		 		
-		PrintWriter printLand = null;		
-		File land = new File("C:/Data/Airs/PreprocessedAirsLand.txt");
+		PrintWriter printLand = null;
+		String filename = Integer.toString(year) + monthS + dayS + "_" + hourS + minuteS;
+		filepathWater = dirPrefix + filename + ".arw";
+		File land = new File(filepathWater);
 		try {
 			printLand = new PrintWriter(land);
 		} catch (FileNotFoundException e) {
@@ -184,7 +231,8 @@ public class AirsPreprocessing_Process extends DataProcess
 
 		
 		PrintWriter printWater = null;		
-		File water = new File("C:/Data/Airs/PreprocessedAirsWater.txt");
+		filepathLand = dirPrefix + filename + ".arl";
+		File water = new File(filepathLand);
 		try {
 			printWater = new PrintWriter(water);
 		} catch (FileNotFoundException e) {
@@ -209,7 +257,7 @@ public class AirsPreprocessing_Process extends DataProcess
 /////////////////////////////////////////////////////////////////////////////
 
 int numberOfScanLines = latitude[1].length;		
-		
+		System.out.println("numberOfScanLines:  " + numberOfScanLines);
 int[][] counter = new int[30][numberOfScanLines];
 double[][][] tprof = new double[100][30][numberOfScanLines];
 double[][][] LCDd = new double[100][30][numberOfScanLines];
@@ -294,44 +342,48 @@ for(int i=0; i<30; i++){
  for(int j=0; j<numberOfScanLines; j++){
 	 
    sum_hght = elev[i][j];
+  // System.out.println(sum_hght);
    for(int k=98; k>41; k--){
 	   
       l=k-1;
       
       if((psurf[i][j] < pobs[k]) && (psurf[i][j] < pobs[l])){           	  
 //		indicates that observation level is below ground
-         hght[k][i][j]=-999.0;                
+         hght[k][i][j]=-999.0;   
       }
       
       if((psurf[i][j] < pobs[k]) && (psurf[i][j] > pobs[l])){ 
     	  hght[k][i][j] = -999.0; 
-          mean_tv = calculateVirtualTemperature(tprof[k][i][j],tdprof[k][i][j],pobs[l]);
+          mean_tv = calculateVirtualTemperature(tprof[l][i][j],tdprof[l][i][j],pobs[l]);
           thkns = calculateThickness(pobs[l],psurf[i][j],mean_tv);
           
 //              print,'surf',i,j,k,l,pobs(l),psurf(i,j),thkns
-
-         hght[k][i][j]=sum_hght + thkns;
-         sum_hght = hght[k][i][j];
+         hght[l][i][j]=sum_hght + thkns;
+         sum_hght = hght[l][i][j];
       }
       
       
       if ((psurf[i][j] > pobs[k]) && (psurf[i][j] > pobs[l])){
     	  
          mean_tv = (calculateVirtualTemperature(tprof[k][i][j],tdprof[k][i][j],pobs[k])+
-        		 calculateVirtualTemperature(tprof[k][i][j],tdprof[k][i][j],pobs[l]))*0.5;
+        		 calculateVirtualTemperature(tprof[l][i][j],tdprof[k][i][j],pobs[l]))*0.5;
          
          thkns = calculateThickness(pobs[l],pobs[k],mean_tv);
-         
 //              print,'non-surf',i,j,k,l,pobs(l),psurf(i,j),thkns
          
          hght[l][i][j] = sum_hght + thkns;
-         sum_hght = hght[k][i][j];
+         if(hght[l][i][j]==0 && (sum_hght>0 || thkns>0)){
+        	 if(sum_hght>0)
+        		 hght[l][i][j]= sum_hght;
+        	 if(sum_hght>0)
+        		 hght[l][i][j]= thkns;
+         }
+         sum_hght = hght[l][i][j];
       }
 
        if (hght[k][i][j] != -999.){
           counter[i][j] = counter[i][j] + 1;
        }
-
    }
  }
 }
@@ -361,9 +413,12 @@ for(int i=0; i<30; i++){
      		   // Send all output to the Appendable object sb    write(15,'(6f15.4)')
      		    Formatter formatterL1 = new Formatter(sbL1, Locale.US);
      		    formatterL1.format(Locale.US, "%12d", n);
-     		    formatterL1.format(Locale.US, "%12d", 54);
-     		    formatterL1.format(Locale.US, "%11.4f", latitude[i][j]);
-     		    formatterL1.format(Locale.US, "%15.4f", longitude[i][j]);
+     		    formatterL1.format(Locale.US, "%12d", 54); 
+     		  //  in the file it is actually lat then lon but it is inverse in the SOS
+     		  // so lon holds the lat and inversely
+     		  // to be changed after the demo
+     		    formatterL1.format(Locale.US, "%11.4f", longitude[i][j]);
+     		    formatterL1.format(Locale.US, "%15.4f", latitude[i][j]);    		    
      		    formatterL1.format(Locale.US, "%15.0f", elev[i][j]);
      		    String elementL1 = formatterL1.toString();
     		   printLand.println(elementL1 + "          " + codeLand);
@@ -379,6 +434,7 @@ for(int i=0; i<30; i++){
        		   	StringBuilder sbL2 = new StringBuilder();
      		   // Send all output to the Appendable object sb    write(15,'(6f15.4)')
      		    Formatter formatterL2 = new Formatter(sbL2, Locale.US);
+     		  //  System.out.println(hght[k][i][j]);
      		    formatterL2.format(Locale.US, "%15.4f", hght[k][i][j]);
      		    formatterL2.format(Locale.US, "%15.4f", pobs[k]);
      		    formatterL2.format(Locale.US, "%15.4f", tprof[k][i][j]);
@@ -410,8 +466,8 @@ for(int i=0; i<30; i++){
      		    Formatter formatterW1 = new Formatter(sbW1, Locale.US);
      		    formatterW1.format(Locale.US, "%12d", m);
      		    formatterW1.format(Locale.US, "%12d", 54);
-     		    formatterW1.format(Locale.US, "%11.4f", latitude[i][j]);
-     		    formatterW1.format(Locale.US, "%15.4f", longitude[i][j]);
+     		    formatterW1.format(Locale.US, "%11.4f", longitude[i][j]);
+    		    formatterW1.format(Locale.US, "%15.4f", latitude[i][j]);
      		    formatterW1.format(Locale.US, "%15.0f", elev[i][j]);
      		    String elementW1 = formatterW1.toString();
     		   printWater.println(elementW1 + "          " + codeWater);
