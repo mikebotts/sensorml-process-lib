@@ -168,7 +168,7 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
 
 	  x = x2;
 	  y = y2;
-	  z = focalLength;   
+	  z = focalLength*2;   
 	  
 	  // normalize the look vector (meb - 2007.07.24)
 	  Vector3d v = new Vector3d(x,y,z);

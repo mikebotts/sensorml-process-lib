@@ -36,10 +36,10 @@ import org.vast.cdm.common.DataType;
 import org.vast.data.*;
 import org.vast.math.Vector3d;
 import org.vast.ogc.OGCRegistry;
+import org.vast.ogc.om.ObservationStreamReader;
 import org.vast.ows.OWSUtils;
-import org.vast.ows.om.ObservationStreamReader;
 import org.vast.ows.sos.GetObservationRequest;
-import org.vast.ows.util.TimeInfo;
+import org.vast.util.TimeInfo;
 import org.vast.process.*;
 import org.vast.sweCommon.SweConstants;
 import org.vast.unit.UnitConversion;
@@ -252,7 +252,7 @@ public class SOS_Process extends DataProcess implements DataHandler
                             else 
                             	dataStream = owsUtils.sendGetRequest(request).getInputStream();
                             
-                            // create reader and parse response
+                         // create reader and parse response
                             ObservationStreamReader reader = (ObservationStreamReader)OGCRegistry.createReader("OM", "ObservationStream", request.getVersion());
 
                             // parse XML header

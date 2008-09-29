@@ -112,9 +112,9 @@ public class LLAToECEF_Process extends DataProcess
     public void execute() throws ProcessException
     {
     	// get lat,lon,alt coordinates from input and convert to SI
-    	double lat = latData.getData().getDoubleValue();
-    	double lon = lonData.getData().getDoubleValue();
-    	double alt = altData.getData().getDoubleValue();
+    	double lat = latData.getData().getDoubleValue(0);
+    	double lon = lonData.getData().getDoubleValue(0);
+    	double alt = altData.getData().getDoubleValue(0);
         
         // convert to ECEF
         double[] ecefPos = MapProjection.LLAtoECF(lon, lat, alt, new Datum());

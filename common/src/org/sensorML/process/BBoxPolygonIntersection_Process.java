@@ -94,10 +94,10 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
    public void execute() throws ProcessException {
 	   
 	// Set up the polygon against which line intersection will be tested
-	   	double URLongitude = (URLongitudeData.getData().getDoubleValue()) / 180 * Math.PI;
-	   	double URLatitude = (URLatitudeData.getData().getDoubleValue()) / 180 * Math.PI;
-	   	double LLLongitude = (LLLongitudeData.getData().getDoubleValue()) / 180 * Math.PI;
-	   	double LLLatitude = (LLLatitudeData.getData().getDoubleValue()) / 180 * Math.PI;
+	    double LLLatitude = (LLLatitudeData.getData().getDoubleValue());// / 180 * Math.PI;
+	   	double URLatitude = (URLatitudeData.getData().getDoubleValue());// / 180 * Math.PI;
+	   	double URLongitude = (URLongitudeData.getData().getDoubleValue());// / 180 * Math.PI;
+	   	double LLLongitude = (LLLongitudeData.getData().getDoubleValue());// / 180 * Math.PI;   	
 	   
 	   	int numberOfFollowingIntersection = 0;
 	   	
@@ -118,7 +118,7 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
 	    int a = 0, b = 0, c = 0, d = 0, e = 0, w = 0;
 
 	    for(int i=0; i<numberOfElements; i++){
-	    elements[i] = inputData.getComponent("footprintData").getComponent(5).getData().getDoubleValue(i); 
+	    elements[i] = inputData.getComponent("footprintData").getComponent(5).getData().getDoubleValue(i) / Math.PI * 180.0; 
 	    a = i%2;
 	    d = i%(numberOfLines*numberOfPointsPerLine);
 	    b = ((int)Math.floor((double)i/2))%(2*numberOfPointsPerLine);
@@ -138,6 +138,8 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
 	    intersectionExists = false;
 	    
 	    for(int j=0; j<numberOfLines-1; j++){
+	    	double minLon = 300, maxLon = -300;
+	    	boolean crossingDemarcationLine = false;
 	    	for(int i=0; i<2*numberOfPointsPerLine; i++){
 	    		if(i<numberOfPointsPerLine-1){
 	    			point[0] = points[j*numberOfPointsPerLine+i][0];
@@ -147,12 +149,18 @@ public class BBoxPolygonIntersection_Process extends DataProcess {
 		     		point[0] = points[-(1+i)+(j+3)*numberOfPointsPerLine][0];
 		    		point[1] = points[-(1+i)+(j+3)*numberOfPointsPerLine][1];
 		    		}
+		    	minLon = Math.min(minLon, point[1]);
+		    	maxLon = Math.max(maxLon, point[1]);
+		    	
 	    		coordinates[i] = new Coordinate(point[0], point[1]);
 	    		}
+	    	if(minLon*maxLon<-30625){
+	    		crossingDemarcationLine = true;
+	    	}
 	    	coordinates[2*numberOfPointsPerLine] = new Coordinate(points[j*numberOfPointsPerLine][0], points[j*numberOfPointsPerLine][1]);
 	    	Geometry swath = geomFactorySwath.createPolygon(geomFactorySwath.createLinearRing(coordinates), null);
 
-	    	if(swath.intersects(boundingBox)){
+	    	if(swath.intersects(boundingBox) && !crossingDemarcationLine){
 	    		intersectionExists = true;
 	    		numberOfFollowingIntersection = numberOfFollowingIntersection++;
 	    		if(j==0){
