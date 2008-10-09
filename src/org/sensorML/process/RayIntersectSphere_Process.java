@@ -109,14 +109,14 @@ public class RayIntersectSphere_Process extends DataProcess
         
         double A = Math.pow(directionX, 2) + Math.pow(directionY, 2) + Math.pow(directionZ, 2);
 
-        originX = centerX+100*directionX/Math.pow(A, 0.5);
-        originY = centerY+100*directionY/Math.pow(A, 0.5);
-        originZ = centerZ+100*directionZ/Math.pow(A, 0.5); 
+        originX = centerX;
+        originY = centerY;
+        originZ = centerZ; 
         
-        double B = 2 * (directionX * (originX - centerX) + directionY * (originY - centerY) + directionZ * (originY - centerZ));
+        double B = 2 * (directionX * (originX - centerX) + directionY * (originY - centerY) + directionZ * (originZ - centerZ));
         double C = Math.pow((originX - centerX),2) + Math.pow((originY - centerY),2) + Math.pow((originZ - centerZ),2) - Math.pow(radius,2);
                
-        double discriminant = - 4 * A * C, t1 = 0, t2 = 0;
+        double discriminant = B * B - 4 * A * C, t1 = 0, t2 = 0;
         double discriminantRoot = Math.pow(discriminant, 0.5);
                
         if (discriminant < 0.0)
@@ -137,8 +137,8 @@ public class RayIntersectSphere_Process extends DataProcess
         intersectionX = centerX + t * directionX;
         intersectionY = centerY + t * directionY;
         intersectionZ = centerZ + t * directionZ; 
-        System.out.println("intersectionX: "+intersectionX+ "   intersectionY: "+intersectionY+"   intersectionZ: "+intersectionZ);
-        xOutput.getData().setDoubleValue(intersectionX);
+        
+	xOutput.getData().setDoubleValue(intersectionX);
         yOutput.getData().setDoubleValue(intersectionY);
         zOutput.getData().setDoubleValue(intersectionZ);
     }
