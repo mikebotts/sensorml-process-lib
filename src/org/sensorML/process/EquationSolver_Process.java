@@ -50,7 +50,8 @@ public class EquationSolver_Process extends DataProcess
 	double result;
 	String equation;
 	Error e;
-	AbstractDataComponent inputsData[], equationData, resultData;
+	DataValue[] inputsData;
+	AbstractDataComponent equationData, resultData;
 	
     @Override
     public void init() throws ProcessException
@@ -61,8 +62,10 @@ public class EquationSolver_Process extends DataProcess
         	resultData = outputData.getComponent("result");
         	numberOfInputs = inputData.getComponentCount();
         	
+        	inputsData = new DataValue[numberOfInputs];
+        	
         	for(int i=0; i<numberOfInputs; i++){
-        		inputsData[i] = inputData.getComponent(i);
+        		inputsData[i] = (DataValue)inputData.getComponent(i);
         	}
 
         }
@@ -78,7 +81,7 @@ public class EquationSolver_Process extends DataProcess
     	equation = equationData.getData().getStringValue();
     	if(equation.contains("=")){
     		int equalSignPosition = equation.indexOf("=");
-    		equation = equation.substring(equalSignPosition);
+    		equation = equation.substring(equalSignPosition+1);
     	}
     	
     	IMathParser parser = MathParserFactory.create();
