@@ -76,7 +76,7 @@ public class LLAToECEF_Process extends DataProcess
             lrzData = orientationData.getComponent("z");
             
             // read rotation order
-            String rotOrder = orientationData.getComponent("order").getData().getStringValue();
+            String rotOrder = inputData.getComponent("rotationOrder").getData().getStringValue();
             if (rotOrder != null && rotOrder.length() == 3)
             	rotationOrder = rotOrder.toCharArray();
             
