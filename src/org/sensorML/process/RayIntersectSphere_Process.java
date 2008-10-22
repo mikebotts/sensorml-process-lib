@@ -20,32 +20,30 @@
 
 package org.sensorML.process;
 
-import org.vast.physics.Datum;
 import org.vast.process.*;
 import org.vast.data.*;
 
 
 /**
  * <p><b>Title:</b><br/>
- * Ray Intersect Ellipsoid Process
+ * Ray Intersect Sphere Process
  * </p>
  *
  * <p><b>Description:</b><br/>
- * Computes intersection of a 3D ray with an ellipsoid which axes are
+ * Computes intersection of a 3D ray with an sphere which axes are
  * aligned with the axes of the referential of the ray. This process outputs
  * coordinates of the intersection point expressed in the same frame.
  * </p>
  * 
- *  This version allows Height Above Ellipsoid adjustment
- *
- * <p>Copyright (c) 2007</p>
- * @author Alexandre Robin
- * @date Sep 2, 2007
+
+ * <p>Copyright (c) 2008</p>
+ * @author Gregoire Berthiau
+ * @date October 2008
  * @version 1.0
  */
 public class RayIntersectSphere_Process extends DataProcess
 {
-    protected DataValue xInput, yInput, zInput, heightAboveEllipsoidData;
+    protected DataValue xInput, yInput, zInput;
     protected DataValue dxInput, dyInput, dzInput;
     protected DataValue xOutput, yOutput, zOutput;
     protected DataValue radiusData;
