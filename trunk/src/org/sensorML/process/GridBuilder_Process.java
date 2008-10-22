@@ -19,21 +19,19 @@
 
 package org.sensorML.process;
 
-import org.vast.cdm.common.DataBlock;
 import org.vast.cdm.common.DataComponent;
 import org.vast.data.*;
 import org.vast.process.*;
 
-
-public class GridBuilderEC2_Process extends DataProcess
+public class GridBuilder_Process extends DataProcess
 {
 	
     private DataGroup groundPoint;
     private DataComponent outputGrid;
-    private int elementCount;
+    private int elementCount, firstDimension, secondDimension;
     
     
-    public GridBuilderEC2_Process()
+    public GridBuilder_Process()
     {
     }
 
@@ -48,7 +46,9 @@ public class GridBuilderEC2_Process extends DataProcess
         {
         	groundPoint = (DataGroup) inputData.getComponent("groundPoint");
         	outputGrid = outputData.getComponent("grid");
-            elementCount = 0;
+        	firstDimension = outputGrid.getComponentCount();
+        	secondDimension = outputGrid.getComponent(0).getComponentCount();
+        	elementCount = 0;
         }
         catch (Exception e)
         {
@@ -65,13 +65,15 @@ public class GridBuilderEC2_Process extends DataProcess
 
         groundPoint.getData();
         
-        int i = elementCount/4;
-        int j = elementCount%4;
+        int i = elementCount/firstDimension;
+        int j = elementCount%secondDimension;
         double x, y, z;
         
         x = groundPoint.getComponent(0).getData().getDoubleValue();
         y = groundPoint.getComponent(1).getData().getDoubleValue();
         z = groundPoint.getComponent(2).getData().getDoubleValue();
+        
+        //System.out.println("x: "+ x + "   y: " + y + "   z: " + z);
         
         outputGrid.getComponent(i).getComponent(j).getComponent(0).getData().setDoubleValue(x);
         outputGrid.getComponent(i).getComponent(j).getComponent(1).getData().setDoubleValue(y);
@@ -80,7 +82,7 @@ public class GridBuilderEC2_Process extends DataProcess
         elementCount++;
     	nextInputNeeded();
     	
-    	if(elementCount==16){
+    	if(elementCount==(firstDimension*secondDimension)){
     		nextOutput();
     		elementCount = 0;
     	}
