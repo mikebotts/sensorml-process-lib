@@ -52,6 +52,7 @@ public class LLAToECEF_Process extends DataProcess
     private int upAxis = 3;
     private int northAxis = 2;
     char[] rotationOrder = {'Z','X','Y'};
+    private Datum datum;
 
 
     public LLAToECEF_Process()
@@ -101,6 +102,9 @@ public class LLAToECEF_Process extends DataProcess
             // output data containers
         	outputPos = outputData.getComponent("ecefPosition");
         	outputPos.renewDataBlock();
+        	
+        	// set Datum to WGS84
+        	datum = new Datum();
         }
         catch (Exception e)
         {
@@ -117,7 +121,7 @@ public class LLAToECEF_Process extends DataProcess
     	double alt = altData.getData().getDoubleValue(0);
         
         // convert to ECEF
-        double[] ecefPos = MapProjection.LLAtoECF(lon, lat, alt, new Datum());
+        double[] ecefPos = MapProjection.LLAtoECF(lon, lat, alt, datum);
         toEcefMatrix.setIdentity();
                 
         // compute nadir orientation if needed

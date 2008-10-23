@@ -59,7 +59,7 @@ public class RayIntersectEllipsoid_Process extends DataProcess
     protected double[] U0_ = new double[3];
     protected double[] P0 = new double[3];
     protected double[] P1 = new double[3];
-    
+
 
     public RayIntersectEllipsoid_Process()
     {

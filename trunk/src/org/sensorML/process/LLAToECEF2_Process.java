@@ -43,6 +43,7 @@ public class LLAToECEF2_Process extends DataProcess
 {
     private AbstractDataComponent latData, lonData, altData;
     private AbstractDataComponent xData, yData, zData;
+    private Datum datum;
 
 
     public LLAToECEF2_Process()
@@ -63,6 +64,8 @@ public class LLAToECEF2_Process extends DataProcess
             yData = (DataValue) outputData.getComponent("ECEF_location").getComponent("y");
             zData = (DataValue) outputData.getComponent("ECEF_location").getComponent("z");
             
+            datum = new Datum();
+            
         }
         catch (Exception e)
         {
@@ -78,7 +81,7 @@ public class LLAToECEF2_Process extends DataProcess
     	double alt = altData.getData().getDoubleValue();
         
         // convert to ECEF
-        double[] ecefPos = MapProjection.LLAtoECF(lon, lat, alt, new Datum());
+        double[] ecefPos = MapProjection.LLAtoECF(lon, lat, alt, datum);
                 
         xData.getData().setDoubleValue(ecefPos[0]);
 		yData.getData().setDoubleValue(ecefPos[1]);
