@@ -43,7 +43,7 @@ public class ECEFToLLA_Process extends DataProcess
 {
     private DataValue xData, yData, zData;
     private DataValue latData, lonData, altData;
-    
+    private Datum datum;
 
     public ECEFToLLA_Process()
     {    	
@@ -66,6 +66,8 @@ public class ECEFToLLA_Process extends DataProcess
             latData = (DataValue)locationData.getComponent("latitude");            
             lonData = (DataValue)locationData.getComponent("longitude");
             altData = (DataValue)locationData.getComponent("altitude");
+            
+            datum = new Datum();
         }
         catch (Exception e)
         {
@@ -81,7 +83,7 @@ public class ECEFToLLA_Process extends DataProcess
         double y = yData.getData().getDoubleValue();
         double z = zData.getData().getDoubleValue();
     	
-        double[] lla = MapProjection.ECFtoLLA(x, y, z, new Datum());
+        double[] lla = MapProjection.ECFtoLLA(x, y, z, datum);
     	
         lonData.getData().setDoubleValue(lla[0]);
         latData.getData().setDoubleValue(lla[1]);        

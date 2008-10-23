@@ -52,7 +52,8 @@ public class NadirPointingMatrix4_Process extends DataProcess
     private DataValue vxData, vyData, vzData;
     private DataArray outputMatrix;
     char forwardAxis, upAxis;
-    
+    private Datum datum;
+
     
     public NadirPointingMatrix4_Process()
     {    	
@@ -80,6 +81,9 @@ public class NadirPointingMatrix4_Process extends DataProcess
             // read parameters
             upAxis = paramData.getComponent("upAxis").getData().getStringValue().charAt(0);
             forwardAxis = paramData.getComponent("forwardAxis").getData().getStringValue().charAt(0);
+            
+            //set Datum to default
+            datum = new Datum();
         }
         catch (Exception e)
         {
@@ -124,8 +128,8 @@ public class NadirPointingMatrix4_Process extends DataProcess
         Vector3d velocity = new Vector3d(vx, vy, vz);
         velocity.normalize();
         
-        double[] lla = MapProjection.ECFtoLLA(position.x, position.y, position.z, new Datum());
-        double[] ecf = MapProjection.LLAtoECF(lla[0], lla[1], -3e3, new Datum());        
+        double[] lla = MapProjection.ECFtoLLA(position.x, position.y, position.z, datum);
+        double[] ecf = MapProjection.LLAtoECF(lla[0], lla[1], -3e3, datum);        
         Vector3d nearPoint = new Vector3d(ecf[0], ecf[1], ecf[2]);
         
         up.sub(position, nearPoint);

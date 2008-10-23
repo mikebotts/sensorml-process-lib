@@ -49,6 +49,8 @@ public class LLAToPTZ_Process extends DataProcess
     private DataValue widthData, altCData, latZData, lonZData, altZData, panAtRefData;
     private DataValue panAngleData, tiltAngleData, zoomFactorData;
     boolean interpolation = true;
+    private Datum datum;
+
     
     public LLAToPTZ_Process()
     {    	
@@ -87,6 +89,8 @@ public class LLAToPTZ_Process extends DataProcess
             tiltAngleData = (DataValue)outputData.getComponent("tiltAngle");
             zoomFactorData = (DataValue)outputData.getComponent("zoomFactor");
             
+            // set Datum to default WGS84
+            datum = new Datum();
         }
         catch (RuntimeException e)
         {
@@ -115,9 +119,9 @@ public class LLAToPTZ_Process extends DataProcess
     	double width = widthData.getData().getDoubleValue();
         
     	// convert to ECEF
-        double[] ecefPosT = MapProjection.LLAtoECF(lonT, latT, altT, new Datum());
-        double[] ecefPosC = MapProjection.LLAtoECF(lonC, latC, altC, new Datum());
-        double[] ecefPosZ = MapProjection.LLAtoECF(lonZ, latZ, altZ, new Datum());
+        double[] ecefPosT = MapProjection.LLAtoECF(lonT, latT, altT, datum);
+        double[] ecefPosC = MapProjection.LLAtoECF(lonC, latC, altC, datum);
+        double[] ecefPosZ = MapProjection.LLAtoECF(lonZ, latZ, altZ, datum);
        
         double[] earthCenter = {1, 1, 1};
         double[] cctPlaneCoefficients = new double[4];
@@ -151,7 +155,7 @@ public class LLAToPTZ_Process extends DataProcess
         
         double altL = (earthRadiusAtCamera + altC)/vectorDotProduct - earthRadiusAtCamera;
         
-        double[] ecefPosL = MapProjection.LLAtoECF(lonT, latT, altL, new Datum());
+        double[] ecefPosL = MapProjection.LLAtoECF(lonT, latT, altL, datum);
         
         Vector3d CT = new Vector3d(ecefPosT[0]-ecefPosC[0], ecefPosT[1]-ecefPosC[1], ecefPosT[2]-ecefPosC[2]);
         Vector3d CL = new Vector3d(ecefPosL[0]-ecefPosC[0], ecefPosL[1]-ecefPosC[1], ecefPosL[2]-ecefPosC[2]);
