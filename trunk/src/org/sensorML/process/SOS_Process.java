@@ -266,8 +266,9 @@ public class SOS_Process extends DataProcess implements DataHandler
                             obsLocation = reader.getFoiLocation();
                             
                             // parse data stream
-                            dataParser.parse(reader.getDataStream());
+                            dataParser.parse(reader.getDataStream());                            
                             done = true;
+                            System.gc();
                         }
                     }
                     catch (Exception e)
