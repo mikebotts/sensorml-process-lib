@@ -28,6 +28,8 @@ package org.sensorML.process;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
+
+import org.vast.cdm.common.CDMException;
 import org.vast.cdm.common.DataBlock;
 import org.vast.cdm.common.DataComponent;
 import org.vast.cdm.common.DataHandler;
@@ -281,8 +283,9 @@ public class WPS_Process extends DataProcess implements DataHandler
      * Reads all input parameters and set up query accordingly
 	 * @throws OWSException 
 	 * @throws IOException 
+	 * @throws CDMException 
      */
-    protected DescribeProcessResponseReader initRequest() throws IOException, OWSException
+    protected DescribeProcessResponseReader initRequest() throws IOException, OWSException, CDMException
     {
         // make sure previous request is cancelled
         endRequest();
@@ -293,6 +296,7 @@ public class WPS_Process extends DataProcess implements DataHandler
         	describeProcessDataStream = owsUtils.sendGetRequest(describeProcessRequest).getInputStream();
         
         DescribeProcessResponseReader reader = new DescribeProcessResponseReader();
+        reader.parse(describeProcessDataStream);
         return reader;
     }
     
