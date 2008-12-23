@@ -29,21 +29,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
-import org.vast.cdm.common.CDMException;
+import javax.xml.soap.SOAPException;
+
 import org.vast.cdm.common.DataBlock;
 import org.vast.cdm.common.DataComponent;
 import org.vast.cdm.common.DataHandler;
 import org.vast.cdm.common.DataStreamParser;
 import org.vast.cdm.common.DataType;
 import org.vast.data.*;
-import org.vast.ows.OWSException;
-import org.vast.ows.OWSUtils;
+import org.vast.ogc.OGCRegistry;
 import org.vast.ows.wps.DescribeProcessRequest;
-import org.vast.ows.wps.DescribeProcessResponseReader;
+import org.vast.ows.wps.DescribeProcessResponse;
 import org.vast.ows.wps.ExecuteProcessRequest;
 import org.vast.ows.wps.ExecuteProcessRequestWriter;
+import org.vast.ows.wps.ExecuteProcessResponse;
+import org.vast.ows.wps.ExecuteProcessResponseReader;
+import org.vast.ows.wps.WPSUtils;
 import org.vast.process.*;
-import org.vast.sweCommon.SWEFactory;
 import org.vast.sweCommon.SweConstants;
 import org.vast.unit.UnitConversion;
 import org.vast.unit.UnitConverter;
@@ -80,8 +82,8 @@ public class WPS_Process extends DataProcess implements DataHandler
     protected DescribeProcessRequest describeProcessRequest;
     protected InputStream dataStream;
     protected ExecuteProcessRequestWriter executeProcessRequestWriter;
-	private OWSUtils owsUtils;
-    
+	private WPSUtils wpsUtils;
+	
     
     public WPS_Process()
     {
@@ -129,17 +131,10 @@ public class WPS_Process extends DataProcess implements DataHandler
             // service end point url
             url = wpsParams.getComponent("endPoint").getData().getStringValue();
             requestMethod = wpsParams.getComponent("requestMethod").getData().getStringValue();
-            if (requestMethod.equalsIgnoreCase("post"))
-            {
-            	describeProcessRequest.setPostServer(url);
-            	executeProcessRequest.setPostServer(url);
-                usePost = true;
-            }
-            else
-            	{
-            	describeProcessRequest.setGetServer(url);
-            	executeProcessRequest.setPostServer(url);
-            	}
+                        
+            describeProcessRequest.setPostServer(url);
+            executeProcessRequest.setPostServer(url);
+            usePost = true;
             
             // version
             version = wpsParams.getComponent("version").getData().getStringValue();
@@ -195,20 +190,30 @@ public class WPS_Process extends DataProcess implements DataHandler
                     {    
                         synchronized (handler)
                         {
-                            // init request using spatial + time extent
-                        	DescribeProcessResponseReader describeProcessResponseReader = initRequest();
-                        	executeProcessRequest.setInputDataComponent(describeProcessResponseReader.getInputDataComponent());
-                        	executeProcessRequest.setInputDataEncoding(describeProcessResponseReader.getInputDataEncoding());
+                            // init request 
+                        	DescribeProcessResponse describeProcessResponse = initRequest();
                         	
-                            dataStream = executeProcessRequestWriter.sendRequest(executeProcessRequest).getInputStream();
+                        	executeProcessRequest.setInputDataComponent(describeProcessResponse.getInputDataComponent());
+                        	executeProcessRequest.setInputDataEncoding(describeProcessResponse.getInputDataEncoding());
+                        	
+                        	ExecuteProcessResponse executeProcessResponse = ((ExecuteProcessResponse)(wpsUtils.getWPSResponse(executeProcessRequest)));
+                        	
+                        	executeProcessResponse.setDataEncoding(describeProcessResponse.getOutputDataEncoding());
+                        	executeProcessResponse.setDataEncoding(describeProcessResponse.getOutputDataEncoding());
+                        	dataStream = executeProcessResponse.getDataStream();
 
-                            dataParser = SWEFactory.createDataParser(describeProcessResponseReader.getOutputDataEncoding());
+                        	ExecuteProcessResponseReader reader = (ExecuteProcessResponseReader)OGCRegistry.createReader(executeProcessRequest.getService(), executeProcessRequest.getOperation(), executeProcessRequest.getVersion());
+
+                        	reader.setDataEncoding(executeProcessResponse.getDataEncoding());
+                        	reader.setDataComponents(executeProcessResponse.getDataComponent());
+                        	reader.parse(dataStream);
+                        	
+                            dataParser = reader.getDataParser();
                             dataParser.setDataHandler(handler);
                             
                             // parse data stream
                             dataParser.parse(dataStream);                            
                             done = true;
-                            //System.gc();
                         }
                     }
                     catch (Exception e)
@@ -272,32 +277,23 @@ public class WPS_Process extends DataProcess implements DataHandler
         }
     }    
     
-    
-    protected void populateProcessResponseDataComponent() {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 	/**
      * Reads all input parameters and set up query accordingly
-	 * @throws OWSException 
-	 * @throws IOException 
-	 * @throws CDMException 
+
      */
-    protected DescribeProcessResponseReader initRequest() throws IOException, OWSException, CDMException
+    protected DescribeProcessResponse initRequest() throws ProcessException
     {
         // make sure previous request is cancelled
         endRequest();
-        
-        if(usePost)
-        	describeProcessDataStream = owsUtils.sendPostRequest(describeProcessRequest).getInputStream();
-        else 
-        	describeProcessDataStream = owsUtils.sendGetRequest(describeProcessRequest).getInputStream();
-        
-        DescribeProcessResponseReader reader = new DescribeProcessResponseReader();
-        reader.parse(describeProcessDataStream);
-        return reader;
+        DescribeProcessResponse describeProcessResponse;
+		try {
+			describeProcessResponse = (DescribeProcessResponse)wpsUtils.getWPSResponse(describeProcessRequest);
+		} catch (SOAPException e) {
+			// TODO Auto-generated catch block
+			throw new ProcessException(e.getMessage(), e);
+		}
+        return describeProcessResponse;
     }
     
     
