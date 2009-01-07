@@ -76,7 +76,7 @@ public class WPS_Process extends DataProcess implements DataHandler
     protected boolean done, error, outputReady;
     protected Exception lastException;
     protected Hashtable<DataComponent, UnitConverter> converters;
-    protected String url, version, requestMethod, requestFormat;
+    protected String url, version, requestMethod, requestFormat, offering;
     protected DataGroup wpsParams;
     protected ExecuteProcessRequest executeProcessRequest;
     protected DescribeProcessRequest describeProcessRequest;
@@ -141,8 +141,15 @@ public class WPS_Process extends DataProcess implements DataHandler
             describeProcessRequest.setVersion(version);
             executeProcessRequest.setVersion(version);
 
-         // request format
+            // offering
+            offering = wpsParams.getComponent("offering").getData().getStringValue();
+            describeProcessRequest.setOffering(offering);
+            executeProcessRequest.setOffering(offering);
+            
+            // request format
             requestFormat = wpsParams.getComponent("requestFormat").getData().getStringValue();
+            describeProcessRequest.setRequestFormat(offering);
+            executeProcessRequest.setRequestFormat(offering);
             checkData();            
     }
     
