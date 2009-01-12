@@ -75,12 +75,13 @@ public class LLAToECEF_Process extends DataProcess
             lrxData = orientationData.getComponent("x");          
             lryData = orientationData.getComponent("y");    
             lrzData = orientationData.getComponent("z");
-            
             // read rotation order
-            String rotOrder = inputData.getComponent("rotationOrder").getData().getStringValue();
-            if (rotOrder != null && rotOrder.length() == 3)
-            	rotationOrder = rotOrder.toCharArray();
-            
+            AbstractDataComponent rotComp = inputData.getComponent("rotationOrder");
+            if(rotComp != null) {
+	            String rotOrder = rotComp.getData().getStringValue();
+	            if (rotOrder != null && rotOrder.length() == 3)
+	            	rotationOrder = rotOrder.toCharArray();
+            }
             // set up upAxis and northAxis depending on the frame (ENU, NED, etc...)
             String refFrame = (String)orientationData.getProperty(SweConstants.REF_FRAME);
             if (refFrame != null)
