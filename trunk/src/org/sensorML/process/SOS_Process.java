@@ -252,7 +252,7 @@ public class SOS_Process extends DataProcess implements DataHandler
                             else 
                             	dataStream = owsUtils.sendGetRequest(request).getInputStream();
                             
-                         // create reader and parse response
+                            // create reader and parse response
                             ObservationStreamReader reader = (ObservationStreamReader)OGCRegistry.createReader("OM", "ObservationStream", request.getVersion());
 
                             // parse XML header

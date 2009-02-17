@@ -29,10 +29,6 @@ import org.vast.process.*;
  * </p>
  *
  * <p><b>Description:</b><br/>
- * Implements a for loop style counter.
- * Variable is incremented from start value to stop value using
- * the provided step value. The pass-through data is duplicated
- * at every iteration. 
  * </p>
  *
  * <p>Copyright (c) 2007</p>
@@ -76,7 +72,7 @@ public class GammaSpecific_Process extends DataProcess
     {
     	
     	double dose = alertData.getComponent("AverageGammaDose").getData().getDoubleValue();
-    	String toDisplay = "average dose: " + Double.toString(dose) + "uRad/min";
+    	String toDisplay = "average dose: " + Double.toString(dose) + " uRad/min";
     	toDisplayData.getData().setStringValue(toDisplay);
     	
     }
