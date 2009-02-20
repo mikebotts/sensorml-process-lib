@@ -21,7 +21,9 @@
 package org.sensorML.process;
 
 import org.vast.cdm.common.DataComponent;
+import org.vast.data.DataValue;
 import org.vast.process.*;
+import org.vast.util.DateTimeFormat;
 
 /**
  * <p><b>Title:</b><br/>
@@ -38,7 +40,7 @@ import org.vast.process.*;
  */
 public class GammaSpecific_Process extends DataProcess
 {
-    protected DataComponent alertData, toDisplayData;
+    protected DataComponent timeData, alertData, toDisplayData;
    
     
     public GammaSpecific_Process()
@@ -55,6 +57,7 @@ public class GammaSpecific_Process extends DataProcess
         
         try
         {
+        	timeData = inputData.getComponent("timestamp");
             alertData = inputData.getComponent("alert");
             toDisplayData = outputData.getComponent("toDisplay");
         }
@@ -70,11 +73,12 @@ public class GammaSpecific_Process extends DataProcess
      */
     public void execute() throws ProcessException
     {
-    	
+    	double time = timeData.getData().getDoubleValue();
+    	String timeISO = DateTimeFormat.formatIso(time, 0);
     	double dose = alertData.getComponent("AverageGammaDose").getData().getDoubleValue();
-    	String toDisplay = "average dose: " + Double.toString(dose) + " uRad/min";
+    	String toDisplay = timeISO+": " + Double.toString(dose) + " uRad/min";
     	toDisplayData.getData().setStringValue(toDisplay);
-    	
+    	System.out.println(toDisplay);
     }
     
 }
