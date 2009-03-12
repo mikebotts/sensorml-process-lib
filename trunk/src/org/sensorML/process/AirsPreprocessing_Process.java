@@ -81,6 +81,29 @@ public class AirsPreprocessing_Process extends DataProcess
     @Override
     public void execute() throws ProcessException
     {
+    	
+    	cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT"));
+    	long currentTime = System.currentTimeMillis();
+    	cal.setTimeInMillis(currentTime);
+    	String yearD = Integer.toString(cal.get(Calendar.YEAR));     	
+    	String monthD = Integer.toString(cal.get(Calendar.MONTH)+1);
+    	String dayD = Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+    	String dayOfYearD = Integer.toString(cal.get(Calendar.DAY_OF_YEAR));
+    	
+    	if(dayD.length()==1)
+    		dayD = "0" + dayD;
+    	if(monthD.length()==1)
+    		monthD = "0" + monthD;
+    	if(dayOfYearD.length()==2)
+    		dayOfYearD = "0" + dayOfYearD;
+
+    	String destinationDirectoryDayPath =  dirPrefix + yearD + "/" + monthD + "/" + dayD + "/";
+		File dirDay = new File(destinationDirectoryDayPath);
+		
+    	if(!dirDay.exists()){
+    		dirDay.mkdirs();
+		}
+    	
     	int m = 3;
     	DataBlock AirsDataBlock = AirsData.getData(); 
     	startTime = AirsDataBlock.getDoubleValue(0);
@@ -199,43 +222,60 @@ public class AirsPreprocessing_Process extends DataProcess
 		else minuteS = Integer.toString(minute);
 		
     	processAndWriteData(latitude, longitude, landFrac, PSurfStd, topog, PBest, TAirSup, H2OCDSup, year, monthS, dayS,
-    			hourS, minuteS);
+    						hourS, minuteS);
     	
-    	try {
+    /*	try {
 			Runtime.getRuntime().exec("chmod 664 " + filepathWater); 
 			Runtime.getRuntime().exec("chmod 664 " + filepathLand);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-    	statusData.getData().setStringValue("completed");
-    	
+		} */
+    	if(scanLineNumber==0)
+    		statusData.getData().setStringValue("failed");
+    	else
+    		statusData.getData().setStringValue("completed");
      } 	 
 
 
 	public void processAndWriteData(double[][] latitude, double[][] longitude, float[][] landfrac,
 			float[][] psurf, float[][] elev, float[][] plevmax, float[][][] tprofK, float[][][] wcd, int year, String monthS, String dayS,
-			String hourS, String minuteS) {
+			String hourS, String minuteS){
 		
 		 		
 		PrintWriter printLand = null;
-		String filename = Integer.toString(year) + monthS + dayS + "_" + hourS + minuteS;
-		filepathWater = dirPrefix + filename + ".arw";
+		String filename = Integer.toString(year) + monthS + dayS + "_" + System.currentTimeMillis();
+		File dir = new File(dirPrefix + Integer.toString(year) + "/" + monthS + "/" + dayS + "/");
+		if(!dir.exists())
+			dir.mkdirs();
+		filepathWater = dirPrefix + Integer.toString(year) + "/" + monthS + "/" + dayS + "/" + filename + ".arw";
 		File land = new File(filepathWater);
-		try {
+		
+		try 
+		{
+			land.createNewFile();
 			printLand = new PrintWriter(land);
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		
 		PrintWriter printWater = null;		
-		filepathLand = dirPrefix + filename + ".arl";
+		filepathLand = dirPrefix + Integer.toString(year) + "/" + monthS + "/" + dayS + "/" + filename + ".arl";
 		File water = new File(filepathLand);
-		try {
+		
+		try 
+		{
+			water.createNewFile();
 			printWater = new PrintWriter(water);
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -451,13 +491,13 @@ for(int i=0; i<30; i++){
     		   nobs_l = nobs_l + 1;
 
     		   codeWater = "A000"+ Integer.toString(m);
-    		   if(n>9){
+    		   if(m>9){
     			   codeWater = "A00"+ Integer.toString(m);
     		   }
-    		   if(n>99){
+    		   if(m>99){
     			   codeWater = "A0"+ Integer.toString(m);
     		   }
-    		   if(n>999){
+    		   if(m>999){
     			   codeWater = "A"+ Integer.toString(m);
     		   }
     		   
