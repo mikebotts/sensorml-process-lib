@@ -82,7 +82,7 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
             yOutput = (DataValue)intersectionData.getComponent("y");         
             zOutput = (DataValue)intersectionData.getComponent("z");
             
-            // get handle to  heightAboveEllipsoid data
+            // get handle to heightAboveEllipsoid data
     		DataValue heightAboveEllipsoidData = (DataValue)paramData.getComponent("heightAboveEllipsoid");
     		if (heightAboveEllipsoidData != null)
     		{
@@ -103,7 +103,7 @@ public class RayIntersectEllipsoid2_Process extends DataProcess
             	// use WGS84
 	           	 Datum datum = new Datum();
 	           	 R[0] = datum.equatorRadius + heightAboveEllipsoid;
-	           	 R[1] = R[0] + heightAboveEllipsoid;
+	           	 R[1] = R[0];
 	           	 R[2] = datum.polarRadius + heightAboveEllipsoid;
             }
         }
