@@ -61,8 +61,8 @@ public class AirsPreprocessing_Process extends DataProcess
 	float[][][] TAirSup, H2OCDSup;
 	Calendar cal;
 	String filepathLand, filepathWater;
-	String dirPrefix = "C:/Data/Airs/ADAS/";
-	//String dirPrefix = "/data/publicweb/Smart/";
+	//String dirPrefix = "C:/Data/Airs/ADAS/";
+	String dirPrefix = "/data/publicweb/Smart/";
 	
     @Override
     public void init() throws ProcessException
@@ -224,13 +224,13 @@ public class AirsPreprocessing_Process extends DataProcess
     	processAndWriteData(latitude, longitude, landFrac, PSurfStd, topog, PBest, TAirSup, H2OCDSup, year, monthS, dayS,
     						hourS, minuteS);
     	
-    /*	try {
+    	try {
 			Runtime.getRuntime().exec("chmod 664 " + filepathWater); 
 			Runtime.getRuntime().exec("chmod 664 " + filepathLand);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} */
+		} 
     	if(scanLineNumber==0)
     		statusData.getData().setStringValue("failed");
     	else
