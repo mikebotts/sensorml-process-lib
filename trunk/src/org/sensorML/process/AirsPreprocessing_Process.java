@@ -61,8 +61,8 @@ public class AirsPreprocessing_Process extends DataProcess
 	float[][][] TAirSup, H2OCDSup;
 	Calendar cal;
 	String filepathLand, filepathWater;
-	String dirPrefix = "C:/Data/Airs/ADAS/";
-	//String dirPrefix = "/data/publicweb/Smart/";
+	//String dirPrefix = "C:/Data/Airs/ADAS/";
+	String dirPrefix = "/data/publicweb/Smart/";
 	
     @Override
     public void init() throws ProcessException
