@@ -72,10 +72,16 @@ public class AirsPreprocessing_Process extends DataProcess
     {
         try
         {
-        	String mapUrl2 = AirsPreprocessing_Process.class.getResource("./srtmProps.txt").toString();
-        	String part1 = mapUrl2.substring(0, mapUrl2.indexOf("/org/"));
-        	String filepath = part1.substring(0, part1.lastIndexOf("/")) + "/directorySetting.txt";
-        	filepath = filepath.substring(6);
+        	String mapUrl4 = AirsPreprocessing_Process.class.getResource("./srtmProps.txt").toString();
+        	String part1 = mapUrl4.substring(0, mapUrl4.indexOf("/org/"));
+        	String part2 = part1.substring(0, part1.lastIndexOf("/"));
+        	String filepath = part2.substring(6) + "/directorySetting.txt";
+        	File settingFile = new File(filepath);
+        	if(!settingFile.exists())
+        	{
+        		filepath = part2.substring(0, part2.lastIndexOf("/"));
+        		filepath = filepath.substring(6) + "/directorySetting.txt";
+        	}
         	BufferedReader reader = new BufferedReader(new FileReader(filepath));
         	String line = reader.readLine();
         	dirPrefix = line.substring(line.indexOf("=")+1);
