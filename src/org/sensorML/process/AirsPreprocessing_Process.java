@@ -25,8 +25,11 @@
 
 package org.sensorML.process;
 
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -61,21 +64,30 @@ public class AirsPreprocessing_Process extends DataProcess
 	float[][][] TAirSup, H2OCDSup;
 	Calendar cal;
 	String filepathLand, filepathWater;
-	//String dirPrefix = "C:/Data/Airs/ADAS/";
-	String dirPrefix = "/data/publicweb/Smart/";
+	String dirPrefix = "C:/Data/Airs/ADAS/";
+	//String dirPrefix = "/data/publicweb/Smart/";
 	
     @Override
     public void init() throws ProcessException
     {
         try
         {
-        	AirsData = inputData.getComponent(0);
+        	String mapUrl2 = AirsPreprocessing_Process.class.getResource("./srtmProps.txt").toString();
+        	String part1 = mapUrl2.substring(0, mapUrl2.indexOf("/org/"));
+        	String filepath = part1.substring(0, part1.lastIndexOf("/")) + "/directorySetting.txt";
+        	filepath = filepath.substring(6);
+        	BufferedReader reader = new BufferedReader(new FileReader(filepath));
+        	String line = reader.readLine();
+        	dirPrefix = line.substring(line.indexOf("=")+1);
+        	
+    		AirsData = inputData.getComponent(0);
         	statusData = outputData.getComponent("airsPreprocessingStatus");        	
         }
         catch (Exception e)
         {
             throw new ProcessException(ioError, e);
         }
+        
     }
     
     @Override
@@ -105,6 +117,7 @@ public class AirsPreprocessing_Process extends DataProcess
 		}
     	
     	int m = 3;
+
     	DataBlock AirsDataBlock = AirsData.getData(); 
     	startTime = AirsDataBlock.getDoubleValue(0);
     	stopTime = AirsDataBlock.getDoubleValue(1);
@@ -221,16 +234,17 @@ public class AirsPreprocessing_Process extends DataProcess
 		}
 		else minuteS = Integer.toString(minute);
 		
-    	processAndWriteData(latitude, longitude, landFrac, PSurfStd, topog, PBest, TAirSup, H2OCDSup, year, monthS, dayS,
-    						hourS, minuteS);
+		if(scanLineNumber!=0)
+			processAndWriteData(latitude, longitude, landFrac, PSurfStd, topog, PBest, TAirSup, H2OCDSup, year, monthS, dayS,
+    							hourS, minuteS);
     	
-    	try {
+    	/*try {
 			Runtime.getRuntime().exec("chmod 664 " + filepathWater); 
 			Runtime.getRuntime().exec("chmod 664 " + filepathLand);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		} */
     	if(scanLineNumber==0)
     		statusData.getData().setStringValue("failed");
     	else
