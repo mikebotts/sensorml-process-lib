@@ -22,10 +22,8 @@ package org.sensorML.process;
 
 import org.vast.data.*;
 import org.vast.process.*;
-
-// COMMENT(csdillard): com.bestcode.mathparser is NOT free software!
-//import com.bestcode.mathparser.IMathParser;
-//import com.bestcode.mathparser.MathParserFactory;
+import com.bestcode.mathparser.IMathParser;
+import com.bestcode.mathparser.MathParserFactory;
 
 /**
  * <p><b>Title:</b><br/>
@@ -80,11 +78,6 @@ public class EquationSolver_Process extends DataProcess
     @Override
     public void execute() throws ProcessException
     {
-    	// COMMENT(csdillard): This implementation requires com.bestcode.mathparser,
-    	// which is NOT free software.  So for the time being, this is commented
-    	// out and it throws an exception instead.
-    	throw new ProcessException("Not implemented");
-    	/*
     	equation = equationData.getData().getStringValue();
     	if(equation.contains("=")){
     		int equalSignPosition = equation.indexOf("=");
@@ -109,7 +102,6 @@ public class EquationSolver_Process extends DataProcess
 		}
 		
 		resultData.getData().setDoubleValue(result);
-		*/
 		
     }
 }
