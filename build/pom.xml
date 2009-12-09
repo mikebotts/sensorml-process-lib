@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>sensorml-profile-library</name>
+	<groupId>org.vast</groupId>
+	<artifactId>sensorml-profile-library</artifactId>
+	<version>0.8.3-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.vast</groupId>
+			<artifactId>sensorml-data-processing</artifactId>
+			<version>0.8.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.vast</groupId>
+			<artifactId>ows-service-framework</artifactId>
+			<version>0.2.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.vast</groupId>
+			<artifactId>swe-common-data-framework</artifactId>
+			<version>0.8.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>java3d</groupId>
+			<artifactId>vecmath</artifactId>
+			<version>1.3.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>1.9</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jivesoftware</groupId>
+			<artifactId>smack</artifactId>
+			<version>3.1.0</version>
+			<scope>compile</scope>
+		</dependency> 
+		<dependency>
+			<groupId>jivesoftware</groupId>
+			<artifactId>smackx</artifactId>
+			<version>3.1.0</version>
+			<scope>compile</scope>
+		</dependency> 
+	</dependencies>
+
+	<build>
+		<!-- Where to put output of the build -->
+		<directory>../target</directory>
+		<!-- Where to find source files -->
+		<sourceDirectory>../src</sourceDirectory>
+		<!-- Where to find test source files -->
+		<testSourceDirectory>../test</testSourceDirectory>
+		<!-- Everything in ../src that isn't ".java" goes in the jar -->
+		<resources>
+			<resource>
+				<directory>../src</directory>
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+		<!-- Everything in ../test that isn't ".java" is in classpath when running tests -->
+		<testResources>
+			<testResource>
+				<directory>../test</directory>
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</testResource>
+		</testResources>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<!-- Tell the compiler this is 1.5 source code. -->
+					<source>1.5</source>
+					<target>1.5</target>
+
+					<!-- Exclude bad files from the build -->
+					<!-- PENDING(CSD): Are these currently needed for any real work? -->
+					<excludes>
+						<exclude>org/sensorML/process/EquationSolver_Process.java</exclude>
+						<exclude>org/sensorML/process/SPS_Process.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
