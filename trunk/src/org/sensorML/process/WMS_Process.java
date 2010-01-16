@@ -31,10 +31,10 @@ import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vast.cdm.common.DataComponent;
 import org.vast.cdm.common.DataType;
 import org.vast.data.DataArray;
@@ -47,7 +47,6 @@ import org.vast.ows.wms.GetMapRequest;
 import org.vast.ows.wms.WMSLayerCapabilities;
 import org.vast.process.DataProcess;
 import org.vast.process.ProcessException;
-
 import org.vast.util.Bbox;
 import com.sun.media.jai.codec.MemoryCacheSeekableStream;
 
@@ -70,6 +69,7 @@ import com.sun.media.jai.codec.MemoryCacheSeekableStream;
  */
 public class WMS_Process extends DataProcess
 {
+    protected Log log = LogFactory.getLog(WMS_Process.class);
     protected DataValue bboxLat1, bboxLon1, bboxLat2, bboxLon2;
     protected DataValue outputWidth, outputHeight;
     protected DataArray outputImage;
@@ -81,6 +81,7 @@ public class WMS_Process extends DataProcess
     protected int originalHeight;
     protected boolean preserveAspectRatio = true;
     protected WMSLayerCapabilities caps;  //  need this for option chooser...
+    
 
     public WMS_Process()
     {
@@ -113,10 +114,8 @@ public class WMS_Process extends DataProcess
             outputHeight = (DataValue)output.getComponent("height");
             
             // image data type
-            //DataArray pixelData = (DataArray)outputImage.getComponent(0).getComponent(0).get;
-           // DataArray pixelData = (DataArray) arraySize.getComponent(0);
-            //DataArray rowData = (DataArray)outputImage.getComponent(0);
-            DataGroup pixelData = (DataGroup)outputImage.getComponent("row").getComponent("pixel");
+            DataArray imgRowData = (DataArray)outputImage.getArrayComponent();
+            DataGroup pixelData = (DataGroup)imgRowData.getArrayComponent();
             for (int i=0; i<pixelData.getComponentCount(); i++)
                 ((DataValue)pixelData.getComponent(i)).setDataType(DataType.BYTE);
         }
@@ -198,6 +197,8 @@ public class WMS_Process extends DataProcess
             initRequest();
             //switchBytes();
             
+            if (log.isDebugEnabled())
+                log.debug(owsUtils.buildURLQuery(request));
             URLConnection urlCon = owsUtils.sendGetRequest(request);
             
             //  Check on mimeType catches all three types (blank, inimage, xml)

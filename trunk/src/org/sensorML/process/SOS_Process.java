@@ -268,7 +268,7 @@ public class SOS_Process extends DataProcess implements DataHandler
                             // parse data stream
                             dataParser.parse(reader.getDataStream());                            
                             done = true;
-                            System.gc();
+                            //System.gc();
                         }
                     }
                     catch (Exception e)
