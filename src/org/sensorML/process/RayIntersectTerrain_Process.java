@@ -20,6 +20,7 @@
 
 package org.sensorML.process;
 
+import java.io.IOException;
 import org.vast.physics.Datum;
 import org.vast.physics.MapProjection;
 import org.vast.process.*;
@@ -58,6 +59,7 @@ public class RayIntersectTerrain_Process extends DataProcess
     protected double xOrigin, yOrigin;
     protected double xOffset, yOffset;
     protected double meanGridAltitude = 0.0;
+    protected SRTMUtil util = new SRTMUtil();
     
 
     public RayIntersectTerrain_Process()
@@ -103,7 +105,7 @@ public class RayIntersectTerrain_Process extends DataProcess
     
     public void execute() throws ProcessException
     {
-        double maxError = 10; // 10m
+        double maxError = 15; // 10m
         double error = 0.0;
         double altitude = meanGridAltitude;
         double x, y, z;
@@ -119,6 +121,7 @@ public class RayIntersectTerrain_Process extends DataProcess
         U0[1] = dyInput.getData().getDoubleValue();
         U0[2] = dzInput.getData().getDoubleValue();
         
+        System.out.println("\n----");
     	do
     	{
 	        // compute new ellipsoid radius by adding altitude
@@ -185,6 +188,9 @@ public class RayIntersectTerrain_Process extends DataProcess
 	        double[] lla = MapProjection.ECFtoLLA(x, y, z, datum);
 	        altitude = getAltitude(lla[0], lla[1]);
 	        error = Math.abs(altitude - lla[2]);
+	        
+	        System.out.println("altitude = " + altitude);
+	        System.out.println("error = " + error);
     	}
     	while (error > maxError);
     	
@@ -197,6 +203,16 @@ public class RayIntersectTerrain_Process extends DataProcess
     
     protected double getAltitude(double lon, double lat)
     {
-    	return Math.sin(lon*10000) * 1000;
+        try
+        {
+            return util.getInterpolatedElevation(lat*180./Math.PI, lon*180./Math.PI);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return 0.0;
+        }
+        
+        //return Math.sin(lon*10000) * 1000;
     }
 }
