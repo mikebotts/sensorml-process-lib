@@ -68,8 +68,9 @@ public class SRTMUtil {
 		BilinearInterpolation bi = new BilinearInterpolation();
 		bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
 		double result = bi.interpolate(lon, lat);
-
+		//System.out.println(result + " m");
 		return result;
+		//return corners[0].z;
 	}
 
 	private boolean fileContains(double lat, double lon){
@@ -93,18 +94,18 @@ public class SRTMUtil {
 		int x1 = (int)lonIndexD;
 		int x2 = (int)lonIndexD+1;
 		int y1 = (int)latIndexD;
-		int y2 = (int)latIndexD + 1;
+		int y2 = (int)latIndexD+1;
 		//  Get Elevations for corners
-		seek(x1, y1);
+		seek(x1, NUM_ROWS_FILE - y1);
 		short z11 = readShort();
 	    short z21 = readShort();
-	    seek(x1, y2);
+	    seek(x1, NUM_ROWS_FILE - y2);
 	    short z12 = readShort();
 	    short z22 = readShort();
-		corners[0] = new Vector3d(lon0 + (double)x1/(NUM_ROWS_FILE), lat0 + (double)y1/(NUM_COLS_FILE), z11);
-		corners[1] = new Vector3d(lon0 + (double)x1/(NUM_ROWS_FILE), lat0 + (double)y2/(NUM_COLS_FILE), z12);
-		corners[2] = new Vector3d(lon0 + (double)x2/(NUM_ROWS_FILE), lat0 + (double)y1/(NUM_COLS_FILE), z21);
-		corners[3] = new Vector3d(lon0 + (double)x2/(NUM_ROWS_FILE), lat0 + (double)y2/(NUM_COLS_FILE), z22);
+		corners[0] = new Vector3d(lon0 + (double)x1/(NUM_COLS_FILE), lat0 + (double)y1/(NUM_ROWS_FILE), z11);
+		corners[1] = new Vector3d(lon0 + (double)x1/(NUM_COLS_FILE), lat0 + (double)y2/(NUM_ROWS_FILE), z12);
+		corners[2] = new Vector3d(lon0 + (double)x2/(NUM_COLS_FILE), lat0 + (double)y1/(NUM_ROWS_FILE), z21);
+		corners[3] = new Vector3d(lon0 + (double)x2/(NUM_COLS_FILE), lat0 + (double)y2/(NUM_ROWS_FILE), z22);
 //		System.err.println(corners[0]);
 //		System.err.println(corners[1]);
 //		System.err.println(corners[2]);
@@ -158,6 +159,7 @@ public class SRTMUtil {
 		lat0 = (int)lat;
 		lon0 = (int)lon - 1.0;
 		String filename = "N" + toTwoChar((int)lat) + "W" + toThreeChar(Math.abs((int)lon0)) + ".hgt";
+		//System.out.println("Using file " + filename);
 		openFile(dataRoot + filename);
 		return dataRoot + filename;
 	}
