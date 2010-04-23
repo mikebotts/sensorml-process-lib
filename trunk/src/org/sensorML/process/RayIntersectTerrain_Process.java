@@ -21,6 +21,8 @@
 package org.sensorML.process;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vast.physics.Datum;
 import org.vast.physics.MapProjection;
 import org.vast.process.*;
@@ -45,6 +47,8 @@ import org.vast.data.*;
  */
 public class RayIntersectTerrain_Process extends DataProcess
 {
+    protected Log log = LogFactory.getLog(RayIntersectTerrain_Process.class);
+    
     protected DataValue xInput, yInput, zInput;
     protected DataValue heightAdjustmentParam;
     protected DataValue dxInput, dyInput, dzInput;
@@ -121,8 +125,7 @@ public class RayIntersectTerrain_Process extends DataProcess
         U0[1] = dyInput.getData().getDoubleValue();
         U0[2] = dzInput.getData().getDoubleValue();
         
-        System.out.println("\n----");
-    	do
+        do
     	{
 	        // compute new ellipsoid radius by adding altitude
 	        R[0] = R[1] = datum.equatorRadius + heightAdjustment + altitude;
@@ -188,9 +191,6 @@ public class RayIntersectTerrain_Process extends DataProcess
 	        double[] lla = MapProjection.ECFtoLLA(x, y, z, datum);
 	        altitude = getAltitude(lla[0], lla[1]);
 	        error = Math.abs(altitude - lla[2]);
-	        
-	        System.out.println("altitude = " + altitude);
-	        System.out.println("error = " + error);
     	}
     	while (error > maxError);
     	
@@ -212,7 +212,5 @@ public class RayIntersectTerrain_Process extends DataProcess
             e.printStackTrace();
             return 0.0;
         }
-        
-        //return Math.sin(lon*10000) * 1000;
     }
 }

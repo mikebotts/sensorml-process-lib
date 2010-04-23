@@ -15,6 +15,7 @@ import org.vast.math.BilinearInterpolation;
 //for the WRTM WCS to make it more accesible to SRTM Process
 public class SRTMUtil {
 	String dataRoot;  // Place in props file
+	String filename;
 	RandomAccessFile file = null;	
 	static final double RES_1ARCSEC = 1.0/3600.0;  // .0027777777
 	public static int NUM_ROWS_FILE = 3601, NUM_COLS_FILE = 3601;
@@ -64,13 +65,12 @@ public class SRTMUtil {
 		//  Is lat lon actually in the currently opened file?
 		openFile(lat,lon);
 		//  Compute the 4 corners containing this lat lon
-		Vector3d [] corners = getCorners(lat, lon);
+		Vector3d [] corners = getCorners(lat, lon);		
 		BilinearInterpolation bi = new BilinearInterpolation();
 		bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
 		double result = bi.interpolate(lon, lat);
 		//System.out.println(result + " m");
 		return result;
-		//return corners[0].z;
 	}
 
 	private boolean fileContains(double lat, double lon){
@@ -158,9 +158,16 @@ public class SRTMUtil {
 	public String openFile(double lat, double lon) throws IOException {
 		lat0 = (int)lat;
 		lon0 = (int)lon - 1.0;
-		String filename = "N" + toTwoChar((int)lat) + "W" + toThreeChar(Math.abs((int)lon0)) + ".hgt";
+		String filename = "N" + toTwoChar((int)lat0) + "W" + toThreeChar(Math.abs((int)lon0)) + ".hgt";
 		//System.out.println("Using file " + filename);
-		openFile(dataRoot + filename);
+		
+		// reuse or open file
+		if (this.filename == null || this.filename.equals(filename)) {
+		    if (file != null)
+		        file.close();
+		    openFile(dataRoot + filename);
+		}
+		
 		return dataRoot + filename;
 	}
 
