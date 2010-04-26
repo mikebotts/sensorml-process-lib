@@ -52,6 +52,7 @@ public class EquationSolver_Process extends DataProcess
 	Error e;
 	DataValue[] inputsData;
 	AbstractDataComponent equationData, resultData;
+	IMathParser parser;
 	
     @Override
     public void init() throws ProcessException
@@ -62,12 +63,20 @@ public class EquationSolver_Process extends DataProcess
         	resultData = outputData.getComponent("result");
         	numberOfInputs = inputData.getComponentCount();
         	
-        	inputsData = new DataValue[numberOfInputs];
-        	
+        	inputsData = new DataValue[numberOfInputs];        	
         	for(int i=0; i<numberOfInputs; i++){
         		inputsData[i] = (DataValue)inputData.getComponent(i);
         	}
-
+        	
+        	// init equation solver
+        	equation = equationData.getData().getStringValue();
+            if(equation.contains("=")){
+                int equalSignPosition = equation.indexOf("=");
+                equation = equation.substring(equalSignPosition+1);
+            }
+            
+        	parser = MathParserFactory.create();
+            parser.setExpression(equation);
         }
         catch (Exception e)
         {
@@ -78,15 +87,7 @@ public class EquationSolver_Process extends DataProcess
     @Override
     public void execute() throws ProcessException
     {
-    	equation = equationData.getData().getStringValue();
-    	if(equation.contains("=")){
-    		int equalSignPosition = equation.indexOf("=");
-    		equation = equation.substring(equalSignPosition+1);
-    	}
-    	
-    	IMathParser parser = MathParserFactory.create();
-		parser.setExpression(equation);
-
+    	// get result from math expression
 		try {
 			for(int i = 0; i<numberOfInputs; i++){
 				parser.setVariable(inputsData[i].getName(),inputsData[i].getData().getDoubleValue());
@@ -101,7 +102,6 @@ public class EquationSolver_Process extends DataProcess
 			throw new ProcessException("The result is infinity, you must have divided by 0.", e);
 		}
 		
-		resultData.getData().setDoubleValue(result);
-		
+		resultData.getData().setDoubleValue(result);		
     }
 }
