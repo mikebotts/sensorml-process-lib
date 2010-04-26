@@ -56,7 +56,7 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
    AbstractDataComponent decenteringCoefficientsData;
    AbstractDataComponent pixelGridCoordinatesData, viewVectorData;
    DataValue rData, cData, xData, yData, zData;   
-   double focalLength, numberOfRowsInImage, numberOfColumnsInImage, rowSpacing, columnSpacing;
+   double numberOfRowsInImage, numberOfColumnsInImage, rowSpacing, columnSpacing;
    double x0, y0;
    double a1, b1, c1, a2, b2, c2;
    double k1, k2, k3;
@@ -87,8 +87,7 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
     	  
          // initialize parameters mapping
     	  focalLengthData = paramData.getComponent("focalLength");
-    	  focalLength = focalLengthData.getData().getDoubleValue();
-    	  
+    	      	  
     	  pixelGridCharacteristicsData = paramData.getComponent("pixelGridCharacteristics");
     	  numberOfRowsInImage = pixelGridCharacteristicsData.getComponent("numberOfRowsInImage").getData().getDoubleValue();
     	  numberOfColumnsInImage = pixelGridCharacteristicsData.getComponent("numberOfColumnsInImage").getData().getDoubleValue();
@@ -131,7 +130,8 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
 	  // get the value of the inputs
 	  double r = rData.getData().getDoubleValue();
 	  double c = cData.getData().getDoubleValue();
-
+	  double focalLength = focalLengthData.getData().getDoubleValue();
+	  
 	  double x = 0, y = 0, z = 0; 	
 	  
 	// goes from image pixel space with corner as origin to centered image pixel space
@@ -153,8 +153,8 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
 	//  double Ypixel = a2*l + b2*s + c2;
 	  
 	  // goes from image pixel space to image mm space
-	  double X = l * columnSpacing; //Ypixel * rowSpacing;
-	  double Y = s * rowSpacing;//Xpixel * columnSpacing;
+	  double X = l * rowSpacing; //Ypixel * rowSpacing;
+	  double Y = s * columnSpacing;//Xpixel * columnSpacing;
 	  
 	  double xbar = X - x0;
       double ybar = Y - y0;
@@ -178,13 +178,11 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
 	  xData.getData().setDoubleValue(v.x);
 	  yData.getData().setDoubleValue(v.y);
 	  zData.getData().setDoubleValue(v.z);
-
-	  
+      
 	  // get the value to the outputs
 //	  xData.getData().setDoubleValue(x);
 //	  yData.getData().setDoubleValue(y);
-//	  zData.getData().setDoubleValue(z);
-	  
+//	  zData.getData().setDoubleValue(z);	  
 	 }
 
 }
