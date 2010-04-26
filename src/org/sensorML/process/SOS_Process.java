@@ -28,11 +28,12 @@ package org.sensorML.process;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.vast.cdm.common.DataBlock;
 import org.vast.cdm.common.DataComponent;
 import org.vast.cdm.common.DataHandler;
 import org.vast.cdm.common.DataStreamParser;
-import org.vast.cdm.common.DataType;
 import org.vast.data.*;
 import org.vast.math.Vector3d;
 import org.vast.ogc.OGCRegistry;
@@ -41,8 +42,6 @@ import org.vast.ows.OWSUtils;
 import org.vast.ows.sos.GetObservationRequest;
 import org.vast.util.TimeInfo;
 import org.vast.process.*;
-import org.vast.sweCommon.SweConstants;
-import org.vast.unit.UnitConversion;
 import org.vast.unit.UnitConverter;
 import org.vast.util.TimeExtent;
 
@@ -64,6 +63,8 @@ import org.vast.util.TimeExtent;
  */
 public class SOS_Process extends DataProcess implements DataHandler
 {
+    protected Log log = LogFactory.getLog(SOS_Process.class);
+    
     protected DataValue bboxLat1, bboxLon1, bboxLat2, bboxLon2;
     protected DataValue inputStartTime, inputStopTime, inputStepTime;
     protected DataComponent outputObsInfo, outputObsData;
@@ -248,9 +249,15 @@ public class SOS_Process extends DataProcess implements DataHandler
                             
                             // select request type (post or get)
                             if(usePost)
+                            {
                             	dataStream = owsUtils.sendPostRequest(request).getInputStream();
-                            else 
-                            	dataStream = owsUtils.sendGetRequest(request).getInputStream();
+                            }
+                            else
+                            {
+                                if (log.isDebugEnabled())
+                                    log.debug(owsUtils.buildURLQuery(request));
+                                dataStream = owsUtils.sendGetRequest(request).getInputStream();
+                            }
                             
                             // create reader and parse response
                             ObservationStreamReader reader = (ObservationStreamReader)OGCRegistry.createReader("OM", "ObservationStream", request.getVersion());
@@ -318,7 +325,7 @@ public class SOS_Process extends DataProcess implements DataHandler
             {
                 String server = request.getPostServer();
                 if (server == null)
-                    server = request.getGetServer();                
+                    server = request.getGetServer();
                 throw new ProcessException("Error while reading data from SOS server: " + server, lastException);
             }
         
@@ -449,27 +456,7 @@ public class SOS_Process extends DataProcess implements DataHandler
 
 
     public void endDataAtom(DataComponent info, DataBlock data)
-    {
-        DataType dataType = data.getDataType();
-        
-        // TODO unit conversion WILL be handled by global chain unit converters
-        if (dataType != DataType.UTF_STRING && dataType != DataType.ASCII_STRING)
-        {
-            UnitConverter converter = converters.get(info);
-            
-            if (converter == null)
-            {
-                String uom = (String)info.getProperty(SweConstants.UOM_CODE);
-                converter = UnitConversion.createConverterToSI(uom);
-                converters.put(info, converter);
-            }
-            
-            // convert to SI
-            double newVal = converter.convert(data.getDoubleValue());
-            data.setDoubleValue(newVal);
-        }
-        
-        //System.out.println(info.getName() + ": " + data.getStringValue());
+    {        
     }
 
 

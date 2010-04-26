@@ -1,5 +1,6 @@
 package org.sensorML.process;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -62,15 +63,18 @@ public class SRTMUtil {
 	//  Convenience method to do everything in one call.
 	//  If optimization is needed, don't use this method, but do the steps individually
 	public double getInterpolatedElevation(double lat, double lon) throws IOException{
-		//  Is lat lon actually in the currently opened file?
-		openFile(lat,lon);
-		//  Compute the 4 corners containing this lat lon
-		Vector3d [] corners = getCorners(lat, lon);		
-		BilinearInterpolation bi = new BilinearInterpolation();
-		bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
-		double result = bi.interpolate(lon, lat);
-		//System.out.println(result + " m");
-		return result;
+	    // Open file containing lat/lon point?
+        openFile(lat,lon);
+        //if (file == null)
+        //    return 0.0;
+        
+        // Compute the 4 corners containing this lat lon
+        Vector3d [] corners = getCorners(lat, lon);     
+        BilinearInterpolation bi = new BilinearInterpolation();
+        bi.setCorners(corners[0], corners[1], corners[2], corners[3]);
+        double result = bi.interpolate(lon, lat);
+        //System.out.println(result + " m");
+        return result;
 	}
 
 	private boolean fileContains(double lat, double lon){
@@ -165,7 +169,17 @@ public class SRTMUtil {
 		if (this.filename == null || this.filename.equals(filename)) {
 		    if (file != null)
 		        file.close();
-		    openFile(dataRoot + filename);
+		    try
+            {
+		        this.filename = filename;
+		        openFile(dataRoot + filename);
+            }
+		    catch (FileNotFoundException e)
+	        {            
+	            System.err.println(e.getMessage());
+	            file = null;
+	            return null;
+	        }
 		}
 		
 		return dataRoot + filename;
