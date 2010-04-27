@@ -22,6 +22,7 @@ package org.sensorML.process;
 
 import java.util.*;
 import org.vast.cdm.common.DataBlock;
+import org.vast.cdm.common.DataComponent;
 import org.vast.data.*;
 import org.vast.process.*;
 
@@ -43,16 +44,23 @@ import org.vast.process.*;
  */
 public class TimeSynchronizer_Process extends DataProcess
 {
-	int masterTimeIndex, slaveTimeIndex, dataInSlaveIndex, dataOutSlaveIndex;
-	int dataInMasterIndex, dataOutMasterIndex;    
-	DataValue masterTimeData, slaveTimeData, computationalMethodData, slaveTimeIndexInDataInData;
-	AbstractDataComponent dataInSlave, dataOutSlave, dataInMaster, dataOutMaster;
-    boolean nextMasterTime, nextSlaveTime, nextOutput;
-    double masterTime;
-    LinkedList<SlaveData> slaveDataStack = new LinkedList<SlaveData>();
-    int interpolationOrder = 1;
-    String computationalMethod;
-    DataBlock masterBlock;
+    protected enum Interpolation
+	{
+	    STEP,
+	    LINEAR
+	}
+    
+    protected int masterTimeIndex, slaveTimeIndex;
+    protected int dataInSlaveIndex, dataOutSlaveIndex;
+    protected DataValue masterTimeData, slaveTimeData;
+    protected DataComponent dataInSlave, dataOutSlave;
+    protected DataValue interpolationMethodData;
+	
+    protected boolean nextMasterTime, nextSlaveTime, outputReady;
+    protected double masterTime;
+    protected LinkedList<SlaveData> slaveDataStack = new LinkedList<SlaveData>();
+    protected Interpolation interpolation;
+
     
 	class SlaveData
 	{
@@ -77,18 +85,23 @@ public class TimeSynchronizer_Process extends DataProcess
             slaveTimeIndex = inputData.getComponentIndex("slaveTime");
             slaveTimeData = (DataValue)inputData.getComponent(slaveTimeIndex);
             
-            dataInSlaveIndex = inputData.getComponentIndex("dataInSlave");
+            dataInSlaveIndex = inputData.getComponentIndex("dataIn");
             dataInSlave = inputData.getComponent(dataInSlaveIndex);
-            dataOutSlaveIndex = outputData.getComponentIndex("dataOutSlave");
+            dataOutSlaveIndex = outputData.getComponentIndex("dataOut");
         	dataOutSlave = outputData.getComponent(dataOutSlaveIndex);
         	
-        	dataInMasterIndex = inputData.getComponentIndex("dataInMaster");
-            dataInMaster = inputData.getComponent(dataInMasterIndex);
-            dataOutMasterIndex = outputData.getComponentIndex("dataOutMaster");
-        	dataOutMaster = outputData.getComponent(dataOutMasterIndex);
+        	interpolationMethodData = (DataValue)paramData.getComponent("interpolationMethod");
+        	if (interpolationMethodData != null)
+        	{
+        	    String method = interpolationMethodData.getData().getStringValue();
+        	    if (method.equalsIgnoreCase("step"))
+                    interpolation = Interpolation.STEP;
+        	    else if (method.equalsIgnoreCase("linear"))
+        	        interpolation = Interpolation.LINEAR;
+        	}
+        	else
+        	    interpolation = Interpolation.STEP;
         	
-        	computationalMethodData = (DataValue)paramData.getComponent("computationalMethod");
-        	computationalMethod = computationalMethodData.getData().getStringValue();
         	// TODO check if dataIn and dataOut have the same structure
         }
         catch (Exception e)
@@ -101,130 +114,101 @@ public class TimeSynchronizer_Process extends DataProcess
     @Override
     public void reset()
     {
-        nextMasterTimeNeeded();
+        bothTimeNeeded();
+        outputReady = false;
+        masterTime = Double.MAX_VALUE;
         slaveDataStack.clear();
     }
     
 
     @Override
     public void execute() throws ProcessException
-    {
-    	   	
-    	if(computationalMethod.equalsIgnoreCase("step"))
+    {    	   	
+        if (interpolation == Interpolation.STEP)
     	{
-    		// get next master time when needed
-    		if (nextMasterTime)
-    		{
-    			masterTime = masterTimeData.getData().getDoubleValue();
-    			masterBlock = dataInMaster.getData();
-    			System.out.println("Master Time: " + masterTime);
-               
-    			if (slaveDataStack.size() > 0 &&
-    					slaveDataStack.getLast().time >= masterTime)
-    			{
-    				lowerStep();
-    		//		nextOutput();
-    			}
-    			else
-    				nextSlaveTimeNeeded();
-    		}        
-            
-    		// keep getting slave time until slaveTime >= masterTime
-    		else if (nextSlaveTime)
-    		{
-    			double slaveTime = slaveTimeData.getData().getDoubleValue();
-    			System.out.println("Slave Time: " + slaveTime);
-    			DataBlock slaveBlock = dataInSlave.getData();
-    			SlaveData newData = new SlaveData(slaveTime, slaveBlock);
-    			slaveDataStack.add(newData);
-    			
-    			
-    			// remove oldest item if stack size reached interp order
-    			if (slaveDataStack.size() > 2)
-    				slaveDataStack.remove(0);
+            // keep getting slave time until slaveTime >= masterTime
+            if (nextSlaveTime)
+            {
+                double slaveTime = slaveTimeData.getData().getDoubleValue();
+                //System.out.println("Slave Time: " + slaveTime);
+                DataBlock slaveBlock = dataInSlave.getData();
+                SlaveData newData = new SlaveData(slaveTime, slaveBlock);
+                slaveDataStack.add(newData);                
+                
+                // remove oldest item if stack size reached interp order
+                if (slaveDataStack.size() > 2)
+                    slaveDataStack.remove(0);
                            
-    			if (slaveTime >= masterTime)
-    			{
-    				lowerStep();
-    			//	nextOutput();
-    			}
-    		}
-            
-    		// set state to get next master time value
-    		else if (nextOutput)
-    			nextMasterTimeNeeded();
+                if (slaveTime >= masterTime)
+                    lowerStep();
+            }
+    		
+            // get next master time when needed
+    		if (nextMasterTime)
+            {
+                masterTime = masterTimeData.getData().getDoubleValue() + 1.5;
+                //System.out.println("Master Time: " + masterTime);
+               
+                if (!slaveDataStack.isEmpty() && slaveDataStack.getLast().time >= masterTime)
+                    lowerStep();
+                else
+                    nextSlaveTimeNeeded();
+            }
     	}	
     	
-    	if(computationalMethod.equalsIgnoreCase("linearInterpolation"))
+    	else if (interpolation == Interpolation.LINEAR)
     	{
-    		// get next master time when needed
-    		if (nextMasterTime)
-        	{
-            	masterTime = masterTimeData.getData().getDoubleValue();
-            	//System.out.println("Master Time: " + masterTime);
+    	    // keep getting slave time until slaveTime >= masterTime
+            if (nextSlaveTime)
+            {
+                double slaveTime = slaveTimeData.getData().getDoubleValue();
+                //System.out.println("Slave Time: " + slaveTime);
+                DataBlock slaveBlock = dataInSlave.getData();
+                SlaveData newData = new SlaveData(slaveTime, slaveBlock);
+                slaveDataStack.add(newData);                
+                
+                // remove oldest item if stack size reached interp order
+                if (slaveDataStack.size() > 2)
+                    slaveDataStack.removeFirst();
+                           
+                if (slaveTime >= masterTime)
+                    interpolateOrder1();
+            }
             
-            	if (slaveDataStack.size() > 0 &&
-            		slaveDataStack.getLast().time >= masterTime)
-            	{
-                	lowerStep();
-                	nextOutput();
-            	}
-            	else
-            		nextSlaveTimeNeeded();
-        	}        
-        
-        	// keep getting slave time until slaveTime >= masterTime
-        	else if (nextSlaveTime)
-        	{
-            	double slaveTime = slaveTimeData.getData().getDoubleValue();
-            	DataBlock slaveBlock = dataInSlave.getData();
-            	SlaveData newData = new SlaveData(slaveTime, slaveBlock);
-            	slaveDataStack.add(newData);
-            	//System.out.println("Slave Time: " + slaveTime);
-            
-            	// remove oldest item if stack size reached interp order
-            	if (slaveDataStack.size() > 2)
-                	slaveDataStack.remove(0);
-                        
-            	if (slaveTime >= masterTime)
-            	{
-                	interpolateOrder1();
-                	nextOutput();
-            	}
-        	}
-        
-        	// set state to get next master time value
-        	else if (nextOutput)
-        		nextMasterTimeNeeded();
+            // get next master time when needed
+            if (nextMasterTime)
+            {
+                masterTime = masterTimeData.getData().getDoubleValue() + 1.5;
+                //System.out.println("Master Time: " + masterTime);
+               
+                if (!slaveDataStack.isEmpty() && slaveDataStack.getLast().time >= masterTime)
+                    interpolateOrder1();
+                else
+                    nextSlaveTimeNeeded();
+            }
     	}
+    }
+    
+    
+    @Override
+    protected void setAvailability(List<ConnectionList> connections, boolean availability)
+    {
+        if (connections == outputConnections)
+        {
+            super.setAvailability(connections, outputReady);
+            outputReady = false;
+        }
+        else
+            super.setAvailability(connections, availability);
     }
     
     
     protected void lowerStep()
     {
-        if (slaveDataStack.size() == 2)
-        {
-            double currentTime = slaveDataStack.get(1).time;
-            double previousTime = slaveDataStack.get(0).time;
-            if(masterTime<currentTime && masterTime>previousTime)
-            {
-            	dataOutSlave.setData(slaveDataStack.get(0).data);
-            	dataOutMaster.setData(masterBlock);
-            	nextOutput();
-            }
-            else if(masterTime<previousTime)
-            {
-            	nextMasterTimeNeeded();
-            }
-            else if(masterTime>currentTime)
-            {
-            	nextSlaveTimeNeeded();
-            }
-        }
-        else if (slaveDataStack.size() < 2)
-        {
-        	nextSlaveTimeNeeded();
-        }
+        //System.out.println("Using data at time " + slaveDataStack.getFirst().time);
+        dataOutSlave.setData(slaveDataStack.getFirst().data);            
+        nextMasterTimeNeeded();
+        outputReady = true;
     }
     
     
@@ -252,8 +236,22 @@ public class TimeSynchronizer_Process extends DataProcess
         }
         else
         {
-            dataOutSlave.setData(slaveDataStack.get(0).data);
+            dataOutSlave.setData(slaveDataStack.getFirst().data);
         }
+        
+        nextMasterTimeNeeded();
+        outputReady = true;
+    }
+    
+    
+    protected void bothTimeNeeded()
+    {
+        inputConnections.get(masterTimeIndex).setNeeded(true);
+        inputConnections.get(slaveTimeIndex).setNeeded(true);
+        inputConnections.get(dataInSlaveIndex).setNeeded(true);
+        nextMasterTime = true;
+        nextSlaveTime = true;
+        //System.out.println("Waiting for next master time + slave time");
     }
     
     
@@ -262,12 +260,9 @@ public class TimeSynchronizer_Process extends DataProcess
         inputConnections.get(masterTimeIndex).setNeeded(true);
         inputConnections.get(slaveTimeIndex).setNeeded(false);
         inputConnections.get(dataInSlaveIndex).setNeeded(false);
-        outputConnections.get(dataOutSlaveIndex).setNeeded(false);
-        inputConnections.get(dataInMasterIndex).setNeeded(true);
-        outputConnections.get(dataOutMasterIndex).setNeeded(false);
         nextMasterTime = true;
         nextSlaveTime = false;
-        nextOutput = false;
+        //System.out.println("Waiting for next master time");
     }
     
     
@@ -276,25 +271,8 @@ public class TimeSynchronizer_Process extends DataProcess
         inputConnections.get(masterTimeIndex).setNeeded(false);
         inputConnections.get(slaveTimeIndex).setNeeded(true);
         inputConnections.get(dataInSlaveIndex).setNeeded(true);
-        outputConnections.get(dataOutSlaveIndex).setNeeded(false);
-        inputConnections.get(dataInMasterIndex).setNeeded(false);
-        outputConnections.get(dataOutMasterIndex).setNeeded(false);
         nextMasterTime = false;
         nextSlaveTime = true;
-        nextOutput = false;
-    }
-    
-    
-    protected void nextOutput()
-    {
-        inputConnections.get(masterTimeIndex).setNeeded(false);
-        inputConnections.get(slaveTimeIndex).setNeeded(false);
-        inputConnections.get(dataInSlaveIndex).setNeeded(false);
-        outputConnections.get(dataOutSlaveIndex).setNeeded(true);
-        inputConnections.get(dataInMasterIndex).setNeeded(false);
-        outputConnections.get(dataOutMasterIndex).setNeeded(true);
-        nextMasterTime = false;
-        nextSlaveTime = false;
-        nextOutput = true;
+        //System.out.println("Waiting for next slave time");
     }
 }
