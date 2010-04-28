@@ -146,7 +146,7 @@ public class TimeSynchronizer_Process extends DataProcess
             // get next master time when needed
     		if (nextMasterTime)
             {
-                masterTime = masterTimeData.getData().getDoubleValue() + 1.5;
+                masterTime = masterTimeData.getData().getDoubleValue();
                 //System.out.println("Master Time: " + masterTime);
                
                 if (!slaveDataStack.isEmpty() && slaveDataStack.getLast().time >= masterTime)
@@ -178,7 +178,7 @@ public class TimeSynchronizer_Process extends DataProcess
             // get next master time when needed
             if (nextMasterTime)
             {
-                masterTime = masterTimeData.getData().getDoubleValue() + 1.5;
+                masterTime = masterTimeData.getData().getDoubleValue();
                 //System.out.println("Master Time: " + masterTime);
                
                 if (!slaveDataStack.isEmpty() && slaveDataStack.getLast().time >= masterTime)
