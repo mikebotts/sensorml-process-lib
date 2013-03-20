@@ -236,8 +236,9 @@ public class WCS_Process extends DataProcess
         double dX = Math.abs(maxX - minX);
         double dY = Math.abs(maxY - minY);
         
-        request.setSkipX((int)Math.round(dY*10) + 1);
-        request.setSkipY((int)Math.round(dX*10) + 1);
+        // hack to automatically set skip factor according to BBOX
+        request.setSkipX((int)Math.round(dY*20) + 1);
+        request.setSkipY((int)Math.round(dX*20) + 1);
     }
     
     

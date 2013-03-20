@@ -40,7 +40,6 @@ import org.vast.ogc.OGCRegistry;
 import org.vast.ogc.om.ObservationStreamReader;
 import org.vast.ows.OWSUtils;
 import org.vast.ows.sos.GetObservationRequest;
-import org.vast.util.TimeInfo;
 import org.vast.process.*;
 import org.vast.unit.UnitConverter;
 import org.vast.util.TimeExtent;
@@ -371,7 +370,7 @@ public class SOS_Process extends DataProcess implements DataHandler
             double start = inputStartTime.getData().getDoubleValue();
             double stop = inputStopTime.getData().getDoubleValue();
             double step = inputStepTime.getData().getDoubleValue();
-            request.setTime(new TimeInfo());
+            request.setTime(new TimeExtent());
             
             if (start == TimeExtent.NOW && stop == TimeExtent.NOW)
             {
