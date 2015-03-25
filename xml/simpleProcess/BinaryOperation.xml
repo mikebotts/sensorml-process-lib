@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sml:SimpleProcess gml:id="BinaryOperation" xml:lang="en"
+	definition="http://sensorml.com/def/process/BinaryOperation" xmlns:sml="http://www.opengis.net/sensorml/2.0"
+	xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/sensorml/2.0 http://schemas.opengis.net/sensorml/2.0/sensorML.xsd">
+	    
+	<gml:description>
+	Operator working on two numbers (e.g. addition, subtraction, multiplication, division, power).
+	e.g. N1+N2, N1-N2, N1*N2, N1/N2, Math.pow(N1,N2)
+	</gml:description>	    
+	<gml:identifier codeSpace="uid">urn:sensorml:xml:binaryOperation</gml:identifier>
+	    
+	<gml:name>Binary Operator</gml:name>
+
+	<sml:inputs>
+		<sml:InputList>
+			<sml:input name="operand1">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/operand" />
+			</sml:input>
+			<sml:input name="operand2">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/operand" />
+			</sml:input>
+		</sml:InputList>
+	</sml:inputs>
+	<sml:outputs>
+		<sml:OutputList>
+			<sml:output name="result">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/result"/>
+			</sml:output>
+		</sml:OutputList>
+	</sml:outputs>
+	<sml:parameters>
+		<sml:ParameterList>
+			<sml:parameter name="operator">
+				<swe:Category definition="http://sensorml.com/ont/swe/property/mathematicalOperator">
+					<swe:constraint>
+						<swe:AllowedTokens>
+							<swe:value>multiplication</swe:value>
+							<swe:value>division</swe:value>
+							<swe:value>addition</swe:value>
+							<swe:value>subtraction</swe:value>
+							<swe:value>power</swe:value>
+						</swe:AllowedTokens>
+					</swe:constraint>
+				</swe:Category>
+			</sml:parameter>
+		</sml:ParameterList>
+	</sml:parameters>
+	<sml:method xlink:href="urn:sensorml:process:BinaryOperation:1.0" />
+</sml:SimpleProcess>

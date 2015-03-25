@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sml:SimpleProcess gml:id="LLAtoPTZ" xml:lang="en"
+	definition="http://sensorml.com/def/process/LLAtoPTZ" xmlns:sml="http://www.opengis.net/sensorml/2.0"
+	xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/sensorml/2.0 http://schemas.opengis.net/sensorml/2.0/sensorML.xsd">
+	    
+	<gml:description>
+	Calculates pan-tilt-zoom (PTZ) in order for a camera to view a particular latitude-longitude-altitude.
+	Uses a reference location and pan angle to determine orientation of camera.
+	</gml:description>
+	    
+	<gml:identifier codeSpace="uid">urn:sensorml:xml:LLAtoPTZ</gml:identifier>
+	<gml:name>LLA to Pan-Tilt-Zoom</gml:name>
+	
+	<sml:inputs>
+		<sml:InputList>
+			<sml:input name="targetlocation">
+				<swe:Vector definition="http://sensorml.com/ont/swe/property/geolocation"
+					referenceFrame="urn:ogc:def:crs:epsg4329">
+					<swe:label>Target Location</swe:label>
+					<swe:coordinate name="latitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/latitude">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="longitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/longitude">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="altitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/altitude">
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+				</swe:Vector>
+			</sml:input>
+			<sml:input name="width">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/widthOfView" uom="m">
+					<swe:label>Width of View (m)</swe:label>
+				</swe:Quantity>
+			</sml:input>
+		</sml:InputList>
+	</sml:inputs>
+	
+	<sml:outputs>
+		<sml:OutputList>
+			<sml:output name="ptzRecord">
+				<swe:DataRecord definition="http://sensorml.com/ont/swe/property/ptz_settings">
+					<swe:field name="pan">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/pan">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="tilt">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/tilt">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:field>
+					<swe:field name="zoomFactor">
+						<swe:Count definition="http://sensorml.com/ont/swe/property/zoomFactor"/>
+					</swe:field>
+				</swe:DataRecord>
+			</sml:output>
+		</sml:OutputList>
+	</sml:outputs>
+	
+	<sml:parameters>
+		<sml:ParameterList>
+			<sml:parameter name="cameraLocation">
+				<swe:Vector definition="http://sensorml.com/ont/swe/property/geolocation"
+					referenceFrame="urn:ogc:def:crs:epsg4329">
+					<swe:label>Target Location</swe:label>
+					<swe:coordinate name="latitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/latitude">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="longitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/longitude">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="altitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/altitude">
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+				</swe:Vector>
+			</sml:parameter>
+			<sml:parameter name="referencePanLocation">
+				<swe:Vector definition="http://sensorml.com/ont/swe/property/geolocation"
+					referenceFrame="urn:ogc:def:crs:epsg4329">
+					<swe:label>Target Location</swe:label>
+					<swe:coordinate name="latitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/latitude">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="longitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/longitude">
+							<swe:uom code="deg" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="altitude">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/altitude">
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+				</swe:Vector>
+			</sml:parameter>
+			<sml:parameter name="panAngleAtReferenceLocation">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/referencePanAngle">
+					<uom code="deg"/>
+				</swe:Quantity>
+			</sml:parameter>
+		</sml:ParameterList>
+	</sml:parameters>
+	<sml:method xlink:href="urn:sensorml:process:LLAtoPTZ:1.0" />
+</sml:SimpleProcess>

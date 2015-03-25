@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sml:SimpleProcess gml:id="ECItoECEF" xml:lang="en"
+	definition="http://sensorml.com/def/process/ECItoECEF" xmlns:sml="http://www.opengis.net/sensorml/2.0"
+	xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/sensorml/2.0 http://schemas.opengis.net/sensorml/2.0/sensorML.xsd">
+	    
+	<gml:description>Converts an Earth-Centered-Inertia location vector to Earth-Centered-Earth-Fixed coordinates </gml:description>
+	    
+	<gml:identifier codeSpace="uid">urn:sensorml:xml:ECItoECEF</gml:identifier>
+	    
+	<gml:name>ECI to ECEF Transform</gml:name>
+	<sml:inputs>
+		<sml:InputList>
+			<sml:input name="julianTime">
+				<swe:Time definition="http://sensorml.com/ont/swe/property/epochTime"
+					referenceTime="1970-01-01T00:00:00Z">
+					<swe:label>Epoch Time</swe:label>
+					<swe:description>Time expressed as Unix time (seconds past Jan 1, 1970)</swe:description>
+					<swe:uom code="s" />
+				</swe:Time>
+			</sml:input>
+			<sml:input name="ECI_location">
+				<swe:Vector definition="http://sensorml.com/ont/swe/property/eci_location"
+					referenceFrame="urn:ogc:def:crs:ECI">
+					<swe:coordinate name="x">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/xCoordinate" >
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="y">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/yCoordinate">
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="z">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/zCoordinate">
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+				</swe:Vector>
+			</sml:input>
+		</sml:InputList>
+	</sml:inputs>
+	<sml:outputs>
+		<sml:OutputList>
+			<sml:output name="ECEF_location">
+				<swe:Vector definition="http://sensorml.com/ont/swe/property/ecef_location"
+					referenceFrame="urn:ogc:def:crs:ecef_wgs84">
+					<swe:coordinate name="x">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/xCoordinate">
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="y">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/yCoordinate">
+							<swe:uom code="m" />
+						</swe:Quantity>
+					</swe:coordinate>
+					<swe:coordinate name="z">
+						<swe:Quantity definition="http://sensorml.com/ont/swe/property/zCoordinate">
+						<swe:uom code="m" />
+					</swe:Quantity>
+					</swe:coordinate>
+				</swe:Vector>
+			</sml:output>
+		</sml:OutputList>
+	</sml:outputs>
+	<sml:parameters>
+		<sml:ParameterList>
+			<sml:parameter name="datum">
+				<swe:Category>
+					<swe:value>urn:ogc:datum:wgs84</swe:value>
+				</swe:Category>
+			</sml:parameter>
+		</sml:ParameterList>
+	</sml:parameters>
+	<sml:method xlink:href="urn:sensorml:process:ECItoECEF:1.0" />
+</sml:SimpleProcess>

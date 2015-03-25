@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sml:SimpleProcess gml:id="ScalarCompare" xml:lang="en"
+	definition="http://sensorml.com/def/process/ScalarCompare" 
+	xmlns:sml="http://www.opengis.net/sensorml/2.0"
+	xmlns:swe="http://www.opengis.net/swe/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+	xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/sensorml/2.0 http://schemas.opengis.net/sensorml/2.0/sensorML.xsd">
+	    
+	<gml:description>
+	Compares a scalar against a threshold and routes input into one of three output pipes  
+	(less than, equal to, or more than)
+	</gml:description>	    
+	<gml:identifier codeSpace="uid">urn:sensorml:xml:binaryOperation</gml:identifier>
+	    
+	<gml:name>Scalar Compare</gml:name>
+
+	<sml:inputs>
+		<sml:InputList>
+			<sml:input name=input>
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/testValue" />
+			</sml:input>
+			<sml:input name="threshold">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/threshold" />
+			</sml:input>
+		</sml:InputList>
+	</sml:inputs>
+	
+	<sml:outputs>
+		<sml:OutputList>
+			<sml:output name="less">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/lessThanThresholdValue"/>
+			</sml:output>
+			<sml:output name="more">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/moreThanThresholdValue"/>
+			</sml:output>
+			<sml:output name="equal">
+				<swe:Quantity definition="http://sensorml.com/ont/swe/property/equalToThresholdValue"/>
+			</sml:output>
+		</sml:OutputList>
+	</sml:outputs>
+	<sml:method xlink:href="urn:sensorml:process:ScalarCompare:1.0" />
+</sml:SimpleProcess>
