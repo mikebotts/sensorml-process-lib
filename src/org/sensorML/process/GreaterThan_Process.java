@@ -10,6 +10,7 @@ import org.vast.process.*;
 * <p><b>Title:  </b><br/></p>
 *
 * <p><b>Description:</b><br/>
+* Determines whether input test value is greater than the threshold value. Return true or false.
 * </p>
 * @author 
 * @date  

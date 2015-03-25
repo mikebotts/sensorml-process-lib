@@ -58,7 +58,7 @@ public class BinaryOperation_Process extends DataProcess
     {
     	try
         {
-            //I/O/P mappings
+            //Input/output mappings
             operand1 = (DataValue) inputData.getComponent("operand1");
             operand2 = (DataValue) inputData.getComponent("operand2");
 
@@ -69,10 +69,6 @@ public class BinaryOperation_Process extends DataProcess
  
             if (operatorData.getData().getStringValue().equalsIgnoreCase("addition"))
               	operator = OperatorEnum.ADD;
-            // meb: seems some French sneaked in here
-            else if (operatorData.getData().getStringValue().equalsIgnoreCase("soustraction"))
-               	operator = OperatorEnum.MIN;
-            // meb - 2010-01-27: added subtraction
             else if (operatorData.getData().getStringValue().equalsIgnoreCase("subtraction"))
                	operator = OperatorEnum.MIN;
             else if (operatorData.getData().getStringValue().equalsIgnoreCase("multiplication"))

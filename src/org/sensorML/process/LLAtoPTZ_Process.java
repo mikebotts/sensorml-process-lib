@@ -43,7 +43,7 @@ import org.vast.process.*;
  * @date Feb 20, 2008
  * @version 1.0
  */
-public class LLAToPTZ_Process extends DataProcess
+public class LLAtoPTZ_Process extends DataProcess
 {
     private DataValue latTData, lonTData, altTData, latCData, lonCData;
     private DataValue widthData, altCData, latZData, lonZData, altZData, panAtRefData;
@@ -52,7 +52,7 @@ public class LLAToPTZ_Process extends DataProcess
     private Datum datum;
 
     
-    public LLAToPTZ_Process()
+    public LLAtoPTZ_Process()
     {    	
     }
    
@@ -85,9 +85,10 @@ public class LLAToPTZ_Process extends DataProcess
             panAtRefData = (DataValue)paramData.getComponent("panAngleAtReferenceLocation");
 
             // output mapping
-            panAngleData = (DataValue)outputData.getComponent("panAngle");
-            tiltAngleData = (DataValue)outputData.getComponent("tiltAngle");
-            zoomFactorData = (DataValue)outputData.getComponent("zoomFactor");
+            DataGroup ptz = (DataGroup)outputData.getComponent("ptzRecord");
+            panAngleData = (DataValue)ptz.getComponent("panAngle");
+            tiltAngleData = (DataValue)ptz.getComponent("tiltAngle");
+            zoomFactorData = (DataValue)ptz.getComponent("zoomFactor");
             
             // set Datum to default WGS84
             datum = new Datum();

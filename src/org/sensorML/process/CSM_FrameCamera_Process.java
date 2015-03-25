@@ -74,7 +74,7 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
 
       try {
 
-    	// initialize inputs mapping
+      	// initialize inputs mapping
     	  pixelGridCoordinatesData = inputData.getComponent("pixelGridCoordinates");
     	  rData = (DataValue)pixelGridCoordinatesData.getComponent("r");
     	  cData = (DataValue)pixelGridCoordinatesData.getComponent("c");
@@ -86,19 +86,23 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
     	  zData = (DataValue)viewVectorData.getComponent("z");
     	  
          // initialize parameters mapping
-    	  focalLengthData = paramData.getComponent("focalLength");
-    	      	  
-    	  pixelGridCharacteristicsData = paramData.getComponent("pixelGridCharacteristics");
+          DataGroup paramElements = (DataGroup) paramData.getComponent("csmParams");
+     
+    	  focalLengthData = paramElements.getComponent("focalLength");
+    	  //focalLength retrieved in execute to account for possible changes in zoom - meb
+    	  //focalLength = focalLengthData.getData().getDoubleValue();
+    	  
+    	  pixelGridCharacteristicsData = paramElements.getComponent("pixelGridCharacteristics");
     	  numberOfRowsInImage = pixelGridCharacteristicsData.getComponent("numberOfRowsInImage").getData().getDoubleValue();
     	  numberOfColumnsInImage = pixelGridCharacteristicsData.getComponent("numberOfColumnsInImage").getData().getDoubleValue();
     	  rowSpacing = pixelGridCharacteristicsData.getComponent("rowSpacing").getData().getDoubleValue();
     	  columnSpacing = pixelGridCharacteristicsData.getComponent("columnSpacing").getData().getDoubleValue();
     	  
-    	  principalPointCoordinatesData = paramData.getComponent("principalPointCoordinates");
+    	  principalPointCoordinatesData = paramElements.getComponent("principalPointCoordinates");
     	  x0 = principalPointCoordinatesData.getComponent("x0").getData().getDoubleValue();
     	  y0 = principalPointCoordinatesData.getComponent("y0").getData().getDoubleValue();
     	  
-    	  affineDistortionCoefficientsData = paramData.getComponent("affineDistortionCoefficients");
+    	  affineDistortionCoefficientsData = paramElements.getComponent("affineDistortionCoefficients");
     	  a1 = affineDistortionCoefficientsData.getComponent("a1").getData().getDoubleValue();
     	  a2 = affineDistortionCoefficientsData.getComponent("a2").getData().getDoubleValue();
     	  b1 = affineDistortionCoefficientsData.getComponent("b1").getData().getDoubleValue();
@@ -106,12 +110,12 @@ public class CSM_FrameCameraModel_Process extends DataProcess {
     	  c1 = affineDistortionCoefficientsData.getComponent("c1").getData().getDoubleValue();
     	  c2 = affineDistortionCoefficientsData.getComponent("c2").getData().getDoubleValue();
     	  
-    	  radialDistortionCoefficientsData = paramData.getComponent("radialDistortionCoefficients");
+    	  radialDistortionCoefficientsData = paramElements.getComponent("radialDistortionCoefficients");
     	  k1 = radialDistortionCoefficientsData.getComponent("k1").getData().getDoubleValue();
     	  k2 = radialDistortionCoefficientsData.getComponent("k2").getData().getDoubleValue();
     	  k3 = radialDistortionCoefficientsData.getComponent("k3").getData().getDoubleValue();
     	  
-    	  decenteringCoefficientsData = paramData.getComponent("decenteringCoefficients");
+    	  decenteringCoefficientsData = paramElements.getComponent("decenteringCoefficients");
     	  p1 = decenteringCoefficientsData.getComponent("p1").getData().getDoubleValue();
     	  p2 = decenteringCoefficientsData.getComponent("p2").getData().getDoubleValue();
     	  

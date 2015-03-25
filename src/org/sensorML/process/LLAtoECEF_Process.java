@@ -29,11 +29,12 @@ import org.vast.sweCommon.SweConstants;
 
 /**
  * <p><b>Title:</b><br/>
- * LLA To ECEF coordinate Transform Process
+ * LLA to ECEF coordinate Transform Process
  * </p>
  *
  * <p><b>Description:</b><br/>
- * TODO LLAToECEFProcess type description
+ * Process to convert coordinates from Latitude-Longitude-Altitude
+ * domain to Earth-Centered-Earth-Fixed frame
  * </p>
  *
  * <p>Copyright (c) 2007</p>
@@ -41,7 +42,7 @@ import org.vast.sweCommon.SweConstants;
  * @date Sep 2, 2005
  * @version 1.0
  */
-public class LLAToECEF_Process extends DataProcess
+public class LLAtoECEF_Process extends DataProcess
 {
     private AbstractDataComponent latData, lonData, altData;
     private AbstractDataComponent lrxData, lryData, lrzData;
@@ -55,7 +56,7 @@ public class LLAToECEF_Process extends DataProcess
     private Datum datum;
 
 
-    public LLAToECEF_Process()
+    public LLAtoECEF_Process()
     {
     }
 

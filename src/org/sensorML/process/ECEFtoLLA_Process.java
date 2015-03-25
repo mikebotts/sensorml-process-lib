@@ -27,65 +27,68 @@ import org.vast.physics.*;
 
 /**
  * <p><b>Title:</b><br/>
- * LLA To ECEF coordinate Transform Process
+ * ECEF To LLA coordinate Transform Process
  * </p>
  *
  * <p><b>Description:</b><br/>
- * TODO LLAToECEFProcess type description
+ * Converts coordinates from Earth-Centered-Earth-Fixed (ECEF) to 
+ *    Latitude-Longitude-Altitude
  * </p>
  *
  * <p>Copyright (c) 2007</p>
- * @author Alexandre Robin & Gregoire Berthiau
+ * @author Alexandre Robin
  * @date Sep 2, 2005
  * @version 1.0
  */
-public class LLAToECEF2_Process extends DataProcess
+public class ECEFtoLLA_Process extends DataProcess
 {
-    private AbstractDataComponent latData, lonData, altData;
-    private AbstractDataComponent xData, yData, zData;
+    private DataValue xData, yData, zData;
+    private DataValue latData, lonData, altData;
     private Datum datum;
 
-
-    public LLAToECEF2_Process()
-    {
+    public ECEFtoLLA_Process()
+    {    	
     }
+
     
+    @Override
     public void init() throws ProcessException
     {
     	try
         {
-            // get input data containers + create appropriate Unit Converters
-    		latData = (DataValue) inputData.getComponent("LLA_location").getComponent("latitude");
-            lonData = (DataValue) inputData.getComponent("LLA_location").getComponent("longitude");
-            altData = (DataValue) inputData.getComponent("LLA_location").getComponent("altitude");
-            
-            // get orientation data containers + create appropriate Unit Converters   
-            xData = (DataValue) outputData.getComponent("ECEF_location").getComponent("x");
-            yData = (DataValue) outputData.getComponent("ECEF_location").getComponent("y");
-            zData = (DataValue) outputData.getComponent("ECEF_location").getComponent("z");
+    		// input data containers
+            DataGroup ecefData = (DataGroup)inputData.getComponent("ecefLocation");
+            xData = (DataValue)ecefData.getComponent("x");
+            yData = (DataValue)ecefData.getComponent("y");
+            zData = (DataValue)ecefData.getComponent("z");
+        	
+    		// get output data containers + create appropriate Unit Converters
+    		DataGroup locationData = (DataGroup)outputData.getComponent("geoLocation");
+            latData = (DataValue)locationData.getComponent("latitude");            
+            lonData = (DataValue)locationData.getComponent("longitude");
+            altData = (DataValue)locationData.getComponent("altitude");
             
             datum = new Datum();
-            
         }
         catch (Exception e)
         {
             throw new ProcessException(ioError, e);
         }
     }
+   
     
+    @Override
     public void execute() throws ProcessException
     {
-    	// get lat,lon,alt coordinates from input and convert to SI
-    	double lat = latData.getData().getDoubleValue();
-    	double lon = lonData.getData().getDoubleValue();
-    	double alt = altData.getData().getDoubleValue();
-        
-        // convert to ECEF
-        double[] ecefPos = MapProjection.LLAtoECF(lon, lat, alt, datum);
-                
-        xData.getData().setDoubleValue(ecefPos[0]);
-		yData.getData().setDoubleValue(ecefPos[1]);
-		zData.getData().setDoubleValue(ecefPos[2]);  
+    	double x = xData.getData().getDoubleValue();
+        double y = yData.getData().getDoubleValue();
+        double z = zData.getData().getDoubleValue();
+    	
+        double[] lla = MapProjection.ECFtoLLA(x, y, z, datum);
+    	
+        lonData.getData().setDoubleValue(lla[0]);
+        latData.getData().setDoubleValue(lla[1]);        
+        altData.getData().setDoubleValue(lla[2]);
 
-	}
+    }
 }
